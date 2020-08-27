@@ -3,7 +3,9 @@ package com.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -11,6 +13,9 @@ import java.util.Set;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Client  extends  Guest{
     private String telephone;
+
+    @OneToMany
+    private List<Bill> bills;
 
     public String getTelephone() {
         return telephone;
@@ -33,6 +38,14 @@ public class Client  extends  Guest{
 
     public Client(){
 
+    }
+
+    public List<Bill> getBills() {
+        return bills;
+    }
+
+    public void setBills(List<Bill> bills) {
+        this.bills = bills;
     }
 
     @Override

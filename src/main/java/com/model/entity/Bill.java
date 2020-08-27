@@ -12,6 +12,9 @@ public class Bill {
     @OneToMany
     private List<OrderItem> orderItems;
 
+    @ManyToOne
+    private Client client;
+
     private LocalDate date;
 
     @ManyToOne
@@ -39,6 +42,14 @@ public class Bill {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public Restaurant getRestaurant() {
