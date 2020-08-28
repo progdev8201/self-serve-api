@@ -1,6 +1,5 @@
 package com.model.entity;
 
-import com.model.enums.ProgressStatus;
 import com.model.enums.RequestType;
 import org.hibernate.annotations.NaturalId;
 

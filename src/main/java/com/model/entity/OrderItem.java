@@ -21,7 +21,17 @@ public class OrderItem {
 
     private double prix;
     //quand le plat doit etre pret
-    private LocalDate delaiDePreparation ;
+    private LocalDate delaiDePreparation;
+
+    private int table;
+
+    public int getTable() {
+        return table;
+    }
+
+    public void setTable(int table) {
+        this.table = table;
+    }
 
     public Long getId() {
         return id;
@@ -71,6 +81,7 @@ public class OrderItem {
                 ", orderStatus=" + orderStatus +
                 ", prix=" + prix +
                 ", delaiDePreparation=" + delaiDePreparation +
+                ", table=" + table +
                 '}';
     }
 }
