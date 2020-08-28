@@ -16,7 +16,7 @@ public class OrderItem {
     @Enumerated(EnumType.STRING)
     @NaturalId
     @Column(length = 60)
-    private OrderStatus orderStatus;
+    private ProgressStatus orderStatus;
 
     private double prix;
     //quand le plat doit etre pret
@@ -38,11 +38,11 @@ public class OrderItem {
         this.product = product;
     }
 
-    public OrderStatus getOrderStatus() {
+    public ProgressStatus getOrderStatus() {
         return orderStatus;
     }
 
-    public void setOrderStatus(OrderStatus orderStatus) {
+    public void setOrderStatus(ProgressStatus orderStatus) {
         this.orderStatus = orderStatus;
     }
 

@@ -24,7 +24,7 @@ public class Bill {
     @Enumerated(EnumType.STRING)
     @NaturalId
     @Column(length = 60)
-    private OrderStatus billStatus;
+    private BillStatus billStatus;
 
     @ManyToOne
     private Restaurant restaurant;
@@ -71,11 +71,11 @@ public class Bill {
         this.prixTotal = prixTotal;
     }
 
-    public OrderStatus getBillStatus() {
+    public BillStatus getBillStatus() {
         return billStatus;
     }
 
-    public void setBillStatus(OrderStatus billStatus) {
+    public void setBillStatus(BillStatus billStatus) {
         this.billStatus = billStatus;
     }
 

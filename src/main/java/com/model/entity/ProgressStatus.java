@@ -1,6 +1,6 @@
 package com.model.entity;
 
-public enum OrderStatus {
+public enum ProgressStatus {
     READY,
     PROGRESS
 }

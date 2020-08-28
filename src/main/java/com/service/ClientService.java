@@ -30,8 +30,10 @@ public class ClientService {
     public Bill makeOrder(List<OrderItem> orderItemList, String guestUsername,Long billId) {
         Bill bill =billRepository.findById(billId).get();
         if(Objects.isNull(bill)){
+            //si bill status ==progress
             bill = new Bill();
             for (OrderItem orderItem : orderItemList) {
+                orderItem.setOrderStatus(ProgressStatus.PROGRESS);
                 bill.setPrixTotal(bill.getPrixTotal() + orderItem.getPrix());
             }
             Guest guest = guestRepository.findByUsername(guestUsername).get();
@@ -43,11 +45,21 @@ public class ClientService {
             bill.getOrderItems().addAll(bill.getOrderItems());
             bill.setOrderItems( bill.getOrderItems());
             bill.setRestaurant(restaurant);
+            bill.setBillStatus(BillStatus.PROGRESS);
+            return billRepository.save(bill);
         }
         //////notify kitchen
-        return billRepository.save(bill);
+        return null;
     }
-    public boolean makePayment(){
+    public boolean makePayment(Long billId){
+
+        Bill bill =billRepository.findById(billId).get();
+        if(Objects.isNull(bill)){
+            bill.setBillStatus(BillStatus.PAYED);
+            if(Objects.nonNull(billRepository.save(bill))){
+                return true;
+            }
+        }
         return false;
     }
 
