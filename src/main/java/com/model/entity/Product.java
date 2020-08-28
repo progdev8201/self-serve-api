@@ -19,6 +19,10 @@ public class Product {
     @OneToMany
     private List<Option> options;
 
+    private double prix;
+    ///en minutes
+    private int tempsDePreparation;
+
     @OneToMany
     private List<Rate> rates;
 
@@ -62,13 +66,40 @@ public class Product {
         this.rates = rates;
     }
 
+    public Menu getMenu() {
+        return menu;
+    }
+
+    public void setMenu(Menu menu) {
+        this.menu = menu;
+    }
+
+    public double getPrix() {
+        return prix;
+    }
+
+    public void setPrix(double prix) {
+        this.prix = prix;
+    }
+
+    public int getTempsDePreparation() {
+        return tempsDePreparation;
+    }
+
+    public void setTempsDePreparation(int tempsDePreparation) {
+        this.tempsDePreparation = tempsDePreparation;
+    }
+
     @Override
     public String toString() {
         return "Product{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", menu=" + menu +
                 ", options=" + options +
+                ", prix=" + prix +
+                ", tempsDePreparation=" + tempsDePreparation +
                 ", rates=" + rates +
                 '}';
     }

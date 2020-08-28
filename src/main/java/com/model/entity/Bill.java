@@ -1,5 +1,7 @@
 package com.model.entity;
 
+import org.hibernate.annotations.NaturalId;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -13,9 +15,16 @@ public class Bill {
     private List<OrderItem> orderItems;
 
     @ManyToOne
-    private Client client;
+    private Guest orderCustomer;
 
     private LocalDate date;
+
+    private double prixTotal;
+
+    @Enumerated(EnumType.STRING)
+    @NaturalId
+    @Column(length = 60)
+    private OrderStatus billStatus;
 
     @ManyToOne
     private Restaurant restaurant;
@@ -44,13 +53,7 @@ public class Bill {
         this.date = date;
     }
 
-    public Client getClient() {
-        return client;
-    }
 
-    public void setClient(Client client) {
-        this.client = client;
-    }
 
     public Restaurant getRestaurant() {
         return restaurant;
@@ -60,12 +63,39 @@ public class Bill {
         this.restaurant = restaurant;
     }
 
+    public double getPrixTotal() {
+        return prixTotal;
+    }
+
+    public void setPrixTotal(double prixTotal) {
+        this.prixTotal = prixTotal;
+    }
+
+    public OrderStatus getBillStatus() {
+        return billStatus;
+    }
+
+    public void setBillStatus(OrderStatus billStatus) {
+        this.billStatus = billStatus;
+    }
+
+    public Guest getOrderCustomer() {
+        return orderCustomer;
+    }
+
+    public void setOrderCustomer(Guest orderCustomer) {
+        this.orderCustomer = orderCustomer;
+    }
+
     @Override
     public String toString() {
         return "Bill{" +
                 "id=" + id +
                 ", orderItems=" + orderItems +
+                ", orderCustomer=" + orderCustomer +
                 ", date=" + date +
+                ", prixTotal=" + prixTotal +
+                ", billStatus=" + billStatus +
                 ", restaurant=" + restaurant +
                 '}';
     }
