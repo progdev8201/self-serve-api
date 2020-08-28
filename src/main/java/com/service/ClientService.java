@@ -27,36 +27,37 @@ public class ClientService {
         this.billRepository = billRepository;
     }
 
-    public Bill makeOrder(List<OrderItem> orderItemList, String guestUsername,Long billId) {
-        Bill bill =billRepository.findById(billId).get();
-        if(Objects.isNull(bill)){
-            //si bill status ==progress
+    public Bill makeOrder(List<OrderItem> orderItemList, String guestUsername, Long billId) {
+        Bill bill = billRepository.findById(billId).get();
+        if (Objects.isNull(bill)) {
             bill = new Bill();
-            for (OrderItem orderItem : orderItemList) {
-                orderItem.setOrderStatus(ProgressStatus.PROGRESS);
-                bill.setPrixTotal(bill.getPrixTotal() + orderItem.getPrix());
-            }
-            Guest guest = guestRepository.findByUsername(guestUsername).get();
-
-            ////meilleur solution?? a voir mais il faut retrouver le restaurent pour l'associé au bill
-            Restaurant restaurant =orderItemList.get(0).getProduct().getMenu().getRestaurant();
-
-            bill.setOrderCustomer(guest);
-            bill.getOrderItems().addAll(bill.getOrderItems());
-            bill.setOrderItems( bill.getOrderItems());
-            bill.setRestaurant(restaurant);
-            bill.setBillStatus(BillStatus.PROGRESS);
-            return billRepository.save(bill);
         }
-        //////notify kitchen
-        return null;
-    }
-    public boolean makePayment(Long billId){
 
-        Bill bill =billRepository.findById(billId).get();
-        if(Objects.isNull(bill)){
+        for (OrderItem orderItem : orderItemList) {
+            orderItem.setOrderStatus(ProgressStatus.PROGRESS);
+            bill.setPrixTotal(bill.getPrixTotal() + orderItem.getPrix());
+        }
+        Guest guest = guestRepository.findByUsername(guestUsername).get();
+
+        ////meilleur solution?? a voir mais il faut retrouver le restaurent pour l'associé au bill
+        Restaurant restaurant = orderItemList.get(0).getProduct().getMenu().getRestaurant();
+
+        bill.setOrderCustomer(guest);
+        bill.getOrderItems().addAll(bill.getOrderItems());
+        bill.setOrderItems(bill.getOrderItems());
+        bill.setRestaurant(restaurant);
+        bill.setBillStatus(BillStatus.PROGRESS);
+
+        //////notify kitchen
+        return billRepository.save(bill);
+    }
+
+    public boolean makePayment(Long billId) {
+
+        Bill bill = billRepository.findById(billId).get();
+        if (Objects.isNull(bill)) {
             bill.setBillStatus(BillStatus.PAYED);
-            if(Objects.nonNull(billRepository.save(bill))){
+            if (Objects.nonNull(billRepository.save(bill))) {
                 return true;
             }
         }
