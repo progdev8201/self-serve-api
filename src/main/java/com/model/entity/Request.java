@@ -16,10 +16,6 @@ public class Request {
     @Enumerated(EnumType.STRING)
     @NaturalId
     @Column(length = 60)
-    private ProgressStatus progressStatus;
-    @Enumerated(EnumType.STRING)
-    @NaturalId
-    @Column(length = 60)
     private RequestType requestType;
 
     public Long getId() {
@@ -46,20 +42,11 @@ public class Request {
         this.requestType = requestType;
     }
 
-    public ProgressStatus getProgressStatus() {
-        return progressStatus;
-    }
-
-    public void setProgressStatus(ProgressStatus progressStatus) {
-        this.progressStatus = progressStatus;
-    }
-
     @Override
     public String toString() {
         return "Request{" +
                 "id=" + id +
                 ", orderItem=" + orderItem +
-                ", progressStatus=" + progressStatus +
                 ", requestType=" + requestType +
                 '}';
     }
