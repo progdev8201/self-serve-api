@@ -4,6 +4,7 @@ import com.model.enums.OrderStatus;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 public class OrderItem {
@@ -17,6 +18,10 @@ public class OrderItem {
     @NaturalId
     @Column(length = 60)
     private OrderStatus orderStatus;
+
+    private double prix;
+    //quand le plat doit etre pret
+    private LocalDate delaiDePreparation ;
 
     public Long getId() {
         return id;
@@ -42,12 +47,30 @@ public class OrderItem {
         this.orderStatus = orderStatus;
     }
 
+    public double getPrix() {
+        return prix;
+    }
+
+    public void setPrix(double prix) {
+        this.prix = prix;
+    }
+
+    public LocalDate getDelaiDePreparation() {
+        return delaiDePreparation;
+    }
+
+    public void setDelaiDePreparation(LocalDate delaiDePreparation) {
+        this.delaiDePreparation = delaiDePreparation;
+    }
+
     @Override
     public String toString() {
         return "OrderItem{" +
                 "id=" + id +
                 ", product=" + product +
                 ", orderStatus=" + orderStatus +
+                ", prix=" + prix +
+                ", delaiDePreparation=" + delaiDePreparation +
                 '}';
     }
 }

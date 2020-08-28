@@ -14,8 +14,6 @@ import java.util.Set;
 public class Client  extends  Guest{
     private String telephone;
 
-    @OneToMany
-    private List<Bill> bills;
 
     public String getTelephone() {
         return telephone;
@@ -40,13 +38,6 @@ public class Client  extends  Guest{
 
     }
 
-    public List<Bill> getBills() {
-        return bills;
-    }
-
-    public void setBills(List<Bill> bills) {
-        this.bills = bills;
-    }
 
     @Override
     public String toString() {

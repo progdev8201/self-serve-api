@@ -12,6 +12,8 @@ public class Menu {
     @OneToMany
     private List<Product> products;
 
+    @OneToOne
+    private Restaurant restaurant ;
     public Long getId() {
         return id;
     }
@@ -28,11 +30,20 @@ public class Menu {
         this.products = products;
     }
 
+    public Restaurant getRestaurant() {
+        return restaurant;
+    }
+
+    public void setRestaurant(Restaurant restaurant) {
+        this.restaurant = restaurant;
+    }
+
     @Override
     public String toString() {
         return "Menu{" +
                 "id=" + id +
                 ", products=" + products +
+                ", restaurant=" + restaurant +
                 '}';
     }
 }
