@@ -1,4 +1,4 @@
-package com.model.entity;
+package com.model.enums;
 
 public enum RoleName {
     ROLE_CLIENT,

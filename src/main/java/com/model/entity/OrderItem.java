@@ -1,5 +1,6 @@
 package com.model.entity;
 
+import com.model.enums.OrderStatus;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
