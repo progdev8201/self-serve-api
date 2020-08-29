@@ -15,7 +15,7 @@ public class Role implements Serializable {
     private Long roleId;
 
     @Enumerated(EnumType.STRING)
-    @NaturalId
+    //@NaturalId
     @Column(length = 60)
     private RoleName name;
 

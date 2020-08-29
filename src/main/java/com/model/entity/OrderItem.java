@@ -16,7 +16,7 @@ public class OrderItem {
     private Product product;
 
     @Enumerated(EnumType.STRING)
-    @NaturalId
+    //@NaturalId
     @Column(length = 60)
     private ProgressStatus orderStatus;
 

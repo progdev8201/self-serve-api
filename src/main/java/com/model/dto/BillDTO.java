@@ -18,7 +18,7 @@ public class BillDTO {
     private double prixTotal;
 
     @Enumerated(EnumType.STRING)
-    @NaturalId
+    //@NaturalId
     @Column(length = 60)
     private BillStatus billStatus;
 

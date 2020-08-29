@@ -6,6 +6,7 @@ import java.util.List;
 @Entity
 public class Restaurant {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String name;

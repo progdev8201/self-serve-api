@@ -4,7 +4,7 @@ import com.model.entity.Restaurant;
 
 import java.util.List;
 
-public class OwnerDTO extends GuestDTO{
+public class  OwnerDTO extends GuestDTO{
     private List<RestaurantDTO> restaurantList;
 
     public List<RestaurantDTO> getRestaurantList() {
