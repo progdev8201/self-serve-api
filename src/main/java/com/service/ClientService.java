@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,13 +39,7 @@ public class ClientService {
         this.restaurantRepository = restaurantRepository;
     }
 
-    public BillRepository getBillRepository() {
-        return billRepository;
-    }
 
-    public void setBillRepository(BillRepository billRepository) {
-        this.billRepository = billRepository;
-    }
 
     public BillDTO makeOrder(List<OrderItemDTO> orderItemDTOList, String guestUsername, Long billId) {
         Bill bill = null;
@@ -59,6 +56,7 @@ public class ClientService {
             OrderItem orderItem =OrderItemDTOToOrderItem.instance.convert(orderItemDTO);
             orderItem.setProduct(product);
             orderItem.setOrderStatus(ProgressStatus.PROGRESS);
+            orderItem.setDelaiDePreparation(LocalDateTime.now().minusMinutes(product.getTempsDePreparation()));
             orderItem = orderItemRepository.save(orderItem);
             orderItemList.add(orderItem);
             bill.setPrixTotal(bill.getPrixTotal() + orderItem.getPrix());
