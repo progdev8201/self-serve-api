@@ -41,6 +41,8 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void createAccount(){
+        Client client = new Client();
+        client.setUsername("client1");
         Guest guest = new Guest();
         guest.setUsername("user1");
         Restaurant restaurant = new Restaurant();
@@ -52,13 +54,20 @@ public class DataLoader implements CommandLineRunner {
         product.setPrix(29.99);
         productList.add(product);
         productRepository.save(product);
+        Product product2 = new Product();
+        product2.setName("le steak chico2");
+        product.setPrix(29.99);
+        productList.add(product2);
+        productRepository.save(product2);
         Menu menu = new Menu();
         menu.setRestaurant(restaurant);
         menu.setProducts(productList);
         menuRepository.save(menu);
         product.setMenu(menu);
         productRepository.save(product);
+        productRepository.save(product2);
 
+        guestRepository.save(client);
         guestRepository.save(guest);
         if (roleRepository.findAll().size() == 0){
             LOGGER.info("READY!...Populating database...");
