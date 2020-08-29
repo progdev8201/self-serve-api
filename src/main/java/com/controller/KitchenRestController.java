@@ -3,6 +3,7 @@ package com.controller;
 import com.model.entity.OrderItem;
 import com.model.entity.Request;
 import com.model.enums.OrderStatus;
+import com.model.enums.ProgressStatus;
 import com.model.enums.RequestType;
 import com.repository.OrderItemRepository;
 import com.repository.RequestRepository;
@@ -27,7 +28,7 @@ public class KitchenRestController {
     public List<Request> findAllRequests() {
         List<Request> requestList = new ArrayList<>();
         requestRepository.findAll().forEach(r -> {
-            if (r.getOrderItem().getOrderStatus() != OrderStatus.READY)
+            if (r.getOrderItem().getOrderStatus() != ProgressStatus.READY)
                 requestList.add(r);
         });
 
