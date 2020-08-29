@@ -22,20 +22,19 @@ public class OrderItem {
 
     private double prix;
     //quand le plat doit etre pret
-    private LocalDate delaiDePreparation;
-
-    private int table;
-
-    public int getTable() {
-        return table;
-    }
-
-    public void setTable(int table) {
-        this.table = table;
-    }
-
+    private LocalDate delaiDePreparation ;
     @OneToMany
     private List<Option> option;
+
+    private int numeroTable;
+
+    public int getNumeroTable() {
+        return numeroTable;
+    }
+
+    public void setNumeroTable(int numeroTable) {
+        this.numeroTable = numeroTable;
+    }
 
     public Long getId() {
         return id;
@@ -93,8 +92,9 @@ public class OrderItem {
                 ", orderStatus=" + orderStatus +
                 ", prix=" + prix +
                 ", delaiDePreparation=" + delaiDePreparation +
-                ", table=" + table +
                 ", option=" + option +
                 '}';
     }
 }
+
+
