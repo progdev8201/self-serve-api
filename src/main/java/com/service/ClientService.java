@@ -1,23 +1,35 @@
 package com.service;
 
+import com.mapping.BillToBillDTO;
+import com.mapping.OrderItemDTOToOrderItem;
+import com.model.dto.BillDTO;
+import com.model.dto.OrderItemDTO;
 import com.model.entity.*;
+import com.model.enums.BillStatus;
+import com.model.enums.ProgressStatus;
 import com.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Service
 public class ClientService {
     BillRepository billRepository;
     GuestRepository guestRepository;
     MenuRepository menuRepository;
+    OrderItemRepository orderItemRepository;
 
     @Autowired
-    public ClientService(BillRepository billRepository, GuestRepository guestRepository, MenuRepository menuRepository) {
+    public ClientService(BillRepository billRepository, GuestRepository guestRepository, MenuRepository menuRepository, OrderItemRepository orderItemRepository) {
         this.billRepository = billRepository;
         this.guestRepository = guestRepository;
         this.menuRepository = menuRepository;
+        this.orderItemRepository = orderItemRepository;
     }
+
 
     public BillRepository getBillRepository() {
         return billRepository;
@@ -27,14 +39,19 @@ public class ClientService {
         this.billRepository = billRepository;
     }
 
-    public Bill makeOrder(List<OrderItem> orderItemList, String guestUsername, Long billId) {
-        Bill bill = billRepository.findById(billId).get();
+    public BillDTO makeOrder(List<OrderItemDTO> orderItemDTOList, String guestUsername, Long billId) {
+        Bill bill = null;
+        if(Objects.nonNull(billId)){
+            bill = billRepository.findById(billId).get();
+        }
         if (Objects.isNull(bill)) {
             bill = new Bill();
         }
-
-        for (OrderItem orderItem : orderItemList) {
+        List<OrderItem> orderItemList = new ArrayList<>();
+        for (OrderItemDTO orderItemDTO : orderItemDTOList) {
+            OrderItem orderItem = orderItemRepository.save(OrderItemDTOToOrderItem.instance.convert(orderItemDTO));
             orderItem.setOrderStatus(ProgressStatus.PROGRESS);
+            orderItemList.add(orderItem);
             bill.setPrixTotal(bill.getPrixTotal() + orderItem.getPrix());
         }
         Guest guest = guestRepository.findByUsername(guestUsername).get();
@@ -49,7 +66,7 @@ public class ClientService {
         bill.setBillStatus(BillStatus.PROGRESS);
 
         //////notify kitchen
-        return billRepository.save(bill);
+        return BillToBillDTO.instance.convert(billRepository.save(bill));
     }
 
     public boolean makePayment(Long billId) {

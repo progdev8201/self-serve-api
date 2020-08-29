@@ -1,7 +1,7 @@
 package com.event;
 
 import com.model.entity.Role;
-import com.model.entity.RoleName;
+import com.model.enums.RoleName;
 import com.repository.GuestRepository;
 import com.repository.RoleRepository;
 import com.service.AuthentificationService;

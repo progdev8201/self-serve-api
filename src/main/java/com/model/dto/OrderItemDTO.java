@@ -1,5 +1,7 @@
-package com.model.entity;
+package com.model.dto;
 
+import com.model.entity.Option;
+import com.model.entity.Product;
 import com.model.enums.ProgressStatus;
 import org.hibernate.annotations.NaturalId;
 
@@ -7,24 +9,18 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
-@Entity
-public class OrderItem {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class OrderItemDTO {
     private Long id;
-    @OneToOne
-    private Product product;
 
-    @Enumerated(EnumType.STRING)
-    @NaturalId
-    @Column(length = 60)
+    private ProductDTO product;
+
     private ProgressStatus orderStatus;
 
     private double prix;
-    //quand le plat doit etre pret
+
     private LocalDate delaiDePreparation ;
-    @OneToMany
-    private List<Option> option;
+
+    private List<OptionDTO> option;
 
     public Long getId() {
         return id;
@@ -34,11 +30,11 @@ public class OrderItem {
         this.id = id;
     }
 
-    public Product getProduct() {
+    public ProductDTO getProduct() {
         return product;
     }
 
-    public void setProduct(Product product) {
+    public void setProduct(ProductDTO product) {
         this.product = product;
     }
 
@@ -66,17 +62,17 @@ public class OrderItem {
         this.delaiDePreparation = delaiDePreparation;
     }
 
-    public List<Option> getOption() {
+    public List<OptionDTO> getOption() {
         return option;
     }
 
-    public void setOption(List<Option> option) {
+    public void setOption(List<OptionDTO> option) {
         this.option = option;
     }
 
     @Override
     public String toString() {
-        return "OrderItem{" +
+        return "OrderItemDTO{" +
                 "id=" + id +
                 ", product=" + product +
                 ", orderStatus=" + orderStatus +

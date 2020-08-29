@@ -1,7 +1,7 @@
 package com.repository;
 
 import com.model.entity.Role;
-import com.model.entity.RoleName;
+import com.model.enums.RoleName;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
