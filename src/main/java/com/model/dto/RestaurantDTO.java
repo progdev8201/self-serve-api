@@ -1,27 +1,28 @@
-package com.model.entity;
+package com.model.dto;
 
-import javax.persistence.*;
+import com.model.entity.Bill;
+import com.model.entity.CustomProprety;
+import com.model.entity.Menu;
+import com.model.entity.Owner;
+
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import java.util.List;
 
-@Entity
-public class Restaurant {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class RestaurantDTO {
     private Long id;
 
     private String name;
 
-    @OneToMany
-    private List<Bill> billList;
+    private List<BillDTO> billList;
 
-    @ManyToOne
-    private Owner owner;
+    private OwnerDTO owner;
 
-    @OneToOne
-    private CustomProprety customProprety;
+    private CustomPropretyDTO customProprety;
 
-    @OneToOne
-    private Menu menu;
+    private MenuDTO menu;
 
     public Long getId() {
         return id;
@@ -39,41 +40,41 @@ public class Restaurant {
         this.name = name;
     }
 
-    public List<Bill> getBillList() {
+    public List<BillDTO> getBillList() {
         return billList;
     }
 
-    public void setBillList(List<Bill> billList) {
+    public void setBillList(List<BillDTO> billList) {
         this.billList = billList;
     }
 
-    public Owner getOwner() {
+    public OwnerDTO getOwner() {
         return owner;
     }
 
-    public void setOwner(Owner owner) {
+    public void setOwner(OwnerDTO owner) {
         this.owner = owner;
     }
 
-    public CustomProprety getCustomProprety() {
+    public CustomPropretyDTO getCustomProprety() {
         return customProprety;
     }
 
-    public void setCustomProprety(CustomProprety customProprety) {
+    public void setCustomProprety(CustomPropretyDTO customProprety) {
         this.customProprety = customProprety;
     }
 
-    public Menu getMenu() {
+    public MenuDTO getMenu() {
         return menu;
     }
 
-    public void setMenu(Menu menu) {
+    public void setMenu(MenuDTO menu) {
         this.menu = menu;
     }
 
     @Override
     public String toString() {
-        return "Restaurant{" +
+        return "RestaurantDTO{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", billList=" + billList +

@@ -1,9 +1,8 @@
 package com.event;
 
-import com.model.entity.Role;
+import com.model.entity.*;
 import com.model.enums.RoleName;
-import com.repository.GuestRepository;
-import com.repository.RoleRepository;
+import com.repository.*;
 import com.service.AuthentificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,15 +11,21 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Order(3)
 @Component
 public class DataLoader implements CommandLineRunner {
     @Autowired
     GuestRepository guestRepository;
+    @Autowired
+    RestaurantRepository restaurantRepository;
+
+    @Autowired
+    MenuRepository menuRepository;
+
+    @Autowired
+    ProductRepository productRepository;
 
     @Autowired
     RoleRepository roleRepository;
@@ -36,6 +41,34 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void createAccount(){
+        Client client = new Client();
+        client.setUsername("client1");
+        Guest guest = new Guest();
+        guest.setUsername("user1");
+        Restaurant restaurant = new Restaurant();
+        restaurant.setName("le resto chico");
+        restaurantRepository.save(restaurant);
+        List<Product> productList = new ArrayList<>();
+        Product product = new Product();
+        product.setName("le steak chico");
+        product.setPrix(29.99);
+        productList.add(product);
+        productRepository.save(product);
+        Product product2 = new Product();
+        product2.setName("le steak chico2");
+        product.setPrix(29.99);
+        productList.add(product2);
+        productRepository.save(product2);
+        Menu menu = new Menu();
+        menu.setRestaurant(restaurant);
+        menu.setProducts(productList);
+        menuRepository.save(menu);
+        product.setMenu(menu);
+        productRepository.save(product);
+        productRepository.save(product2);
+
+        guestRepository.save(client);
+        guestRepository.save(guest);
         if (roleRepository.findAll().size() == 0){
             LOGGER.info("READY!...Populating database...");
 

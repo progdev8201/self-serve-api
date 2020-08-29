@@ -1,4 +1,4 @@
-package com.model.entity;
+package com.model.dto;
 
 import com.model.enums.BillStatus;
 import org.hibernate.annotations.NaturalId;
@@ -7,16 +7,11 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
-@Entity
-public class Bill {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class BillDTO {
     private Long id;
-    @OneToMany
-    private List<OrderItem> orderItems;
+    private List<OrderItemDTO> orderItems;
 
-    @ManyToOne
-    private Guest orderCustomer;
+    private GuestDTO orderCustomer;
 
     private LocalDate date;
 
@@ -28,7 +23,7 @@ public class Bill {
     private BillStatus billStatus;
 
     @ManyToOne
-    private Restaurant restaurant;
+    private RestaurantDTO restaurant;
 
     public Long getId() {
         return id;
@@ -38,12 +33,20 @@ public class Bill {
         this.id = id;
     }
 
-    public List<OrderItem> getOrderItems() {
+    public List<OrderItemDTO> getOrderItems() {
         return orderItems;
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
+    public void setOrderItems(List<OrderItemDTO> orderItems) {
         this.orderItems = orderItems;
+    }
+
+    public GuestDTO getOrderCustomer() {
+        return orderCustomer;
+    }
+
+    public void setOrderCustomer(GuestDTO orderCustomer) {
+        this.orderCustomer = orderCustomer;
     }
 
     public LocalDate getDate() {
@@ -52,16 +55,6 @@ public class Bill {
 
     public void setDate(LocalDate date) {
         this.date = date;
-    }
-
-
-
-    public Restaurant getRestaurant() {
-        return restaurant;
-    }
-
-    public void setRestaurant(Restaurant restaurant) {
-        this.restaurant = restaurant;
     }
 
     public double getPrixTotal() {
@@ -80,17 +73,17 @@ public class Bill {
         this.billStatus = billStatus;
     }
 
-    public Guest getOrderCustomer() {
-        return orderCustomer;
+    public RestaurantDTO getRestaurant() {
+        return restaurant;
     }
 
-    public void setOrderCustomer(Guest orderCustomer) {
-        this.orderCustomer = orderCustomer;
+    public void setRestaurant(RestaurantDTO restaurant) {
+        this.restaurant = restaurant;
     }
 
     @Override
     public String toString() {
-        return "Bill{" +
+        return "BillDTO{" +
                 "id=" + id +
                 ", orderItems=" + orderItems +
                 ", orderCustomer=" + orderCustomer +
