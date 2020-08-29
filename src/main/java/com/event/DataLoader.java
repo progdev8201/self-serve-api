@@ -52,6 +52,7 @@ public class DataLoader implements CommandLineRunner {
         Product product = new Product();
         product.setName("le steak chico");
         product.setPrix(29.99);
+        product.setTempsDePreparation(30);
         productList.add(product);
         productRepository.save(product);
         Product product2 = new Product();

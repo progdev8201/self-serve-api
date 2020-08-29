@@ -2,6 +2,7 @@ package com;
 
 import com.controller.BillController;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.model.dto.*;
 import com.model.entity.OrderItem;
 import com.model.entity.Product;
@@ -20,10 +21,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -53,8 +55,9 @@ class SelfServeApiApplicationTests {
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
-
-        BillDTO reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(),BillDTO.class);
+        ObjectMapper mapper=new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
         assertEquals(29.99, reponse.getPrixTotal());
         assertEquals("le steak chico",reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1,reponse.getOrderItems().size());

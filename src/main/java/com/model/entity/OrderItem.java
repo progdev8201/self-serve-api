@@ -5,6 +5,7 @@ import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -22,7 +23,7 @@ public class OrderItem {
 
     private double prix;
     //quand le plat doit etre pret
-    private LocalDate delaiDePreparation ;
+    private LocalDateTime delaiDePreparation ;
     @OneToMany
     private List<Option> option;
 
@@ -68,11 +69,11 @@ public class OrderItem {
         this.prix = prix;
     }
 
-    public LocalDate getDelaiDePreparation() {
+    public LocalDateTime getDelaiDePreparation() {
         return delaiDePreparation;
     }
 
-    public void setDelaiDePreparation(LocalDate delaiDePreparation) {
+    public void setDelaiDePreparation(LocalDateTime delaiDePreparation) {
         this.delaiDePreparation = delaiDePreparation;
     }
 

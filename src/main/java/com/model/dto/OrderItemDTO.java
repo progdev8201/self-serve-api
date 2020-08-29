@@ -7,6 +7,7 @@ import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrderItemDTO {
@@ -18,7 +19,7 @@ public class OrderItemDTO {
 
     private double prix;
 
-    private LocalDate delaiDePreparation ;
+    private LocalDateTime delaiDePreparation ;
 
     private List<OptionDTO> option;
 
@@ -54,11 +55,11 @@ public class OrderItemDTO {
         this.prix = prix;
     }
 
-    public LocalDate getDelaiDePreparation() {
+    public LocalDateTime getDelaiDePreparation() {
         return delaiDePreparation;
     }
 
-    public void setDelaiDePreparation(LocalDate delaiDePreparation) {
+    public void setDelaiDePreparation(LocalDateTime delaiDePreparation) {
         this.delaiDePreparation = delaiDePreparation;
     }
 
