@@ -1,4 +1,4 @@
-package com;
+package com.controller;
 
 import com.controller.BillController;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-class SelfServeApiApplicationTests {
+class BillControllerTests {
     @Autowired
     BillController billController;
 

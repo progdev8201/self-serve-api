@@ -12,5 +12,6 @@ public interface MenuToMenuDTO {
 
     @Mapping(target = "products", ignore = true)
     @Mapping(target = "restaurant", ignore = true)
+    @Mapping(target = "speciaux", ignore = true)
     MenuDTO convert(Menu menuDTO);
 }
