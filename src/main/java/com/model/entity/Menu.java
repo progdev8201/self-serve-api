@@ -9,7 +9,7 @@ public class Menu {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Product> products;
 
     @OneToOne
