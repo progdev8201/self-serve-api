@@ -12,8 +12,12 @@ public class Menu {
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Product> products;
 
+    @OneToMany
+    private List<Product> speciaux;
+
     @OneToOne
     private Restaurant restaurant ;
+
     public Long getId() {
         return id;
     }
@@ -36,6 +40,14 @@ public class Menu {
 
     public void setRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
+    }
+
+    public List<Product> getSpeciaux() {
+        return speciaux;
+    }
+
+    public void setSpeciaux(List<Product> speciaux) {
+        this.speciaux = speciaux;
     }
 
     @Override

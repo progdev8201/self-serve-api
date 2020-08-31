@@ -12,6 +12,10 @@ public class MenuDTO {
 
     private RestaurantDTO restaurant ;
 
+    private List<ProductDTO> speciaux;
+
+
+
     public Long getId() {
         return id;
     }
@@ -34,6 +38,14 @@ public class MenuDTO {
 
     public void setRestaurant(RestaurantDTO restaurant) {
         this.restaurant = restaurant;
+    }
+
+    public List<ProductDTO> getSpeciaux() {
+        return speciaux;
+    }
+
+    public void setSpeciaux(List<ProductDTO> speciaux) {
+        this.speciaux = speciaux;
     }
 
     @Override
