@@ -1,5 +1,7 @@
 package com.controller;
 
+import com.mapping.ProductDTOToProduct;
+import com.model.dto.ProductDTO;
 import com.model.entity.Menu;
 import com.model.entity.Product;
 import com.repository.MenuRepository;
@@ -30,14 +32,16 @@ public class ProductController {
     }
 
     @PostMapping("/{menuId}")
-    public void create(@RequestBody Product product,@PathVariable Long menuId) {
+    public void create(@RequestBody ProductDTO productDTO, @PathVariable Long menuId) {
+        Product product = ProductDTOToProduct.instance.convert(productDTO);
         Menu menu = menuRepository.findById(menuId).get();
         menu.getProducts().add(product);
         menuRepository.save(menu);
     }
 
     @PutMapping()
-    public void update(@RequestBody Product product) {
+    public void update(@RequestBody ProductDTO productDTO) {
+        Product product = ProductDTOToProduct.instance.convert(productDTO);
         productRepository.save(product);
     }
 
