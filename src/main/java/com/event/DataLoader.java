@@ -41,33 +41,41 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void createAccount(){
+        // create client
         Client client = new Client();
         client.setUsername("client1");
+
+        //create guest
         Guest guest = new Guest();
         guest.setUsername("user1");
+
+        //create restaurant
         Restaurant restaurant = new Restaurant();
         restaurant.setName("le resto chico");
         restaurantRepository.save(restaurant);
+
+        //create product list
         List<Product> productList = new ArrayList<>();
         Product product = new Product();
         product.setName("le steak chico");
         product.setPrix(29.99);
         product.setTempsDePreparation(30);
         productList.add(product);
-        product=productRepository.save(product);
         Product product2 = new Product();
         product2.setName("le steak chico2");
         product2.setPrix(29.99);
         productList.add(product2);
-        product2=productRepository.save(product2);
+
+        //create menu
         Menu menu = new Menu();
         menu.setRestaurant(restaurant);
         menu.setProducts(productList);
-        menu =menuRepository.save(menu);
         product.setMenu(menu);
-        productRepository.save(product);
-        productRepository.save(product2);
+        product2.setMenu(menu);
+        menu = menuRepository.save(menu);
 
+        //finish create client and guest
+        //TODO: pourquoi as-tu separer la creation de lobjet a deux endroits dans le code?
         guestRepository.save(client);
         guestRepository.save(guest);
         if (roleRepository.findAll().size() == 0){

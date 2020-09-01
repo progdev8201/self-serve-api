@@ -8,3 +8,15 @@ spring:
     username: sa
     password:
     driverClassName: org.h2.Driver
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ezserve7@gmail.com
+    password: kulotte2008
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
