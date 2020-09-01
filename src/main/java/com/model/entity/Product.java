@@ -1,5 +1,7 @@
 package com.model.entity;
 
+import com.model.enums.ProductType;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -25,6 +27,10 @@ public class Product {
 
     @OneToMany
     private List<Rate> rates;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 60)
+    private ProductType productType;
 
     public long getId() {
         return id;
@@ -90,6 +96,14 @@ public class Product {
         this.tempsDePreparation = tempsDePreparation;
     }
 
+    public ProductType getProductType() {
+        return productType;
+    }
+
+    public void setProductType(ProductType productType) {
+        this.productType = productType;
+    }
+
     @Override
     public String toString() {
         return "Product{" +
@@ -101,6 +115,7 @@ public class Product {
                 ", prix=" + prix +
                 ", tempsDePreparation=" + tempsDePreparation +
                 ", rates=" + rates +
+                ", productType=" + productType +
                 '}';
     }
 }

@@ -1,16 +1,13 @@
 package com.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Entity
-@PrimaryKeyJoinColumn(referencedColumnName = "id")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Guest  {
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Guest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,7 +23,7 @@ public class Guest  {
     @JoinTable
     protected Set<Role> roles = new HashSet<>();
 
-    public Guest(String username, String password,Set<Role> roles) {
+    public Guest(String username, String password, Set<Role> roles) {
         this.username = username;
         this.password = password;
         this.roles = roles;

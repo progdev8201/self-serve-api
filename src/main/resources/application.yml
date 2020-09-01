@@ -13,3 +13,14 @@ spring:
 
 stripe:
   apiKey: "sk_test_51HLwKgC5UoZOX4GRUFItjFyJNULwHrPtVdQneYTfdNWN8Jvaix5wabpNZk8JwjkSG36Mg2st9yV1VrhnfhUfhAOQ00NasvN6m1"
+mail:
+  host: smtp.gmail.com
+  port: 587
+  username: ezserve7@gmail.com
+  password: kulotte2008
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
