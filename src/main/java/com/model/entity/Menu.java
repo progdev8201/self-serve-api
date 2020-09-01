@@ -12,7 +12,7 @@ public class Menu {
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Product> products;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Product> speciaux;
 
     @OneToOne
