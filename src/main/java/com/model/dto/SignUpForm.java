@@ -15,6 +15,10 @@ public class SignUpForm {
     @NotBlank
     private String telephone;
 
+    @NotBlank
+    private String adresse;
+
+
     public SignUpForm(@NotBlank @Size(min = 3, max = 50) String username, @NotBlank @Size(min = 6, max = 40) String password, String phone, String role) {
         this.username = username;
         this.password = password;

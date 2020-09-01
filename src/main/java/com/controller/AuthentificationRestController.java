@@ -3,7 +3,9 @@ package com.controller;
 import com.model.dto.JwtResponse;
 import com.model.dto.LoginForm;
 import com.model.dto.SignUpForm;
+import com.model.entity.Owner;
 import com.service.AuthentificationService;
+import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,5 +28,8 @@ public class AuthentificationRestController {
     public ResponseEntity<String> registerUser(@RequestBody SignUpForm signUpForm) {
         return authentificationService.registerUser(signUpForm);
     }
-
+    @PostMapping("/registerStripeAccount")
+    public ResponseEntity<String> registerStripeAccpunt(@RequestBody Owner owner) throws StripeException {
+        return ResponseEntity.ok(authentificationService.createStripeAccount(owner));
+    }
 }

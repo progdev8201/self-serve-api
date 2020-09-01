@@ -9,9 +9,16 @@ import com.model.enums.RoleName;
 import com.repository.GuestRepository;
 import com.repository.RoleRepository;
 import com.security.jwt.JwtProvider;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Account;
+import com.stripe.model.AccountLink;
+import com.stripe.param.AccountCreateParams;
+import com.stripe.param.AccountLinkCreateParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +35,7 @@ public class AuthentificationService {
     @Autowired
     AuthenticationManager authenticationManager;
 
+
     @Autowired
     GuestRepository guestRepository;
 
@@ -39,6 +47,11 @@ public class AuthentificationService {
 
     @Autowired
     JwtProvider jwtProvider;
+
+
+    @Value("${stripe.apiKey}")
+    private String stripeAPIKey;
+
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthentificationService.class);
 
@@ -141,5 +154,42 @@ public class AuthentificationService {
 
         }
         return false;
+    }
+    public String createStripeAccount(Owner owner) throws StripeException {
+        Stripe.apiKey = stripeAPIKey;
+
+
+        AccountCreateParams params =
+                AccountCreateParams.builder()
+                        .setEmail(owner.getUsername())
+                        .setBusinessType(AccountCreateParams.BusinessType.INDIVIDUAL)
+                        .setBusinessProfile(AccountCreateParams.BusinessProfile.builder().
+                                setProductDescription("produitDescription").
+                                setName(owner.getRestaurantList().get(0).getName()).
+                                setSupportEmail(owner.getUsername()).build())
+                        .setCapabilities(AccountCreateParams.Capabilities.builder().
+                                setTransfers(AccountCreateParams.Capabilities.Transfers.builder().
+                                        setRequested(true).build()).
+                                setCardPayments(AccountCreateParams.Capabilities.CardPayments.builder().setRequested(true).build()).
+                                build())
+                        .setCompany(AccountCreateParams.Company.builder().
+                                setName(owner.getRestaurantList().get(0).getName()).
+                                setPhone("5143652481").
+                                build())
+                        .setType(AccountCreateParams.Type.EXPRESS)
+                        .build();
+
+        Account account =Account.create(params);
+
+        AccountLinkCreateParams accountLinkparams =
+                AccountLinkCreateParams.builder()
+                        .setAccount(account.getId())
+                        .setRefreshUrl("https://example.com/reauth")
+                        .setReturnUrl("https://example.com/return")
+                        .setType(AccountLinkCreateParams.Type.ACCOUNT_ONBOARDING)
+                        .build();
+
+        AccountLink accountLink = AccountLink.create(accountLinkparams);
+        return accountLink.getUrl();
     }
 }
