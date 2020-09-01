@@ -1,14 +1,20 @@
 package com.service;
 
+import com.model.entity.Bill;
 import com.model.entity.Owner;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
 import com.stripe.model.AccountLink;
+import com.stripe.model.PaymentIntent;
 import com.stripe.param.AccountCreateParams;
 import com.stripe.param.AccountLinkCreateParams;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class StripeService {
@@ -51,5 +57,26 @@ public class StripeService {
 
         AccountLink accountLink = AccountLink.create(accountLinkparams);
         return accountLink.getUrl();
+    }
+
+    public String processPayment (String restaurentStripeAccount, Bill bill) throws StripeException {
+        Stripe.apiKey = stripeAPIKey;
+
+
+        ArrayList paymentMethodTypes = new ArrayList();
+        paymentMethodTypes.add("card");
+
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("payment_method_types", paymentMethodTypes);
+        params.put("amount", bill.getPrixTotal());
+        params.put("currency", "cad");
+        params.put("application_fee_amount", 0);
+        Map<String, Object> transferDataParams = new HashMap<>();
+        transferDataParams.put("destination", restaurentStripeAccount);
+        params.put("transfer_data", transferDataParams);
+        PaymentIntent paymentIntent = PaymentIntent.create(params);
+        return paymentIntent.getClientSecret();
+
     }
 }
