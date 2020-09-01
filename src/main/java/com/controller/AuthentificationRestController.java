@@ -30,6 +30,7 @@ public class AuthentificationRestController {
     }
     @PostMapping("/registerStripeAccount")
     public ResponseEntity<String> registerStripeAccpunt(@RequestBody Owner owner) throws StripeException {
-        return ResponseEntity.ok(authentificationService.createStripeAccount(owner));
+       return null;
+        // return ResponseEntity.ok(authentificationService.createSùtripeAccount(owner));
     }
 }
