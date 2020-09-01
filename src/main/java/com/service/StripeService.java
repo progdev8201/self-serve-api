@@ -8,7 +8,9 @@ import com.stripe.model.AccountLink;
 import com.stripe.param.AccountCreateParams;
 import com.stripe.param.AccountLinkCreateParams;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+@Service
 public class StripeService {
     @Value("${stripe.apiKey}")
     private String stripeAPIKey;
