@@ -1,11 +1,13 @@
 package com.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.model.enums.ProductType;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
