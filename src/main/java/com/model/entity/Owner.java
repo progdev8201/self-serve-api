@@ -7,7 +7,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @PrimaryKeyJoinColumn(referencedColumnName = "id")
