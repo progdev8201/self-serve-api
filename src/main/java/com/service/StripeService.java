@@ -2,6 +2,7 @@ package com.service;
 
 import com.model.entity.Bill;
 import com.model.entity.Owner;
+import com.repository.OwnerRepository;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
@@ -9,6 +10,7 @@ import com.stripe.model.AccountLink;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.AccountCreateParams;
 import com.stripe.param.AccountLinkCreateParams;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,9 @@ import java.util.Map;
 public class StripeService {
     @Value("${stripe.apiKey}")
     private String stripeAPIKey;
+
+    @Autowired
+    private OwnerRepository ownerRepository;
 
     public String createStripeAccount(Owner owner) throws StripeException {
         Stripe.apiKey = stripeAPIKey;
@@ -54,8 +59,10 @@ public class StripeService {
                         .setReturnUrl("https://example.com/return")
                         .setType(AccountLinkCreateParams.Type.ACCOUNT_ONBOARDING)
                         .build();
-
+        owner.setStripeAccountId(account.getId());
+        ownerRepository.save(owner);
         AccountLink accountLink = AccountLink.create(accountLinkparams);
+
         return accountLink.getUrl();
     }
 

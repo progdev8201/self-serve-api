@@ -15,6 +15,8 @@ public class Owner extends Guest {
     @OneToMany
     private List<Restaurant> restaurantList;
 
+    private String stripeAccountId;
+
     public Owner(Guest user) {
         super(user.getUsername(), user.getPassword(), user.getRoles());
         this.restaurantList = new ArrayList<>();
@@ -31,10 +33,20 @@ public class Owner extends Guest {
         this.restaurantList = restaurantList;
     }
 
+    public String getStripeAccountId() {
+        return stripeAccountId;
+    }
+
+    public void setStripeAccountId(String stripeAccountId) {
+        this.stripeAccountId = stripeAccountId;
+    }
+
     @Override
     public String toString() {
         return "Owner{" +
                 "restaurantList=" + restaurantList +
+                ", stripeAccountId='" + stripeAccountId + '\'' +
                 '}';
     }
+
 }
