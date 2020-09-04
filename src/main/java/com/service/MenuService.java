@@ -1,5 +1,6 @@
 package com.service;
 
+import com.mapping.MenuToMenuDTO;
 import com.mapping.MenuToMenuDTOImpl;
 import com.mapping.ProductToProductDTO;
 import com.model.dto.MenuDTO;
@@ -55,6 +56,20 @@ public class MenuService {
         menu.setSpeciaux(speciauxDuMenu);
         menu=menuRepository.save(menu);
         return returnMenu(menu);
+    }
+    public MenuDTO findMenu(Long id){
+        Menu menu =menuRepository.findById(id).get();
+        MenuDTO menuDTO =MenuToMenuDTO.instance.convert(menu);
+
+        menuDTO.setProducts(new ArrayList<>());
+        for(Product product :menu.getProducts()){
+            ProductDTO productDTO =ProductToProductDTO.instance.convert(product);
+            productDTO.setProductType(product.getProductType());
+            menuDTO.getProducts().add(productDTO);
+        }
+
+        return menuDTO;
+
     }
 
     private List<Product> findSpecialsInBD(List<ProductDTO> specialProducts) {

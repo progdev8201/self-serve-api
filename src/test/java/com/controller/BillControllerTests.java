@@ -83,7 +83,9 @@ class BillControllerTests {
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
-        BillDTO reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(),BillDTO.class);
+        ObjectMapper mapper=new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
 
         billDTO = initBillDTO();
         billDTO.setId(reponse.getId());
@@ -99,8 +101,8 @@ class BillControllerTests {
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
-
-        reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(),BillDTO.class);
+        objectMapper.registerModule(new JavaTimeModule());
+        reponse = objectMapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
         assertEquals(59.98, reponse.getPrixTotal());
         assertEquals("le steak chico",reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(2,reponse.getOrderItems().size());
@@ -116,7 +118,7 @@ class BillControllerTests {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setRestaurant(restaurantDTO);
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(2);
+        productDTO.setId(3);
         productDTO.setMenu(menuDTO);
         List<OrderItemDTO> orderItemDTOList = new ArrayList<>();
         OrderItemDTO orderItemDTO1 = new OrderItemDTO();
@@ -145,8 +147,8 @@ class BillControllerTests {
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
-
-        BillDTO reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(),BillDTO.class);
+        objectMapper.registerModule(new JavaTimeModule());
+        BillDTO reponse = objectMapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
         assertEquals(59.98, reponse.getPrixTotal());
         assertEquals("le steak chico",reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(2,reponse.getOrderItems().size());
@@ -174,7 +176,8 @@ class BillControllerTests {
                 andExpect(status().isOk()).
                 andReturn();
 
-        BillDTO reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(),BillDTO.class);
+        objectMapper.registerModule(new JavaTimeModule());
+        BillDTO reponse = objectMapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
         assertEquals(29.99, reponse.getPrixTotal());
         assertEquals("le steak chico",reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1,reponse.getOrderItems().size());
@@ -187,7 +190,7 @@ class BillControllerTests {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setRestaurant(restaurantDTO);
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(2);
+        productDTO.setId(3);
         productDTO.setMenu(menuDTO);
         OrderItemDTO orderItemDTO1 = new OrderItemDTO();
         orderItemDTO1.setProduct(productDTO);

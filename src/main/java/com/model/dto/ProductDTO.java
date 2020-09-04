@@ -3,6 +3,7 @@ package com.model.dto;
 import com.model.entity.Menu;
 import com.model.entity.Option;
 import com.model.entity.Rate;
+import com.model.enums.ProductType;
 
 import javax.persistence.*;
 import java.util.List;
@@ -24,6 +25,16 @@ public class ProductDTO {
     private int tempsDePreparation;
 
     private List<RateDTO> rates;
+
+    ProductType productType ;
+
+    public ProductType getProductType() {
+        return productType;
+    }
+
+    public void setProductType(ProductType productType) {
+        this.productType = productType;
+    }
 
     public long getId() {
         return id;

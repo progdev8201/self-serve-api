@@ -76,8 +76,8 @@ public class DataLoader implements CommandLineRunner {
 
         //finish create client and guest
         //TODO: pourquoi as-tu separer la creation de lobjet a deux endroits dans le code?
-        guestRepository.save(client);
-        guestRepository.save(guest);
+        client =guestRepository.save(client);
+        guest =guestRepository.save(guest);
         if (roleRepository.findAll().size() == 0){
             LOGGER.info("READY!...Populating database...");
 
