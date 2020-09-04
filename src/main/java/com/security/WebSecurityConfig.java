@@ -51,6 +51,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -72,15 +74,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors();
+
+     /*   http.authorizeRequests()
+                .antMatchers("/h2-console/**").permitAll()
+                .antMatchers("/ws").permitAll();*/
+
         http.csrf().disable().
                 authorizeRequests()
                 .antMatchers("/h2-console/**").permitAll()
+                .antMatchers("/csrf/*").permitAll()
                 .antMatchers("/auth/*").permitAll()
-                .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }

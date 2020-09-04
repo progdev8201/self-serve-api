@@ -1,31 +1,23 @@
 package com.controller;
 
-import com.controller.BillController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.model.dto.*;
-import com.model.entity.OrderItem;
-import com.model.entity.Product;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.parameters.P;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 
-import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -36,81 +28,82 @@ class BillControllerTests {
     @Test
     void contextLoads() {
     }
+
     @Test
     public void testCreateMakeOrderByGuest() throws Exception {
         MockMvc mvc = initMockMvc();
-        LinkedMultiValueMap<String,String> requestParams = new LinkedMultiValueMap<>();
+        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
 
         BillDTO billDTO = initBillDTO();
-        ObjectMapper objectMapper =new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername","user1");
+        sendObj.put("bill", objectMapper.writeValueAsString(billDTO));
+        sendObj.put("guestUsername", "user1");
 
-        MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
-        ObjectMapper mapper=new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
+        BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
         assertEquals(29.99, reponse.getPrixTotal());
-        assertEquals("le steak chico",reponse.getOrderItems().get(0).getProduct().getName());
-        assertEquals(1,reponse.getOrderItems().size());
-        assertEquals("user1",reponse.getOrderCustomer().getUsername());
+        assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
+        assertEquals(1, reponse.getOrderItems().size());
+        assertEquals("user1", reponse.getOrderCustomer().getUsername());
     }
 
     @Test
     public void testCreateMakeOrderAddItemToBillByGuest() throws Exception {
         MockMvc mvc = initMockMvc();
-        LinkedMultiValueMap<String,String> requestParams = new LinkedMultiValueMap<>();
+        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
 
         BillDTO billDTO = initBillDTO();
-        ObjectMapper objectMapper =new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername","user1");
+        sendObj.put("bill", objectMapper.writeValueAsString(billDTO));
+        sendObj.put("guestUsername", "user1");
 
-        MvcResult result =mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
-        BillDTO reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(),BillDTO.class);
+        BillDTO reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(), BillDTO.class);
 
         billDTO = initBillDTO();
         billDTO.setId(reponse.getId());
-        objectMapper =new ObjectMapper();
+        objectMapper = new ObjectMapper();
 
 
         sendObj = new JSONObject();
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername","user1");
-        result= mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
+        sendObj.put("bill", objectMapper.writeValueAsString(billDTO));
+        sendObj.put("guestUsername", "user1");
+        result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
 
-        reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(),BillDTO.class);
+        reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(), BillDTO.class);
         assertEquals(59.98, reponse.getPrixTotal());
-        assertEquals("le steak chico",reponse.getOrderItems().get(0).getProduct().getName());
-        assertEquals(2,reponse.getOrderItems().size());
-        assertEquals("user1",reponse.getOrderCustomer().getUsername());
+        assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
+        assertEquals(2, reponse.getOrderItems().size());
+        assertEquals("user1", reponse.getOrderCustomer().getUsername());
     }
 
     @Test
     public void testCreateMakeOrderMultipleItemByGuest() throws Exception {
         MockMvc mvc = initMockMvc();
-        LinkedMultiValueMap<String,String> requestParams = new LinkedMultiValueMap<>();
+        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
 
         RestaurantDTO restaurantDTO = new RestaurantDTO();
         MenuDTO menuDTO = new MenuDTO();
@@ -132,53 +125,53 @@ class BillControllerTests {
         billDTO.setOrderItems(orderItemDTOList);
 
 
-        ObjectMapper objectMapper =new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername","user1");
+        sendObj.put("bill", objectMapper.writeValueAsString(billDTO));
+        sendObj.put("guestUsername", "user1");
 
-        MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
 
-        BillDTO reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(),BillDTO.class);
+        BillDTO reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(), BillDTO.class);
         assertEquals(59.98, reponse.getPrixTotal());
-        assertEquals("le steak chico",reponse.getOrderItems().get(0).getProduct().getName());
-        assertEquals(2,reponse.getOrderItems().size());
-        assertEquals("user1",reponse.getOrderCustomer().getUsername());
+        assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
+        assertEquals(2, reponse.getOrderItems().size());
+        assertEquals("user1", reponse.getOrderCustomer().getUsername());
     }
 
 
     @Test
     public void testCreateMakeOrderByClient() throws Exception {
         MockMvc mvc = initMockMvc();
-        LinkedMultiValueMap<String,String> requestParams = new LinkedMultiValueMap<>();
+        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
 
         BillDTO billDTO = initBillDTO();
-        ObjectMapper objectMapper =new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername","client1");
+        sendObj.put("bill", objectMapper.writeValueAsString(billDTO));
+        sendObj.put("guestUsername", "client1");
 
-        MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
 
-        BillDTO reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(),BillDTO.class);
+        BillDTO reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(), BillDTO.class);
         assertEquals(29.99, reponse.getPrixTotal());
-        assertEquals("le steak chico",reponse.getOrderItems().get(0).getProduct().getName());
-        assertEquals(1,reponse.getOrderItems().size());
-        assertEquals("client1",reponse.getOrderCustomer().getUsername());
+        assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
+        assertEquals(1, reponse.getOrderItems().size());
+        assertEquals("client1", reponse.getOrderCustomer().getUsername());
     }
 
 
@@ -200,7 +193,7 @@ class BillControllerTests {
         return billDTO;
     }
 
-    private MockMvc initMockMvc(){
+    private MockMvc initMockMvc() {
         return MockMvcBuilders.standaloneSetup(billController).build();
     }
 

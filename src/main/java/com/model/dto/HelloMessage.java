@@ -1,4 +1,4 @@
-package com.model.entity;
+package com.model.dto;
 
 public class HelloMessage {
     private String name;
