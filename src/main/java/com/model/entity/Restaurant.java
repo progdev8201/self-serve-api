@@ -12,10 +12,13 @@ public class Restaurant {
     private String name;
 
     @OneToMany
-    private List<Bill> billList;
+    private List<Bill> bill;
 
     @ManyToOne
     private Owner owner;
+
+    @OneToMany
+    private List <RestaurentTable> restaurentTables;
 
     @OneToOne
     private CustomProprety customProprety;
@@ -39,12 +42,12 @@ public class Restaurant {
         this.name = name;
     }
 
-    public List<Bill> getBillList() {
-        return billList;
+    public List<Bill> getBill() {
+        return bill;
     }
 
-    public void setBillList(List<Bill> billList) {
-        this.billList = billList;
+    public void setBill(List<Bill> billList) {
+        this.bill = billList;
     }
 
     public Owner getOwner() {
@@ -71,12 +74,20 @@ public class Restaurant {
         this.menu = menu;
     }
 
+    public List<RestaurentTable> getRestaurentTables() {
+        return restaurentTables;
+    }
+
+    public void setRestaurentTables(List<RestaurentTable> restaurentTables) {
+        this.restaurentTables = restaurentTables;
+    }
+
     @Override
     public String toString() {
         return "Restaurant{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", billList=" + billList +
+                ", billList=" + bill +
                 ", owner=" + owner +
                 ", customProprety=" + customProprety +
                 ", menu=" + menu +

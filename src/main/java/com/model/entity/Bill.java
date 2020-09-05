@@ -19,6 +19,9 @@ public class Bill {
     @ManyToOne
     private Guest orderCustomer;
 
+    @ManyToOne
+    private RestaurentTable restaurentTable;
+
     private LocalDateTime date;
 
     private double prixTotal;
@@ -30,6 +33,14 @@ public class Bill {
 
     @ManyToOne
     private Restaurant restaurant;
+
+    public RestaurentTable getRestaurentTable() {
+        return restaurentTable;
+    }
+
+    public void setRestaurentTable(RestaurentTable restaurentTable) {
+        this.restaurentTable = restaurentTable;
+    }
 
     public Long getId() {
         return id;
@@ -95,6 +106,7 @@ public class Bill {
                 "id=" + id +
                 ", orderItems=" + orderItems +
                 ", orderCustomer=" + orderCustomer +
+                ", restaurentTable=" + restaurentTable +
                 ", date=" + date +
                 ", prixTotal=" + prixTotal +
                 ", billStatus=" + billStatus +

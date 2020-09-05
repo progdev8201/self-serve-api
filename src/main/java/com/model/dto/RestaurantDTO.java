@@ -1,9 +1,6 @@
 package com.model.dto;
 
-import com.model.entity.Bill;
-import com.model.entity.CustomProprety;
-import com.model.entity.Menu;
-import com.model.entity.Owner;
+import com.model.entity.*;
 
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -23,6 +20,9 @@ public class RestaurantDTO {
     private CustomPropretyDTO customProprety;
 
     private MenuDTO menu;
+
+    private List <RestaurentTableDTO> restaurentTablesDTO;
+
 
     public Long getId() {
         return id;
@@ -72,6 +72,14 @@ public class RestaurantDTO {
         this.menu = menu;
     }
 
+    public List<RestaurentTableDTO> getRestaurentTablesDTO() {
+        return restaurentTablesDTO;
+    }
+
+    public void setRestaurentTablesDTO(List<RestaurentTableDTO> restaurentTablesDTO) {
+        this.restaurentTablesDTO = restaurentTablesDTO;
+    }
+
     @Override
     public String toString() {
         return "RestaurantDTO{" +
@@ -81,6 +89,7 @@ public class RestaurantDTO {
                 ", owner=" + owner +
                 ", customProprety=" + customProprety +
                 ", menu=" + menu +
+                ", restaurentTablesDTO=" + restaurentTablesDTO +
                 '}';
     }
 }

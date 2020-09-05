@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -75,12 +73,12 @@ public class ClientService {
         bill.setRestaurant(restaurant);
         bill.setBillStatus(BillStatus.PROGRESS);
         bill = billRepository.save(bill);
-        if(Objects.isNull(restaurant.getBillList())){
-            restaurant.setBillList(new ArrayList<>());
+        if(Objects.isNull(restaurant.getBill())){
+            restaurant.setBill(new ArrayList<>());
         }
-        if(!restaurant.getBillList().contains(bill)){
-            restaurant.getBillList().add(bill);
-            restaurant.setBillList(restaurant.getBillList());
+        if(!restaurant.getBill().contains(bill)){
+            restaurant.getBill().add(bill);
+            restaurant.setBill(restaurant.getBill());
             restaurantRepository.save(restaurant);
         }
 

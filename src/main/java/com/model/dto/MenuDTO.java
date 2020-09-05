@@ -2,6 +2,7 @@ package com.model.dto;
 
 import com.model.entity.Product;
 import com.model.entity.Restaurant;
+import com.model.entity.RestaurentTable;
 
 import javax.persistence.*;
 import java.util.List;
@@ -54,6 +55,7 @@ public class MenuDTO {
                 "id=" + id +
                 ", products=" + products +
                 ", restaurant=" + restaurant +
+                ", speciaux=" + speciaux +
                 '}';
     }
 }

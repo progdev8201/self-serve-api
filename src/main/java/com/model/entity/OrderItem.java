@@ -1,10 +1,6 @@
 package com.model.entity;
-
 import com.model.enums.ProgressStatus;
-import org.hibernate.annotations.NaturalId;
-
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

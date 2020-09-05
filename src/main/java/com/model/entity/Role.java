@@ -2,7 +2,6 @@ package com.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.model.enums.RoleName;
-import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.io.Serializable;

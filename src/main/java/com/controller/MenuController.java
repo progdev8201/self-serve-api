@@ -19,7 +19,7 @@ public class MenuController {
     @Autowired
     MenuService menuService;
     @PostMapping("/changeFeatured")
-    public ResponseEntity<MenuDTO> makeOrder(@RequestBody Map<String, String> json) throws JsonProcessingException {
+    public ResponseEntity<MenuDTO> changeFeatured(@RequestBody Map<String, String> json) throws JsonProcessingException {
         MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menu"),MenuDTO.class);
         return ResponseEntity.ok(menuService.createSpecial(menuDTO,menuDTO.getProducts()));
     }

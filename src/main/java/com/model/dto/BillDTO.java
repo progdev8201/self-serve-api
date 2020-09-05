@@ -29,10 +29,8 @@ public class BillDTO {
 
     private double prixTotal;
 
-    @Enumerated(EnumType.STRING)
-    //@NaturalId
-    @Column(length = 60)
     private BillStatus billStatus;
+
 
     @ManyToOne
     private RestaurantDTO restaurant;
