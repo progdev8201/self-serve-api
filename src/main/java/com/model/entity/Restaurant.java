@@ -14,16 +14,16 @@ public class Restaurant {
     @OneToMany
     private List<Bill> bill;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Owner owner;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List <RestaurentTable> restaurentTables;
 
     @OneToOne
     private CustomProprety customProprety;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     private Menu menu;
 
     public Long getId() {

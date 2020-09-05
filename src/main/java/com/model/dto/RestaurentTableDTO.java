@@ -1,11 +1,5 @@
 package com.model.dto;
 
-import com.model.entity.Menu;
-import com.model.entity.RestaurentTable;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import java.util.List;
 
 public class RestaurentTableDTO {
@@ -17,7 +11,7 @@ public class RestaurentTableDTO {
 
     private MenuDTO menuDTO;
 
-    private List <RestaurentTableDTO> restaurentTableDTOS;
+    private List <RestaurantDTO> restaurant;
 
 
     public Long getId() {
@@ -52,11 +46,11 @@ public class RestaurentTableDTO {
         this.menuDTO = menuDTO;
     }
 
-    public List<RestaurentTableDTO> getRestaurentTableDTOS() {
-        return restaurentTableDTOS;
+    public List<RestaurantDTO> getRestaurant() {
+        return restaurant;
     }
 
-    public void setRestaurentTableDTOS(List<RestaurentTableDTO> restaurentTableDTOS) {
-        this.restaurentTableDTOS = restaurentTableDTOS;
+    public void setRestaurant(List<RestaurantDTO> restaurant) {
+        this.restaurant = restaurant;
     }
 }

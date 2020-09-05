@@ -11,6 +11,7 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface RestaurentTableToRestaurenTableDTO {
     RestaurentTableToRestaurenTableDTO instance = Mappers.getMapper(RestaurentTableToRestaurenTableDTO.class);
-    @Mapping(target = "bill", ignore = true)
+    @Mapping(target = "billDTOList", ignore = true)
+    @Mapping(target = "restaurant", ignore = true)
     RestaurentTableDTO convert(RestaurentTable restaurentTable);
 }

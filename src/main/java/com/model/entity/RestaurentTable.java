@@ -15,15 +15,15 @@ public class RestaurentTable {
     private List<Bill> bill;
 
     @ManyToOne
-    private RestaurentTable restaurentTable;
+    private Restaurant restaurant;
 
 
-    public RestaurentTable getRestaurentTable() {
-        return restaurentTable;
+    public Restaurant getRestaurentTable() {
+        return restaurant;
     }
 
-    public void setRestaurentTable(RestaurentTable restaurentTable) {
-        this.restaurentTable = restaurentTable;
+    public void setRestaurant(Restaurant restaurent) {
+        this.restaurant = restaurent;
     }
 
     public List<Bill> getBill() {

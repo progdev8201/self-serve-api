@@ -49,10 +49,6 @@ public class DataLoader implements CommandLineRunner {
         Guest guest = new Guest();
         guest.setUsername("user1");
 
-        //create restaurant
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName("le resto chico");
-        restaurantRepository.save(restaurant);
 
         //create product list
         List<Product> productList = new ArrayList<>();
@@ -68,11 +64,21 @@ public class DataLoader implements CommandLineRunner {
 
         //create menu
         Menu menu = new Menu();
-        menu.setRestaurant(restaurant);
         menu.setProducts(productList);
         product.setMenu(menu);
         product2.setMenu(menu);
-        menu = menuRepository.save(menu);
+
+        RestaurentTable restaurentTable = new RestaurentTable();
+        restaurentTable.setTableNumber(1);
+
+        Restaurant restaurant = new Restaurant();
+        restaurant.setName("le resto chico");
+       // menu=menuRepository.save(menu);
+        menu.setRestaurant(restaurant);
+        restaurant.setMenu(menu);
+        restaurant.setRestaurentTables(new ArrayList<>());
+        restaurant.getRestaurentTables().add(restaurentTable);
+        restaurant=restaurantRepository.save(restaurant);
 
         //finish create client and guest
         //TODO: pourquoi as-tu separer la creation de lobjet a deux endroits dans le code?

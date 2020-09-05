@@ -48,6 +48,7 @@ class BillControllerTests {
         JSONObject sendObj = new JSONObject();
         sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","user1");
+        sendObj.put("restaurentTableId","5");
 
         MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
                 content(sendObj.toString()).
@@ -76,6 +77,7 @@ class BillControllerTests {
         JSONObject sendObj = new JSONObject();
         sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","user1");
+        sendObj.put("restaurentTableId","5");
 
         MvcResult result =mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
                 content(sendObj.toString()).
@@ -95,6 +97,7 @@ class BillControllerTests {
         sendObj = new JSONObject();
         sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","user1");
+        sendObj.put("restaurentTableId","5");
         result= mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
@@ -140,6 +143,7 @@ class BillControllerTests {
         JSONObject sendObj = new JSONObject();
         sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","user1");
+        sendObj.put("restaurentTableId","5");
 
         MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
                 content(sendObj.toString()).
@@ -168,6 +172,7 @@ class BillControllerTests {
         JSONObject sendObj = new JSONObject();
         sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","client1");
+        sendObj.put("restaurentTableId","5");
 
         MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
                 content(sendObj.toString()).

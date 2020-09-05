@@ -26,20 +26,24 @@ public class ClientService {
     ProductRepository productRepository;
     RestaurantRepository restaurantRepository;
 
+    RestaurentTableRepository restaurentTableRepository;
+
     @Autowired
     public ClientService(BillRepository billRepository, GuestRepository guestRepository, MenuRepository menuRepository,
-                         OrderItemRepository orderItemRepository, ProductRepository productRepository, RestaurantRepository restaurantRepository) {
+                         OrderItemRepository orderItemRepository, ProductRepository productRepository, RestaurantRepository restaurantRepository,
+                         RestaurentTableRepository restaurentTableRepository) {
         this.billRepository = billRepository;
         this.guestRepository = guestRepository;
         this.menuRepository = menuRepository;
         this.orderItemRepository = orderItemRepository;
         this.productRepository = productRepository;
         this.restaurantRepository = restaurantRepository;
+        this.restaurentTableRepository = restaurentTableRepository;
     }
 
 
 
-    public BillDTO makeOrder(List<OrderItemDTO> orderItemDTOList, String guestUsername, Long billId) {
+    public BillDTO makeOrder(List<OrderItemDTO> orderItemDTOList, String guestUsername, Long billId,Long restaurentTableId) {
         Bill bill = null;
         if(Objects.nonNull(billId)){
             bill = billRepository.findById(billId).get();
@@ -63,7 +67,7 @@ public class ClientService {
 
         ////meilleur solution?? a voir mais il faut retrouver le restaurent pour l'associé au bill
         Restaurant restaurant = orderItemList.get(0).getProduct().getMenu().getRestaurant();
-
+        RestaurentTable restaurentTable =restaurentTableRepository.findById(restaurentTableId).get();
         bill.setOrderCustomer(guest);
         if(Objects.isNull(bill.getOrderItems())){
             bill.setOrderItems(new ArrayList<>());
@@ -72,6 +76,7 @@ public class ClientService {
         bill.setOrderItems(bill.getOrderItems());
         bill.setRestaurant(restaurant);
         bill.setBillStatus(BillStatus.PROGRESS);
+        bill.setRestaurentTable(restaurentTable);
         bill = billRepository.save(bill);
         if(Objects.isNull(restaurant.getBill())){
             restaurant.setBill(new ArrayList<>());
@@ -101,6 +106,7 @@ public class ClientService {
         Bill bill = billRepository.findById(billId).get();
         if (Objects.isNull(bill)) {
             bill.setBillStatus(BillStatus.PAYED);
+            bill.setRestaurentTable(null);
             if (Objects.nonNull(billRepository.save(bill))) {
                 return true;
             }
