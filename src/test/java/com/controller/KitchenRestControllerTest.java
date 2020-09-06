@@ -3,8 +3,6 @@ package com.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.model.dto.*;
-import com.model.entity.Product;
-import com.model.enums.ProductType;
 import com.service.ClientService;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -21,14 +19,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-class RestaurantTableControllerTest {
+class KitchenRestControllerTest {
+
     @Autowired
-    RestaurantTableController restaurantTableController;
+    KitchenRestController kitchenRestController;
 
     @Autowired
     MenuController menuController;
@@ -52,7 +50,7 @@ class RestaurantTableControllerTest {
         sendObj.put("guestUsername","client1");
         sendObj.put("restaurentId","1");
 
-        MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/restaurantTable/createRate").
+        MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/rest/kitchen/findAllTables").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
@@ -96,22 +94,22 @@ class RestaurantTableControllerTest {
         sendObj = new JSONObject();
         sendObj.put("restaurentId",1);
         mvc = initMockMvc();
-        result= mvc.perform(MockMvcRequestBuilders.post(   "/restaurantTable/createRate").
+        result= mvc.perform(MockMvcRequestBuilders.post(   "/rest/kitchen/findAllTables").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
-        List<LinkedHashMap<String,Object>> reponse = mapper.readValue(result.getResponse().getContentAsString(),ArrayList.class);
+        List<LinkedHashMap<String,Object>> reponse = mapper.readValue(result.getResponse().getContentAsString(), ArrayList.class);
 
         List<BillDTO> billDTOS = mapper.readValue(reponse.get(0).get("billDTOList").toString(),ArrayList.class);
-       // billDTOList
-       // List<BillDTO> billDTOS =reponse.get("billDTOList");
+        // billDTOList
+        // List<BillDTO> billDTOS =reponse.get("billDTOList");
         assertEquals(0, billDTOS.size());
     }
 
     private MockMvc initMockMvc(){
-        return MockMvcBuilders.standaloneSetup(restaurantTableController).build();
+        return MockMvcBuilders.standaloneSetup(kitchenRestController).build();
     }
     private MockMvc initMockMvcBillController(){
         return MockMvcBuilders.standaloneSetup(billController).build();
