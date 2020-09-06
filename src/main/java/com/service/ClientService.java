@@ -58,6 +58,7 @@ public class ClientService {
             OrderItem orderItem = OrderItemDTOToOrderItem.instance.convert(orderItemDTO);
             orderItem.setProduct(product);
             orderItem.setOrderStatus(ProgressStatus.PROGRESS);
+            orderItem.setBill(bill);
             orderItem.setDelaiDePreparation(LocalDateTime.now().minusMinutes(product.getTempsDePreparation()));
             orderItem = orderItemRepository.save(orderItem);
             orderItemList.add(orderItem);
@@ -81,6 +82,7 @@ public class ClientService {
         }
         if (!restaurentTable.getBill().stream().anyMatch(x -> x.getId().equals(billId))) {
             bill.setRestaurentTable(restaurentTable);
+            restaurentTable.getBill().add(bill);
             System.out.println("yiooooo/*************************************************/");
         }
         bill = billRepository.save(bill);

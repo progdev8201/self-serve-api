@@ -2,6 +2,8 @@ package com.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.model.dto.OrderItemDTO;
 import com.model.dto.RestaurentTableDTO;
 import com.model.entity.OrderItem;
@@ -80,9 +82,13 @@ public class KitchenRestController {
 
     @PostMapping("/changeOrderItemStatus")
     public ResponseEntity changeOrderItemStatus(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        OrderItemDTO orderItemDTO = new ObjectMapper().readValue(json.get("orderItem"), OrderItemDTO.class);
+        ObjectMapper mapper=new ObjectMapper();
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        mapper.registerModule(new JavaTimeModule());
+        OrderItemDTO orderItemDTO = mapper.readValue(json.get("orderItem"), OrderItemDTO.class);
         kitchenService.changeOrderItemStatus(orderItemDTO);
         return new ResponseEntity(HttpStatus.OK);
     }
+
 
 }

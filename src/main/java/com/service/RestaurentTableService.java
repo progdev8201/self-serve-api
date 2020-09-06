@@ -1,8 +1,10 @@
 package com.service;
 
 import com.mapping.BillToBillDTO;
+import com.mapping.OrderItemToOrderItemDTO;
 import com.mapping.RestaurentTableToRestaurenTableDTO;
 import com.model.dto.BillDTO;
+import com.model.dto.OrderItemDTO;
 import com.model.dto.RestaurentTableDTO;
 import com.model.entity.Bill;
 import com.model.entity.Restaurant;
@@ -35,7 +37,14 @@ public class RestaurentTableService {
             RestaurentTableDTO restaurentTableDTO = RestaurentTableToRestaurenTableDTO.instance.convert(restaurentTable);
             List<BillDTO> billDTOS = new ArrayList<>();
             restaurentTable.getBill().forEach(bill -> {
-                billDTOS.add(BillToBillDTO.instance.convert(bill));
+                BillDTO billDTO = new BillDTO();
+                List<OrderItemDTO> orderItemDTOList = new ArrayList<>();
+                bill.getOrderItems().forEach(orderItem -> {
+                    orderItemDTOList.add(OrderItemToOrderItemDTO.instance.convert(orderItem));
+                });
+                billDTO =BillToBillDTO.instance.convert(bill);
+                billDTO.setOrderItems(orderItemDTOList);
+                billDTOS.add(billDTO);
             });
             restaurentTableDTO.setBillDTOList(billDTOS);
             restaurentTableDTOS.add(restaurentTableDTO);
