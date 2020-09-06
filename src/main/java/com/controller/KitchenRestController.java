@@ -2,6 +2,7 @@ package com.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.model.dto.OrderItemDTO;
 import com.model.dto.RestaurentTableDTO;
 import com.model.entity.OrderItem;
 import com.model.entity.Request;
@@ -10,8 +11,10 @@ import com.model.enums.ProgressStatus;
 import com.model.enums.RequestType;
 import com.repository.OrderItemRepository;
 import com.repository.RequestRepository;
+import com.service.KitchenService;
 import com.service.RestaurentTableService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +34,9 @@ public class KitchenRestController {
 
     @Autowired
     private RestaurentTableService restaurentTableService;
+
+    @Autowired
+    private KitchenService kitchenService;
 
 
     //ALLOW SERVER AND COOK TO LIST REQUEST
@@ -68,6 +74,15 @@ public class KitchenRestController {
     public ResponseEntity<List<RestaurentTableDTO>> findAllTables(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long restaurentId = new ObjectMapper().readValue(json.get("restaurentId"),Long.class);
         return ResponseEntity.ok(restaurentTableService.findAllForRestaurent(restaurentId));
+    }
+
+
+
+    @PostMapping("/changeOrderItemStatus")
+    public ResponseEntity changeOrderItemStatus(@RequestBody Map<String, String> json) throws JsonProcessingException {
+        OrderItemDTO orderItemDTO = new ObjectMapper().readValue(json.get("orderItem"), OrderItemDTO.class);
+        kitchenService.changeOrderItemStatus(orderItemDTO);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 }
