@@ -11,10 +11,10 @@ public class RestaurentTable {
 
     private int tableNumber;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Bill> bill;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Restaurant restaurant;
 
 

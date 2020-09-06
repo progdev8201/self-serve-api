@@ -7,6 +7,7 @@ import com.model.entity.*;
 import com.model.enums.BillStatus;
 import com.model.enums.ProgressStatus;
 import com.repository.*;
+import net.bytebuddy.implementation.bind.MethodDelegationBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,26 +27,25 @@ public class ClientService {
     ProductRepository productRepository;
     RestaurantRepository restaurantRepository;
 
+    RestaurentTableService restaurentTableService;
+
     RestaurentTableRepository restaurentTableRepository;
 
     @Autowired
-    public ClientService(BillRepository billRepository, GuestRepository guestRepository, MenuRepository menuRepository,
-                         OrderItemRepository orderItemRepository, ProductRepository productRepository, RestaurantRepository restaurantRepository,
-                         RestaurentTableRepository restaurentTableRepository) {
+    public ClientService(BillRepository billRepository, GuestRepository guestRepository, MenuRepository menuRepository, OrderItemRepository orderItemRepository, ProductRepository productRepository, RestaurantRepository restaurantRepository, RestaurentTableService restaurentTableService, RestaurentTableRepository restaurentTableRepository) {
         this.billRepository = billRepository;
         this.guestRepository = guestRepository;
         this.menuRepository = menuRepository;
         this.orderItemRepository = orderItemRepository;
         this.productRepository = productRepository;
         this.restaurantRepository = restaurantRepository;
+        this.restaurentTableService = restaurentTableService;
         this.restaurentTableRepository = restaurentTableRepository;
     }
 
-
-
-    public BillDTO makeOrder(List<OrderItemDTO> orderItemDTOList, String guestUsername, Long billId,Long restaurentTableId) {
+    public BillDTO makeOrder(List<OrderItemDTO> orderItemDTOList, String guestUsername, Long billId, Long restaurentTableId) {
         Bill bill = null;
-        if(Objects.nonNull(billId)){
+        if (Objects.nonNull(billId)) {
             bill = billRepository.findById(billId).get();
         }
         if (Objects.isNull(bill)) {
@@ -54,8 +54,8 @@ public class ClientService {
         List<OrderItem> orderItemList = new ArrayList<>();
         for (OrderItemDTO orderItemDTO : orderItemDTOList) {
 
-            Product product =productRepository.findById(orderItemDTO.getProduct().getId()).get();
-            OrderItem orderItem =OrderItemDTOToOrderItem.instance.convert(orderItemDTO);
+            Product product = productRepository.findById(orderItemDTO.getProduct().getId()).get();
+            OrderItem orderItem = OrderItemDTOToOrderItem.instance.convert(orderItemDTO);
             orderItem.setProduct(product);
             orderItem.setOrderStatus(ProgressStatus.PROGRESS);
             orderItem.setDelaiDePreparation(LocalDateTime.now().minusMinutes(product.getTempsDePreparation()));
@@ -67,31 +67,33 @@ public class ClientService {
 
         ////meilleur solution?? a voir mais il faut retrouver le restaurent pour l'associé au bill
         Restaurant restaurant = orderItemList.get(0).getProduct().getMenu().getRestaurant();
-        RestaurentTable restaurentTable =restaurentTableRepository.findById(restaurentTableId).get();
+        RestaurentTable restaurentTable = restaurentTableRepository.findById(restaurentTableId).get();
         bill.setOrderCustomer(guest);
-        if(Objects.isNull(bill.getOrderItems())){
+        if (Objects.isNull(bill.getOrderItems())) {
             bill.setOrderItems(new ArrayList<>());
         }
         bill.getOrderItems().addAll(orderItemList);
         bill.setOrderItems(bill.getOrderItems());
         bill.setRestaurant(restaurant);
         bill.setBillStatus(BillStatus.PROGRESS);
-        bill.setRestaurentTable(restaurentTable);
+        if (Objects.isNull(restaurentTable.getBill())) {
+            restaurentTable.setBill(new ArrayList<>());
+        }
+        if (!restaurentTable.getBill().stream().anyMatch(x -> x.getId().equals(billId))) {
+            bill.setRestaurentTable(restaurentTable);
+            System.out.println("yiooooo/*************************************************/");
+        }
         bill = billRepository.save(bill);
-        if(Objects.isNull(restaurant.getBill())){
+        if (Objects.isNull(restaurant.getBill())) {
             restaurant.setBill(new ArrayList<>());
         }
-        if(!restaurant.getBill().contains(bill)){
-            restaurant.getBill().add(bill);
-            restaurant.setBill(restaurant.getBill());
-            restaurantRepository.save(restaurant);
-        }
+
 
         //////notify kitchen
-        BillDTO returnValue =BillToBillDTO.instance.convert(billRepository.save(bill));
+        BillDTO returnValue = BillToBillDTO.instance.convert(bill);
         List<OrderItemDTO> returnBillOrderItems = new ArrayList<>();
-        for(OrderItem orderItem : bill.getOrderItems()){
-            OrderItemDTO orderItemDTO =OrderItemToOrderItemDTO.instance.convert(orderItem);
+        for (OrderItem orderItem : bill.getOrderItems()) {
+            OrderItemDTO orderItemDTO = OrderItemToOrderItemDTO.instance.convert(orderItem);
             orderItemDTO.setProduct(ProductToProductDTO.instance.convert(orderItem.getProduct()));
             returnBillOrderItems.add(orderItemDTO);
         }
@@ -104,8 +106,9 @@ public class ClientService {
     public boolean makePayment(Long billId) {
 
         Bill bill = billRepository.findById(billId).get();
-        if (Objects.isNull(bill)) {
+        if (Objects.nonNull(bill)) {
             bill.setBillStatus(BillStatus.PAYED);
+            restaurentTableService.deleteBillFromTable(bill);
             bill.setRestaurentTable(null);
             if (Objects.nonNull(billRepository.save(bill))) {
                 return true;

@@ -19,7 +19,7 @@ public class Bill {
     @ManyToOne
     private Guest orderCustomer;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private RestaurentTable restaurentTable;
 
     private LocalDateTime date;
@@ -31,7 +31,7 @@ public class Bill {
     @Column(length = 60)
     private BillStatus billStatus;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Restaurant restaurant;
 
     public RestaurentTable getRestaurentTable() {
