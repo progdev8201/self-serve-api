@@ -29,13 +29,12 @@ public class RatingService {
 
     public RateDTO createRate(Rate rate,Product product){
         rate = rateRepository.save(rate);
-        if(Objects.isNull(product.getRates())){
-            List<Rate> rates = new ArrayList<>();
-            rates.add(rate);
-            product.setRates(rates);
-            productRepository.save(product);
+        if(Objects.isNull(product.getRates()))
+            product.setRates(new ArrayList<>());
 
-        }
+
+        product.getRates().add(rate);
+        productRepository.save(product);
         return RateToRateDTOImpl.instance.convert(rateRepository.save(rate));
     }
     public double findAverageRate(Product product){

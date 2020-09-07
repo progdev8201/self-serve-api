@@ -1,20 +1,14 @@
 package com.model.dto;
 
-import com.model.entity.Product;
-import com.model.entity.Restaurant;
-import com.model.entity.RestaurentTable;
-
-import javax.persistence.*;
 import java.util.List;
 
 public class MenuDTO {
     private Long id;
     private List<ProductDTO> products;
 
-    private RestaurantDTO restaurant ;
+    private RestaurantDTO restaurant;
 
     private List<ProductDTO> speciaux;
-
 
 
     public Long getId() {

@@ -7,7 +7,6 @@ import com.model.entity.*;
 import com.model.enums.BillStatus;
 import com.model.enums.ProgressStatus;
 import com.repository.*;
-import net.bytebuddy.implementation.bind.MethodDelegationBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +44,7 @@ public class ClientService {
 
     public BillDTO makeOrder(List<OrderItemDTO> orderItemDTOList, String guestUsername, Long billId, Long restaurentTableId) {
         Bill bill = null;
+        //TODO trouver bill
         if (Objects.nonNull(billId)) {
             bill = billRepository.findById(billId).get();
         }
@@ -52,12 +52,14 @@ public class ClientService {
             bill = new Bill();
         }
         List<OrderItem> orderItemList = new ArrayList<>();
+        //TODO set up order item in db
         for (OrderItemDTO orderItemDTO : orderItemDTOList) {
 
             Product product = productRepository.findById(orderItemDTO.getProduct().getId()).get();
             OrderItem orderItem = OrderItemDTOToOrderItem.instance.convert(orderItemDTO);
             orderItem.setProduct(product);
             orderItem.setOrderStatus(ProgressStatus.PROGRESS);
+            orderItem.setBill(bill);
             orderItem.setDelaiDePreparation(LocalDateTime.now().minusMinutes(product.getTempsDePreparation()));
             orderItem = orderItemRepository.save(orderItem);
             orderItemList.add(orderItem);
@@ -65,31 +67,34 @@ public class ClientService {
         }
         Guest guest = guestRepository.findByUsername(guestUsername).get();
 
-        ////meilleur solution?? a voir mais il faut retrouver le restaurent pour l'associé au bill
+        //TODO:meilleur solution?? a voir mais il faut retrouver le restaurent pour l'associé au bill
         Restaurant restaurant = orderItemList.get(0).getProduct().getMenu().getRestaurant();
         RestaurentTable restaurentTable = restaurentTableRepository.findById(restaurentTableId).get();
+
         bill.setOrderCustomer(guest);
+        //
         if (Objects.isNull(bill.getOrderItems())) {
             bill.setOrderItems(new ArrayList<>());
         }
         bill.getOrderItems().addAll(orderItemList);
-        bill.setOrderItems(bill.getOrderItems());
         bill.setRestaurant(restaurant);
         bill.setBillStatus(BillStatus.PROGRESS);
-        if (Objects.isNull(restaurentTable.getBill())) {
-            restaurentTable.setBill(new ArrayList<>());
+
+        if (Objects.isNull(restaurentTable.getBills())) {
+            restaurentTable.setBills(new ArrayList<>());
         }
-        if (!restaurentTable.getBill().stream().anyMatch(x -> x.getId().equals(billId))) {
+        if (!restaurentTable.getBills().stream().anyMatch(x -> x.getId().equals(billId))) {
             bill.setRestaurentTable(restaurentTable);
-            System.out.println("yiooooo/*************************************************/");
+            restaurentTable.getBills().add(bill);
         }
-        bill = billRepository.save(bill);
         if (Objects.isNull(restaurant.getBill())) {
             restaurant.setBill(new ArrayList<>());
-        }
+        };
+        restaurant.getBill().add(bill);
+        bill = billRepository.save(bill);
 
-
-        //////notify kitchen
+        //TODO notify kitchen
+        //set valeur retour
         BillDTO returnValue = BillToBillDTO.instance.convert(bill);
         List<OrderItemDTO> returnBillOrderItems = new ArrayList<>();
         for (OrderItem orderItem : bill.getOrderItems()) {
@@ -104,6 +109,7 @@ public class ClientService {
     }
 
     public boolean makePayment(Long billId) {
+        //TODO METTRE EN PLACE WBHOOK DE STRIPE
 
         Bill bill = billRepository.findById(billId).get();
         if (Objects.nonNull(bill)) {

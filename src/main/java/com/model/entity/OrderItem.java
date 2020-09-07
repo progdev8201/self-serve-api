@@ -17,6 +17,9 @@ public class OrderItem {
     @Column(length = 60)
     private ProgressStatus orderStatus;
 
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    private  Bill bill;
+
     private double prix;
     //quand le plat doit etre pret
     private LocalDateTime delaiDePreparation ;
@@ -79,6 +82,14 @@ public class OrderItem {
 
     public void setOption(List<Option> option) {
         this.option = option;
+    }
+
+    public Bill getBill() {
+        return bill;
+    }
+
+    public void setBill(Bill bill) {
+        this.bill = bill;
     }
 
     @Override

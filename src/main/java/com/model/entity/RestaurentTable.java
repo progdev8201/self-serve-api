@@ -11,8 +11,9 @@ public class RestaurentTable {
 
     private int tableNumber;
 
+    //Todo: rajouter un s a bill
     @OneToMany(cascade = CascadeType.PERSIST)
-    private List<Bill> bill;
+    private List<Bill> bills;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     private Restaurant restaurant;
@@ -26,12 +27,12 @@ public class RestaurentTable {
         this.restaurant = restaurent;
     }
 
-    public List<Bill> getBill() {
-        return bill;
+    public List<Bill> getBills() {
+        return bills;
     }
 
-    public void setBill(List<Bill> bill) {
-        this.bill = bill;
+    public void setBills(List<Bill> bill) {
+        this.bills = bill;
     }
 
     public Long getId() {

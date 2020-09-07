@@ -26,7 +26,7 @@ class RateControllerTest {
     @Autowired
     RateController rateController;
     @Test
-    public void testCreateMakeAjouterSpecial() throws Exception {
+    public void testCreateRateResponseNonNull() throws Exception {
         MockMvc mvc = initMockMvc();
         LinkedMultiValueMap<String,String> requestParams = new LinkedMultiValueMap<>();
 
