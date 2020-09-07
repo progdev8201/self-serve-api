@@ -66,7 +66,7 @@ class KitchenRestControllerTest {
     }
 
     @Test
-    public void testBillRetirer() throws Exception {
+    public void testBillRetirerRestaurantTableBillNull() throws Exception {
         MockMvc mvc = initMockMvcBillController();
         LinkedMultiValueMap<String,String> requestParams = new LinkedMultiValueMap<>();
 
@@ -92,7 +92,6 @@ class KitchenRestControllerTest {
 
 
         BillDTO responseBill=mapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
-        clientService.makePayment(responseBill.getId());
 
         sendObj = new JSONObject();
         sendObj.put("restaurentId",1);
@@ -106,6 +105,24 @@ class KitchenRestControllerTest {
         List<LinkedHashMap<String,Object>> reponse = mapper.readValue(result.getResponse().getContentAsString(), ArrayList.class);
 
         ArrayList billDTOS = (ArrayList)reponse.get(0).get("billDTOList");
+        // billDTOList
+        // List<BillDTO> billDTOS =reponse.get("billDTOList");
+        assertEquals(1, billDTOS.size());
+
+        clientService.makePayment(responseBill.getId());
+
+        sendObj = new JSONObject();
+        sendObj.put("restaurentId",1);
+        mvc = initMockMvc();
+        result= mvc.perform(MockMvcRequestBuilders.post(   "/rest/kitchen/findAllTables").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        reponse = mapper.readValue(result.getResponse().getContentAsString(), ArrayList.class);
+
+        billDTOS = (ArrayList)reponse.get(0).get("billDTOList");
         // billDTOList
         // List<BillDTO> billDTOS =reponse.get("billDTOList");
         assertEquals(0, billDTOS.size());
@@ -166,11 +183,17 @@ class KitchenRestControllerTest {
         ArrayList orderItemList =(ArrayList)((LinkedHashMap) billDTOS.get(0)).get("orderItems");
         assertEquals(OrderStatus.READY.toString(),((LinkedHashMap)orderItemList.get(0)).get("orderStatus"));
     }
-    private MockMvc initMockMvc(){
-        return MockMvcBuilders.standaloneSetup(kitchenRestController).build();
-    }
-    private MockMvc initMockMvcBillController(){
-        return MockMvcBuilders.standaloneSetup(billController).build();
+
+
+    private MenuDTO createMenuDTO() {
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        MenuDTO menuDTO = new MenuDTO();
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setId(3);
+        productDTOS.add(productDTO);
+        menuDTO.setId(2L);
+        menuDTO.setProducts(productDTOS);
+        return menuDTO;
     }
     private BillDTO initBillDTO() {
         RestaurantDTO restaurantDTO = new RestaurantDTO();
@@ -190,5 +213,14 @@ class KitchenRestControllerTest {
         return billDTO;
     }
 
+    private MockMvc initMockMvc(){
+        return MockMvcBuilders.standaloneSetup(kitchenRestController).build();
+    }
+    private MockMvc initMockMvcBillController(){
+        return MockMvcBuilders.standaloneSetup(billController).build();
+    }
+    private MockMvc initMockMvcMenuController(){
+        return MockMvcBuilders.standaloneSetup(menuController).build();
+    }
 
 }

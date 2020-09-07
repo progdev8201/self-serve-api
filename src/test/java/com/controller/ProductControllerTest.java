@@ -185,7 +185,7 @@ class ProductControllerTest {
                 andExpect(status().isOk()).
                 andReturn();
         ProductDTO productDTOResponse = mapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
-
+        assertEquals(productDTO.getId(), productDTOResponse.getId());
         assertEquals(null, productDTOResponse.getProductType());
     }
 

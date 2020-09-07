@@ -9,8 +9,10 @@ import com.model.dto.RestaurentTableDTO;
 import com.model.entity.Bill;
 import com.model.entity.Restaurant;
 import com.model.entity.RestaurentTable;
+import com.repository.BillRepository;
 import com.repository.RestaurantRepository;
 import com.repository.RestaurentTableRepository;
+import com.service.DtoUtil.DTOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,12 @@ public class RestaurentTableService {
     @Autowired
     RestaurantRepository restaurantRepository;
 
+    @Autowired
+    BillRepository billRepository;
+
+    @Autowired
+    DTOUtils dtoUtils;
+
 
     public List<RestaurentTableDTO> findAllForRestaurent(Long restaurentId) {
         Restaurant restaurant = restaurantRepository.findById(restaurentId).get();
@@ -37,13 +45,7 @@ public class RestaurentTableService {
             RestaurentTableDTO restaurentTableDTO = RestaurentTableToRestaurenTableDTO.instance.convert(restaurentTable);
             List<BillDTO> billDTOS = new ArrayList<>();
             restaurentTable.getBills().forEach(bill -> {
-                BillDTO billDTO = new BillDTO();
-                List<OrderItemDTO> orderItemDTOList = new ArrayList<>();
-                bill.getOrderItems().forEach(orderItem -> {
-                    orderItemDTOList.add(OrderItemToOrderItemDTO.instance.convert(orderItem));
-                });
-                billDTO =BillToBillDTO.instance.convert(bill);
-                billDTO.setOrderItems(orderItemDTOList);
+                BillDTO billDTO =dtoUtils.constructBillDTOWithOrderItems(bill);
                 billDTOS.add(billDTO);
             });
             restaurentTableDTO.setBillDTOList(billDTOS);
@@ -54,7 +56,6 @@ public class RestaurentTableService {
     }
 
     public void deleteBillFromTable(Bill bill) {
-        //TODO VERIF QUE BILL NE SOIT PAS DELETE
         RestaurentTable restaurentTable = bill.getRestaurentTable();
         if(restaurentTable.getBills().remove(bill)){
             restaurentTable =restaurentTableRepository.save(restaurentTable);

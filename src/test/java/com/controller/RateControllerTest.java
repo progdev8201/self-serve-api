@@ -52,6 +52,8 @@ class RateControllerTest {
 
         RateDTO reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(), RateDTO.class);
         assertNotNull(reponse);
+        assertEquals(rate.getRate(),reponse.getRate());
+        assertEquals(rate.getRaterUsername(),reponse.getRaterUsername());
     }
 
     private MockMvc initMockMvc(){
