@@ -77,9 +77,10 @@ public class ClientService {
             bill.setOrderItems(new ArrayList<>());
         }
         bill.getOrderItems().addAll(orderItemList);
-        bill.setRestaurant(restaurant);
+        if(Objects.isNull(bill.getRestaurant())){
+            bill.setRestaurant(restaurant);
+        }
         bill.setBillStatus(BillStatus.PROGRESS);
-
         if (Objects.isNull(restaurentTable.getBills())) {
             restaurentTable.setBills(new ArrayList<>());
         }
@@ -87,12 +88,14 @@ public class ClientService {
             bill.setRestaurentTable(restaurentTable);
             restaurentTable.getBills().add(bill);
         }
-        if (Objects.isNull(restaurant.getBill())) {
-            restaurant.setBill(new ArrayList<>());
-        };
-        restaurant.getBill().add(bill);
-        bill = billRepository.save(bill);
-
+        if (!restaurant.getBill().stream().anyMatch(x -> x.getId().equals(billId))) {
+            if(Objects.isNull(restaurant.getBill())) {
+                restaurant.setBill(new ArrayList<>());
+            }
+            restaurant.getBill().add(bill);
+        }
+        //bill  = billRepository.save(bill);
+         restaurantRepository.save(restaurant);
         //TODO notify kitchen
         //set valeur retour
         BillDTO returnValue = BillToBillDTO.instance.convert(bill);
