@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -180,6 +181,43 @@ class BillControllerTests {
         assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
         assertEquals("client1", reponse.getOrderCustomer().getUsername());
+    }
+    @Test
+    public void testCreateMakePaymentReturnTrue() throws Exception {
+        MockMvc mvc = initMockMvc();
+        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
+
+        BillDTO billDTO = initBillDTO();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("guestUsername","user1");
+        sendObj.put("restaurentTableId","5");
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
+        sendObj = new JSONObject();
+        sendObj.put("billId",reponse.getId());
+        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("guestUsername","user1");
+        sendObj.put("restaurentTableId","5");
+        result =mvc.perform(MockMvcRequestBuilders.post("/order/makePayment").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+
+        assertTrue(mapper.readValue(result.getResponse().getContentAsString(), Boolean.class));
     }
 
 
