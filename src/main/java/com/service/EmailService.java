@@ -1,9 +1,14 @@
 package com.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 @Service
 public class EmailService {
@@ -11,13 +16,26 @@ public class EmailService {
     @Autowired
     private JavaMailSender javaMailSender;
 
+    @Value("${spring.mail.username}")
+    private String fabMoeEmail;
 
-    public void sendSimpleMessage(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply@baeldung.com");
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-        javaMailSender.send(message);
+
+    public boolean sendSimpleMessage(String ownerEmail, String subject, String text) {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+        text = "<h3>" + text + "</h3><p>From: " + ownerEmail + "<p>";
+
+        try {
+            helper.setText(text,true);
+            helper.setFrom(ownerEmail);
+            helper.setTo(fabMoeEmail);
+            helper.setSubject(subject);
+            javaMailSender.send(mimeMessage);
+            System.out.println("EMAIL WAS SENT SUCCESSFULLY!");
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }
