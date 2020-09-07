@@ -36,7 +36,7 @@ public class RestaurentTableService {
 
             RestaurentTableDTO restaurentTableDTO = RestaurentTableToRestaurenTableDTO.instance.convert(restaurentTable);
             List<BillDTO> billDTOS = new ArrayList<>();
-            restaurentTable.getBills().forEach(bill -> {
+            restaurentTable.getBill().forEach(bill -> {
                 BillDTO billDTO = new BillDTO();
                 List<OrderItemDTO> orderItemDTOList = new ArrayList<>();
                 bill.getOrderItems().forEach(orderItem -> {
