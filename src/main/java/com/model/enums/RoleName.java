@@ -2,7 +2,8 @@ package com.model.enums;
 
 public enum RoleName {
     ROLE_CLIENT,
-    ROLE_ADMIN,
-    ROLE_DELIVERYMAN
+    ROLE_GUEST,
+    ROLE_OWNER,
+    ROLE_EMPLOYEE
 }
 
