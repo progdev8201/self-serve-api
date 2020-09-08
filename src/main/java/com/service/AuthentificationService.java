@@ -125,14 +125,18 @@ public class AuthentificationService {
                     LOGGER.info("I created a new client");
                     return true;
 
-                case ROLE_DELIVERYMAN:
+                case ROLE_OWNER:
                     guestRepository.save(new Owner(user));
                     LOGGER.info("I create a new owner");
                     return true;
 
-                case ROLE_ADMIN:
+                case ROLE_EMPLOYEE:
                     guestRepository.save(new Employee(user));
                     LOGGER.info("I create a new employee");
+                    return true;
+                case ROLE_GUEST:
+                    guestRepository.save(user);
+                    LOGGER.info("I create a new Guest");
                     return true;
 
                 default:

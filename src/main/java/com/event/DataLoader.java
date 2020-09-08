@@ -1,5 +1,6 @@
 package com.event;
 
+import com.model.dto.SignUpForm;
 import com.model.entity.*;
 import com.model.enums.RoleName;
 import com.repository.*;
@@ -18,6 +19,7 @@ import java.util.*;
 public class DataLoader implements CommandLineRunner {
     @Autowired
     GuestRepository guestRepository;
+
     @Autowired
     RestaurantRepository restaurantRepository;
 
@@ -41,14 +43,6 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void createAccount(){
-        // create client
-        Client client = new Client();
-        client.setUsername("client1");
-
-        //create guest
-        Guest guest = new Guest();
-        guest.setUsername("user1");
-
         //create restaurant
         Restaurant restaurant = new Restaurant();
         restaurant.setName("le resto chico");
@@ -74,10 +68,6 @@ public class DataLoader implements CommandLineRunner {
         product2.setMenu(menu);
         menu = menuRepository.save(menu);
 
-        //finish create client and guest
-        //TODO: pourquoi as-tu separer la creation de lobjet a deux endroits dans le code?
-        guestRepository.save(client);
-        guestRepository.save(guest);
         if (roleRepository.findAll().size() == 0){
             LOGGER.info("READY!...Populating database...");
 
@@ -96,9 +86,14 @@ public class DataLoader implements CommandLineRunner {
             roleRepository.flush();
             LOGGER.info("RoleRepository populated");
 
-       /*     LOGGER.info("Creating default client");
-            SignUpForm client = new SignUpForm("Aissatou","Diakite","677 berverly street","5147886958","client","123456","jekoum@mail.com","123456","5147845789","client");
-            authentificationService.registerUser(client);*/
+
+            // create client and guest
+            LOGGER.info("Creating default client and guest");
+            SignUpForm client = new SignUpForm("client1@mail.com","123456","5147887884","client");
+            SignUpForm guest = new SignUpForm("guest@mail.com","123456","5147887884","guest");
+            authentificationService.registerUser(client);
+            authentificationService.registerUser(guest);
+
             System.out.println("APPLICATION IS READY!!!");
 
         }
