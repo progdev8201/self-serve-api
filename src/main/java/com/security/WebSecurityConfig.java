@@ -16,10 +16,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -73,20 +76,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        RequestMatcher csrfRequestMatcher = new RequestMatcher() {
+
+            private RegexRequestMatcher requestMatcher =
+                    new RegexRequestMatcher("/gs-guide-websocket/", null);
+
+            @Override
+            public boolean matches(HttpServletRequest request) {
+
+                // Enable the CSRF
+                if(requestMatcher.matches(request))
+                    return true;
+                return false;
+            }
+
+        }; // new RequestMatcher
         http.cors();
-
-     /*   http.authorizeRequests()
-                .antMatchers("/h2-console/**").permitAll()
-                .antMatchers("/ws").permitAll();*/
-
-        http.csrf().disable().
-                authorizeRequests()
-                .antMatchers("/h2-console/**").permitAll()
-                .and()
-                .authorizeRequests()
-                .antMatchers("/csrf/*").permitAll()
-                .antMatchers("/auth/*").permitAll()
-                .antMatchers("/auth/***").permitAll()
+        http.csrf().requireCsrfProtectionMatcher(csrfRequestMatcher).and().authorizeRequests()
+                .antMatchers("/csrf/**","/auth/**","/h2-console/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
