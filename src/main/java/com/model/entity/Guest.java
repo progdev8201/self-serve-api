@@ -19,7 +19,7 @@ public class Guest {
     @OneToMany
     private List<Bill> bills;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinTable
     protected Set<Role> roles = new HashSet<>();
 

@@ -59,7 +59,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
     private String getJwt(HttpServletRequest request) {
         // TROUVER LE TOKEN EN  SASSURANT QUIL CONTIENT BEARER POUR ENSUITE LENLEVER
         String authHeader = request.getHeader("Authorization");
-        System.out.println("This is the Authorization -> " + authHeader);
+        logger.info("This is the Authorization -> " + authHeader);
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             return authHeader.replace("Bearer ","");
         }
