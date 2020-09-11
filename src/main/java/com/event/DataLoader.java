@@ -69,7 +69,7 @@ public class DataLoader implements CommandLineRunner {
         RestaurentTable restaurentTable = new RestaurentTable();
         restaurentTable.setTableNumber(1);
 
-        Restaurant restaurant = new Restaurant();
+        restaurant = new Restaurant();
         restaurant.setName("le resto chico");
        // menu=menuRepository.save(menu);
         menu.setRestaurant(restaurant);
