@@ -103,7 +103,7 @@ public class ProductService {
 
     public ProductDTO setProductChefChoice(ProductDTO productDTO) {
 
-        Product product = productRepository.findById(3L).get();
+        Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(ProductType.CHEFCHOICE);
         ProductDTO retour = ProductToProductDTO.instance.convert(productRepository.save(product));
         retour.setProductType(product.getProductType());

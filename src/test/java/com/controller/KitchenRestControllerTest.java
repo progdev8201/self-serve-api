@@ -50,8 +50,8 @@ class KitchenRestControllerTest {
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername","client1");
-        sendObj.put("restaurentId","1");
+        sendObj.put("guestUsername","client1@mail.com");
+        sendObj.put("restaurentId","2");
 
         MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/rest/kitchen/findAllTables").
                 content(sendObj.toString()).
@@ -77,8 +77,8 @@ class KitchenRestControllerTest {
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername","client1");
-        sendObj.put("restaurentTableId","5");
+        sendObj.put("guestUsername","client1@mail.com");
+        sendObj.put("restaurentTableId","6");
 
         MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
                 content(sendObj.toString()).
@@ -94,7 +94,7 @@ class KitchenRestControllerTest {
         BillDTO responseBill=mapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
 
         sendObj = new JSONObject();
-        sendObj.put("restaurentId",1);
+        sendObj.put("restaurentId",2);
         mvc = initMockMvc();
         result= mvc.perform(MockMvcRequestBuilders.post(   "/rest/kitchen/findAllTables").
                 content(sendObj.toString()).
@@ -112,7 +112,7 @@ class KitchenRestControllerTest {
         clientService.makePayment(responseBill.getId());
 
         sendObj = new JSONObject();
-        sendObj.put("restaurentId",1);
+        sendObj.put("restaurentId",2);
         mvc = initMockMvc();
         result= mvc.perform(MockMvcRequestBuilders.post(   "/rest/kitchen/findAllTables").
                 content(sendObj.toString()).
@@ -139,8 +139,8 @@ class KitchenRestControllerTest {
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername","client1");
-        sendObj.put("restaurentTableId","5");
+        sendObj.put("guestUsername","client1@mail.com");
+        sendObj.put("restaurentTableId","6");
 
         mvc = initMockMvcBillController();
 
@@ -169,7 +169,7 @@ class KitchenRestControllerTest {
                 andReturn();
 
         sendObj = new JSONObject();
-        sendObj.put("restaurentId",1);
+        sendObj.put("restaurentId",2);
         mvc = initMockMvc();
         result= mvc.perform(MockMvcRequestBuilders.post(   "/rest/kitchen/findAllTables").
                 content(sendObj.toString()).
@@ -200,7 +200,7 @@ class KitchenRestControllerTest {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setRestaurant(restaurantDTO);
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(3);
+        productDTO.setId(4);
         productDTO.setMenu(menuDTO);
         OrderItemDTO orderItemDTO1 = new OrderItemDTO();
         orderItemDTO1.setProduct(productDTO);

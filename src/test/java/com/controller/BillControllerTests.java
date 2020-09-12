@@ -41,8 +41,8 @@ class BillControllerTests {
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername","user1");
-        sendObj.put("restaurentTableId","5");
+        sendObj.put("guestUsername","guest@mail.com");
+        sendObj.put("restaurentTableId","6");
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
@@ -56,7 +56,7 @@ class BillControllerTests {
         assertEquals(29.99, reponse.getPrixTotal());
         assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
-        assertEquals("user1", reponse.getOrderCustomer().getUsername());
+        assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
     }
 
     @Test
@@ -70,8 +70,8 @@ class BillControllerTests {
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername","user1");
-        sendObj.put("restaurentTableId","5");
+        sendObj.put("guestUsername","guest@mail.com");
+        sendObj.put("restaurentTableId","6");
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
@@ -90,8 +90,8 @@ class BillControllerTests {
 
         sendObj = new JSONObject();
         sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername","user1");
-        sendObj.put("restaurentTableId","5");
+        sendObj.put("guestUsername","guest@mail.com");
+        sendObj.put("restaurentTableId","6");
         result= mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
@@ -103,7 +103,7 @@ class BillControllerTests {
         assertEquals(59.98, reponse.getPrixTotal());
         assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(2, reponse.getOrderItems().size());
-        assertEquals("user1", reponse.getOrderCustomer().getUsername());
+        assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
     }
 
     @Test
@@ -115,7 +115,7 @@ class BillControllerTests {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setRestaurant(restaurantDTO);
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(3);
+        productDTO.setId(4);
         productDTO.setMenu(menuDTO);
         List<OrderItemDTO> orderItemDTOList = new ArrayList<>();
         OrderItemDTO orderItemDTO1 = new OrderItemDTO();
@@ -136,8 +136,8 @@ class BillControllerTests {
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername","user1");
-        sendObj.put("restaurentTableId","5");
+        sendObj.put("guestUsername","guest@mail.com");
+        sendObj.put("restaurentTableId","6");
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
@@ -150,7 +150,7 @@ class BillControllerTests {
         assertEquals(59.98, reponse.getPrixTotal());
         assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(2, reponse.getOrderItems().size());
-        assertEquals("user1", reponse.getOrderCustomer().getUsername());
+        assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
     }
 
 
@@ -165,8 +165,8 @@ class BillControllerTests {
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername","client1");
-        sendObj.put("restaurentTableId","5");
+        sendObj.put("guestUsername","client1@mail.com");
+        sendObj.put("restaurentTableId","6");
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
@@ -180,7 +180,7 @@ class BillControllerTests {
         assertEquals(29.99, reponse.getPrixTotal());
         assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
-        assertEquals("client1", reponse.getOrderCustomer().getUsername());
+        assertEquals("client1@mail.com", reponse.getOrderCustomer().getUsername());
     }
     @Test
     public void testCreateMakePaymentReturnTrue() throws Exception {
@@ -193,8 +193,8 @@ class BillControllerTests {
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername","user1");
-        sendObj.put("restaurentTableId","5");
+        sendObj.put("guestUsername","guest@mail.com");
+        sendObj.put("restaurentTableId","6");
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
@@ -208,8 +208,8 @@ class BillControllerTests {
         sendObj = new JSONObject();
         sendObj.put("billId",reponse.getId());
         sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername","user1");
-        sendObj.put("restaurentTableId","5");
+        sendObj.put("guestUsername","guest@mail.com");
+        sendObj.put("restaurentTableId","6");
         result =mvc.perform(MockMvcRequestBuilders.post("/order/makePayment").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
@@ -226,7 +226,7 @@ class BillControllerTests {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setRestaurant(restaurantDTO);
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(3);
+        productDTO.setId(4);
         productDTO.setMenu(menuDTO);
         OrderItemDTO orderItemDTO1 = new OrderItemDTO();
         orderItemDTO1.setProduct(productDTO);

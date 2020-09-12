@@ -32,7 +32,6 @@ public class BillDTO {
     private BillStatus billStatus;
 
 
-    @ManyToOne
     private RestaurantDTO restaurant;
 
     public Long getId() {
