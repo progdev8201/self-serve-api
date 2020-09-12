@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+//TODO les methode devrais seulement avoir une seule ligne de code, le map de string devrait etre passer au service
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -32,6 +33,7 @@ public class ProductController {
     @Autowired
     ProductService productService;
 
+    //TODO put dto instead of entity
     @GetMapping("/{id}")
     public Product find(@PathVariable Long id) {
         return productService.find(id);
@@ -57,32 +59,32 @@ public class ProductController {
         productService.delete(id);
     }
 
-    @GetMapping("findMenuSpecial")
+    @GetMapping("/findMenuSpecial")
     public ResponseEntity<List<ProductDTO>> findMenuSpecials(@RequestBody Map<String, String> json) throws JsonProcessingException {
         MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menuDTO"), MenuDTO.class);
         return ResponseEntity.ok(productService.findMenuSpecials(menuDTO));
     }
 
-    @GetMapping("findChoixDuChef")
+    @GetMapping("/findChoixDuChef")
     public ResponseEntity<List<ProductDTO>> findMenuChoixDuChef(@RequestBody Map<String, String> json) throws JsonProcessingException {
         MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menuDTO"), MenuDTO.class);
         return ResponseEntity.ok(productService.findMenuChoixDuChef(menuDTO));
     }
 
-    @PostMapping("setMenuSpecial")
+    @PostMapping("/setMenuSpecial")
     public ResponseEntity<ProductDTO> setProductSpecial(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ProductDTO productDTO = new ObjectMapper().readValue(json.get("productDTO"), ProductDTO.class);
         return ResponseEntity.ok(productService.setProductSpecial(productDTO));
 
     }
 
-    @PostMapping("deleteProductType")
+    @PostMapping("/deleteProductType")
     public ResponseEntity<ProductDTO> removeProductType(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ProductDTO productDTO = new ObjectMapper().readValue(json.get("productDTO"), ProductDTO.class);
         return ResponseEntity.ok(productService.removeProductType(productDTO));
     }
 
-    @PostMapping("setMenuChefChoice")
+    @PostMapping("/setMenuChefChoice")
     public ResponseEntity<ProductDTO> setProductChefChoice(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ProductDTO productDTO = new ObjectMapper().readValue(json.get("productDTO"), ProductDTO.class);
         return ResponseEntity.ok(productService.setProductChefChoice(productDTO));

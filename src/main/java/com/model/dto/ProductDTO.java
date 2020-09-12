@@ -1,11 +1,7 @@
 package com.model.dto;
 
-import com.model.entity.Menu;
-import com.model.entity.Option;
-import com.model.entity.Rate;
 import com.model.enums.ProductType;
 
-import javax.persistence.*;
 import java.util.List;
 
 public class ProductDTO {
@@ -26,7 +22,7 @@ public class ProductDTO {
 
     private List<RateDTO> rates;
 
-    ProductType productType ;
+    ProductType productType;
 
     public ProductType getProductType() {
         return productType;

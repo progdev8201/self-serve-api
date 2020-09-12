@@ -1,12 +1,7 @@
 package com.model.dto;
 
-import com.model.entity.Option;
-import com.model.entity.Product;
 import com.model.enums.ProgressStatus;
-import org.hibernate.annotations.NaturalId;
 
-import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,7 +14,7 @@ public class OrderItemDTO {
 
     private double prix;
 
-    private LocalDateTime delaiDePreparation ;
+    private LocalDateTime delaiDePreparation;
 
     private List<OptionDTO> option;
 
