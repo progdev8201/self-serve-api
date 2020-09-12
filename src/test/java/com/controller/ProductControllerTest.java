@@ -38,7 +38,7 @@ class ProductControllerTest {
         LinkedMultiValueMap<String,String> requestParams = new LinkedMultiValueMap<>();
 
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(3L);
+        productDTO.setId(4L);
         productDTO.setPrix(39.99);
         productDTO.setName("killua");
         ObjectMapper objectMapper =new ObjectMapper();
@@ -59,10 +59,10 @@ class ProductControllerTest {
         assertEquals(ProductType.SPECIAL, reponse.getProductType());
 
         JSONObject sendObj2 = new JSONObject();
-        sendObj2.put("menuId","2");
+        sendObj2.put("menuId","3");
         mvc = initMockMvcMenuController();
         result= mvc.perform(MockMvcRequestBuilders.get(   "/menu/getMenu").
-                content("2").
+                content("3").
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
@@ -78,7 +78,7 @@ class ProductControllerTest {
         LinkedMultiValueMap<String,String> requestParams = new LinkedMultiValueMap<>();
 
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(3L);
+        productDTO.setId(4L);
         productDTO.setPrix(39.99);
         productDTO.setName("killua");
         ObjectMapper objectMapper =new ObjectMapper();
@@ -99,10 +99,10 @@ class ProductControllerTest {
         assertEquals(ProductType.SPECIAL, reponse.getProductType());
 
         JSONObject sendObj2 = new JSONObject();
-        sendObj2.put("menuId","2");
+        sendObj2.put("menuId","3");
         mvc = initMockMvcMenuController();
         result= mvc.perform(MockMvcRequestBuilders.get(   "/menu/getMenu").
-                content("2").
+                content("3").
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
@@ -118,7 +118,7 @@ class ProductControllerTest {
         LinkedMultiValueMap<String,String> requestParams = new LinkedMultiValueMap<>();
 
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(3L);
+        productDTO.setId(4L);
         productDTO.setPrix(39.99);
         productDTO.setName("killua");
         ObjectMapper objectMapper =new ObjectMapper();
@@ -139,10 +139,10 @@ class ProductControllerTest {
         assertEquals(ProductType.CHEFCHOICE, reponse.getProductType());
 
         JSONObject sendObj2 = new JSONObject();
-        sendObj2.put("menuId","2");
+        sendObj2.put("menuId","3");
         mvc = initMockMvcMenuController();
         result= mvc.perform(MockMvcRequestBuilders.get(   "/menu/getMenu").
-                content("2").
+                content("3").
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
@@ -158,7 +158,7 @@ class ProductControllerTest {
         LinkedMultiValueMap<String,String> requestParams = new LinkedMultiValueMap<>();
 
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(3L);
+        productDTO.setId(4L);
         productDTO.setPrix(39.99);
         productDTO.setName("killua");
         ObjectMapper objectMapper =new ObjectMapper();
@@ -195,7 +195,7 @@ class ProductControllerTest {
         LinkedMultiValueMap<String,String> requestParams = new LinkedMultiValueMap<>();
 
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(3L);
+        productDTO.setId(4L);
         productDTO.setPrix(39.99);
         productDTO.setName("killua");
         ObjectMapper objectMapper =new ObjectMapper();
@@ -213,7 +213,7 @@ class ProductControllerTest {
 
 
          productDTO = new ProductDTO();
-        productDTO.setId(4L);
+        productDTO.setId(5L);
         productDTO.setPrix(69.99);
         productDTO.setName("killua");
          objectMapper =new ObjectMapper();
@@ -235,7 +235,7 @@ class ProductControllerTest {
         assertEquals(ProductType.SPECIAL, reponse.getProductType());
 
         MenuDTO menuDTO = new MenuDTO();
-        menuDTO.setId(2L);
+        menuDTO.setId(3L);
         sendObj = new JSONObject();
         sendObj.put("menuDTO",objectMapper.writeValueAsString(menuDTO));
 
@@ -257,7 +257,7 @@ class ProductControllerTest {
         LinkedMultiValueMap<String,String> requestParams = new LinkedMultiValueMap<>();
 
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(3L);
+        productDTO.setId(4L);
         productDTO.setPrix(39.99);
         productDTO.setName("killua");
         ObjectMapper objectMapper =new ObjectMapper();
@@ -275,7 +275,7 @@ class ProductControllerTest {
 
 
         productDTO = new ProductDTO();
-        productDTO.setId(4L);
+        productDTO.setId(5L);
         productDTO.setPrix(69.99);
         productDTO.setName("killua");
         objectMapper =new ObjectMapper();
@@ -297,7 +297,7 @@ class ProductControllerTest {
         assertEquals(ProductType.CHEFCHOICE, reponse.getProductType());
 
         MenuDTO menuDTO = new MenuDTO();
-        menuDTO.setId(2L);
+        menuDTO.setId(3L);
         sendObj = new JSONObject();
         sendObj.put("menuDTO",objectMapper.writeValueAsString(menuDTO));
 
