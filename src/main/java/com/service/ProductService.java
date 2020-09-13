@@ -6,6 +6,7 @@ import com.model.dto.MenuDTO;
 import com.model.dto.ProductDTO;
 import com.model.entity.Menu;
 import com.model.entity.Product;
+import com.model.enums.ProductMenuType;
 import com.model.enums.ProductType;
 import com.repository.MenuRepository;
 import com.repository.ProductRepository;
@@ -54,6 +55,55 @@ public class ProductService {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
         List<Product> productList = menu.getSpeciaux().parallelStream().filter(r -> {
             if (r.getProductType() == ProductType.SPECIAL) {
+                return true;
+            }
+            return false;
+        }).collect(Collectors.toList());
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        for (Product product : productList) {
+            productDTOS.add(ProductToProductDTO.instance.convert(product));
+        }
+
+        return productDTOS;
+
+    }
+
+    public List<ProductDTO> findMenuDinerProduct(MenuDTO menuDTO) {
+        Menu menu = menuRepository.findById(menuDTO.getId()).get();
+        List<Product> productList = menu.getSpeciaux().parallelStream().filter(r -> {
+            if (r.getProductMenuType() == ProductMenuType.DINER) {
+                return true;
+            }
+            return false;
+        }).collect(Collectors.toList());
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        for (Product product : productList) {
+            productDTOS.add(ProductToProductDTO.instance.convert(product));
+        }
+
+        return productDTOS;
+
+    }
+    public List<ProductDTO> findMenuDejeunerProduct(MenuDTO menuDTO) {
+        Menu menu = menuRepository.findById(menuDTO.getId()).get();
+        List<Product> productList = menu.getSpeciaux().parallelStream().filter(r -> {
+            if (r.getProductMenuType() == ProductMenuType.DEJEUNER) {
+                return true;
+            }
+            return false;
+        }).collect(Collectors.toList());
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        for (Product product : productList) {
+            productDTOS.add(ProductToProductDTO.instance.convert(product));
+        }
+
+        return productDTOS;
+
+    }
+    public List<ProductDTO> findMenuSouper(MenuDTO menuDTO) {
+        Menu menu = menuRepository.findById(menuDTO.getId()).get();
+        List<Product> productList = menu.getSpeciaux().parallelStream().filter(r -> {
+            if (r.getProductMenuType() == ProductMenuType.SOUPER) {
                 return true;
             }
             return false;

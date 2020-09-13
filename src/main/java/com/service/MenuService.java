@@ -27,6 +27,9 @@ public class MenuService {
     ProductRepository productRepository;
 
     @Autowired
+    private ProductService productService;
+
+    @Autowired
     public MenuService(MenuRepository menuRepository) {
         this.menuRepository = menuRepository;
     }
@@ -60,7 +63,11 @@ public class MenuService {
     public MenuDTO findMenu(Long id) {
         Menu menu = menuRepository.findById(id).get();
         MenuDTO menuDTO = MenuToMenuDTO.instance.convert(menu);
-
+        menuDTO.setSpeciaux(productService.findMenuSpecials(menuDTO));
+        menuDTO.setFeatured(productService.findMenuChoixDuChef(menuDTO));
+        menuDTO.setDejeuner(productService.findMenuDejeunerProduct(menuDTO));
+        menuDTO.setSouper(productService.findMenuSouper(menuDTO));
+        menuDTO.setDiner(productService.findMenuDinerProduct(menuDTO));
         menuDTO.setProducts(new ArrayList<>());
         for (Product product : menu.getProducts()) {
             ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
