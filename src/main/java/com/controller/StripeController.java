@@ -2,10 +2,12 @@ package com.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mapping.BillDTOToBill;
 import com.mapping.OwnerDTOToOwner;
 import com.model.dto.BillDTO;
 import com.model.dto.OwnerDTO;
+import com.model.dto.StripeClientSecretDTO;
 import com.model.entity.Owner;
 import com.service.ClientService;
 import com.service.StripeService;
@@ -34,9 +36,9 @@ public class StripeController {
     }
 
     @PostMapping("/fetchPaymentIntent")
-    public ResponseEntity<String> processPayment(@RequestBody Map<String, String> json) throws JsonProcessingException, StripeException {
-        BillDTO billDTO = new ObjectMapper().readValue(json.get("billDto"), BillDTO.class);
-        String restaurentStripeAccount =new ObjectMapper().readValue(json.get("restaurentStripeAccount"), String.class);
+    public ResponseEntity<StripeClientSecretDTO> processPayment(@RequestBody Map<String, String> json) throws JsonProcessingException, StripeException {
+        BillDTO billDTO = new ObjectMapper().readValue(json.get("billDTO"), BillDTO.class);
+        String restaurentStripeAccount =json.get("restaurentStripeAccount");
         return ResponseEntity.ok(stripeService.processPayment(restaurentStripeAccount, BillDTOToBill.instance.convert(billDTO)));
     }
 

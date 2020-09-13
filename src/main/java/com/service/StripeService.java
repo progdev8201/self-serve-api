@@ -1,5 +1,6 @@
 package com.service;
 
+import com.model.dto.StripeClientSecretDTO;
 import com.model.entity.Bill;
 import com.model.entity.Owner;
 import com.repository.OwnerRepository;
@@ -10,10 +11,10 @@ import com.stripe.model.AccountLink;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.AccountCreateParams;
 import com.stripe.param.AccountLinkCreateParams;
+import com.stripe.param.PaymentIntentCreateParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class StripeService {
         Stripe.apiKey = stripeAPIKey;
 
 
-        AccountCreateParams params =
+        /*AccountCreateParams params =
                 AccountCreateParams.builder()
                         .setEmail(owner.getUsername())
                         .setBusinessType(AccountCreateParams.BusinessType.INDIVIDUAL)
@@ -48,9 +49,20 @@ public class StripeService {
                                 setPhone("5143652481").
                                 build())
                         .setType(AccountCreateParams.Type.EXPRESS)
+                        .build();*/
+
+
+        AccountCreateParams params =
+                AccountCreateParams.builder()
+                        .setEmail(owner.getUsername())
+                        .setBusinessType(AccountCreateParams.BusinessType.INDIVIDUAL)
+                        .setType(AccountCreateParams.Type.EXPRESS)
+                        .addRequestedCapability(AccountCreateParams.RequestedCapability.CARD_PAYMENTS)
+                        .addRequestedCapability(AccountCreateParams.RequestedCapability.TRANSFERS)
                         .build();
 
-        Account account =Account.create(params);
+
+        Account account = Account.create(params);
 
         AccountLinkCreateParams accountLinkparams =
                 AccountLinkCreateParams.builder()
@@ -66,24 +78,22 @@ public class StripeService {
         return accountLink.getUrl();
     }
 
-    public String processPayment (String restaurentStripeAccount, Bill bill) throws StripeException {
+    public StripeClientSecretDTO processPayment(String restaurentStripeAccount, Bill bill) throws StripeException {
         Stripe.apiKey = stripeAPIKey;
 
-
+        PaymentIntentCreateParams params =
+                PaymentIntentCreateParams.builder()
+                        .setAmount(Math.round(bill.getPrixTotal()) * 100)
+                        .setCurrency("cad")
+                        .setTransferData(PaymentIntentCreateParams.TransferData.builder().setDestination(restaurentStripeAccount).build())
+                        .addPaymentMethodType("card")
+                        .build();
         ArrayList paymentMethodTypes = new ArrayList();
         paymentMethodTypes.add("card");
 
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("payment_method_types", paymentMethodTypes);
-        params.put("amount", bill.getPrixTotal());
-        params.put("currency", "cad");
-        params.put("application_fee_amount", 0);
-        Map<String, Object> transferDataParams = new HashMap<>();
-        transferDataParams.put("destination", restaurentStripeAccount);
-        params.put("transfer_data", transferDataParams);
         PaymentIntent paymentIntent = PaymentIntent.create(params);
-        return paymentIntent.getClientSecret();
-
+        StripeClientSecretDTO stripeClientSecretDTO = new StripeClientSecretDTO();
+        stripeClientSecretDTO.setValue(paymentIntent.getClientSecret());
+        return stripeClientSecretDTO;
     }
 }
