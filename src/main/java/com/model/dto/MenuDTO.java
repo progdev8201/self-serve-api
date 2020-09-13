@@ -10,6 +10,45 @@ public class MenuDTO {
 
     private List<ProductDTO> speciaux;
 
+    private List<ProductDTO> featured;
+
+    private List<ProductDTO> diner;
+
+    private List<ProductDTO> dejeuner;
+
+    private List<ProductDTO> souper;
+
+    public List<ProductDTO> getDiner() {
+        return diner;
+    }
+
+    public void setDiner(List<ProductDTO> diner) {
+        this.diner = diner;
+    }
+
+    public List<ProductDTO> getDejeuner() {
+        return dejeuner;
+    }
+
+    public void setDejeuner(List<ProductDTO> dejeuner) {
+        this.dejeuner = dejeuner;
+    }
+
+    public List<ProductDTO> getSouper() {
+        return souper;
+    }
+
+    public void setSouper(List<ProductDTO> souper) {
+        this.souper = souper;
+    }
+
+    public List<ProductDTO> getFeatured() {
+        return featured;
+    }
+
+    public void setFeatured(List<ProductDTO> featured) {
+        this.featured = featured;
+    }
 
     public Long getId() {
         return id;

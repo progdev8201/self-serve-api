@@ -1,6 +1,7 @@
 package com.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.model.enums.ProductMenuType;
 import com.model.enums.ProductType;
 
 import javax.persistence.*;
@@ -34,6 +35,19 @@ public class Product {
     @Enumerated(EnumType.STRING)
     @Column(length = 60)
     private ProductType productType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 60)
+    private ProductMenuType productMenuType;
+
+
+    public ProductMenuType getProductMenuType() {
+        return productMenuType;
+    }
+
+    public void setProductMenuType(ProductMenuType productMenuType) {
+        this.productMenuType = productMenuType;
+    }
 
     public long getId() {
         return id;
