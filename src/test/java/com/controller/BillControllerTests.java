@@ -42,7 +42,7 @@ class BillControllerTests {
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","guest@mail.com");
         sendObj.put("restaurentTableId","6");
 
@@ -71,7 +71,7 @@ class BillControllerTests {
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","guest@mail.com");
         sendObj.put("restaurentTableId","6");
 
@@ -91,7 +91,7 @@ class BillControllerTests {
 
 
         sendObj = new JSONObject();
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","guest@mail.com");
         sendObj.put("restaurentTableId","6");
         result= mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
@@ -137,7 +137,7 @@ class BillControllerTests {
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","guest@mail.com");
         sendObj.put("restaurentTableId","6");
 
@@ -166,7 +166,7 @@ class BillControllerTests {
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","client1@mail.com");
         sendObj.put("restaurentTableId","6");
 
@@ -194,7 +194,7 @@ class BillControllerTests {
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","guest@mail.com");
         sendObj.put("restaurentTableId","6");
 
@@ -209,7 +209,7 @@ class BillControllerTests {
         BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
         sendObj = new JSONObject();
         sendObj.put("billId",reponse.getId());
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","guest@mail.com");
         sendObj.put("restaurentTableId","6");
         result =mvc.perform(MockMvcRequestBuilders.post("/order/makePayment").

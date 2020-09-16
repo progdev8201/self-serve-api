@@ -53,7 +53,7 @@ public class ProductService {
 
     public List<ProductDTO> findMenuSpecials(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getSpeciaux().parallelStream().filter(r -> {
+        List<Product> productList = menu.getProducts().parallelStream().filter(r -> {
             if (r.getProductType() == ProductType.SPECIAL) {
                 return true;
             }
@@ -70,7 +70,7 @@ public class ProductService {
 
     public List<ProductDTO> findMenuDinerProduct(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getSpeciaux().parallelStream().filter(r -> {
+        List<Product> productList = menu.getProducts().parallelStream().filter(r -> {
             if (r.getProductMenuType() == ProductMenuType.DINER) {
                 return true;
             }
@@ -86,7 +86,7 @@ public class ProductService {
     }
     public List<ProductDTO> findMenuDejeunerProduct(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getSpeciaux().parallelStream().filter(r -> {
+        List<Product> productList = menu.getProducts().stream().filter(r -> {
             if (r.getProductMenuType() == ProductMenuType.DEJEUNER) {
                 return true;
             }
@@ -102,7 +102,7 @@ public class ProductService {
     }
     public List<ProductDTO> findMenuSouper(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getSpeciaux().parallelStream().filter(r -> {
+        List<Product> productList = menu.getProducts().parallelStream().filter(r -> {
             if (r.getProductMenuType() == ProductMenuType.SOUPER) {
                 return true;
             }
@@ -119,7 +119,7 @@ public class ProductService {
 
     public List<ProductDTO> findMenuChoixDuChef(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getSpeciaux().parallelStream().filter(r -> {
+        List<Product> productList = menu.getProducts().parallelStream().filter(r -> {
             if (r.getProductType() == ProductType.CHEFCHOICE) {
                 return true;
             }

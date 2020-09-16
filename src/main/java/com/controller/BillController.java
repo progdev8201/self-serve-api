@@ -19,10 +19,9 @@ public class BillController {
     @Autowired
     ClientService clientService;
 
-
     @PostMapping("/makeOrder")
     public ResponseEntity<BillDTO> makeOrder(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        BillDTO billDTO = new ObjectMapper().readValue(json.get("bill"),BillDTO.class);
+        BillDTO billDTO = new ObjectMapper().readValue(json.get("billDTO"),BillDTO.class);
         Long restaurentTableId = new ObjectMapper().readValue(json.get("restaurentTableId"),Long.class);
         return ResponseEntity.ok(clientService.makeOrder(billDTO.getOrderItems(),json.get("guestUsername"),billDTO.getId(),restaurentTableId));
     }

@@ -2,6 +2,7 @@ package com.event;
 
 import com.model.dto.SignUpForm;
 import com.model.entity.*;
+import com.model.enums.ProductMenuType;
 import com.model.enums.RoleName;
 import com.repository.*;
 import com.service.AuthentificationService;
@@ -54,9 +55,13 @@ public class DataLoader implements CommandLineRunner {
         product.setName("le steak chico");
         product.setPrix(29.99);
         product.setTempsDePreparation(30);
+        product.setProductMenuType(ProductMenuType.DINER);
+        product.setDescription("cest bon cest bon cest bon");
         productList.add(product);
         Product product2 = new Product();
+        product2.setProductMenuType(ProductMenuType.DEJEUNER);
         product2.setName("le steak chico2");
+        product2.setDescription("cest po bon cest po bon cest po bon");
         product2.setPrix(29.99);
         productList.add(product2);
 
