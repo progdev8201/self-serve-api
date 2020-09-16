@@ -43,6 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new JwtAuthTokenFilter();
     }
 
+
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
@@ -53,8 +54,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -69,6 +68,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.addAllowedHeader("content-type");
         configuration.addAllowedHeader("Access-Control-Allow-Origin");
         configuration.addAllowedHeader("Authorization");
+        configuration.addAllowedHeader("X-CSRF-TOKEN");
+        configuration.addAllowedHeader("");
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

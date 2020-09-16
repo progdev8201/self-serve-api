@@ -8,6 +8,8 @@ import com.model.dto.LoginForm;
 import com.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -19,10 +21,13 @@ public class BillController {
     @Autowired
     ClientService clientService;
 
+    @Autowired
+    PasswordEncoder bCryptPasswordEncoder;
+
 
     @PostMapping("/makeOrder")
     public ResponseEntity<BillDTO> makeOrder(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        BillDTO billDTO = new ObjectMapper().readValue(json.get("bill"),BillDTO.class);
+        BillDTO billDTO = new ObjectMapper().readValue(json.get("billDTO"),BillDTO.class);
         Long restaurentTableId = new ObjectMapper().readValue(json.get("restaurentTableId"),Long.class);
         return ResponseEntity.ok(clientService.makeOrder(billDTO.getOrderItems(),json.get("guestUsername"),billDTO.getId(),restaurentTableId));
     }
@@ -32,5 +37,7 @@ public class BillController {
         Long restaurentTableId = new ObjectMapper().readValue(json.get("restaurentTableId"),Long.class);
         return ResponseEntity.ok(clientService.makePayment(billId));
     }
+
+
 
 }
