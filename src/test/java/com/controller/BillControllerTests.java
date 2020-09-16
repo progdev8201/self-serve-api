@@ -40,7 +40,7 @@ class BillControllerTests {
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","guest@mail.com");
         sendObj.put("restaurentTableId","6");
 
@@ -50,7 +50,6 @@ class BillControllerTests {
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
-
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
@@ -70,7 +69,7 @@ class BillControllerTests {
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","guest@mail.com");
         sendObj.put("restaurentTableId","6");
 
@@ -90,7 +89,7 @@ class BillControllerTests {
 
 
         sendObj = new JSONObject();
-        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","guest@mail.com");
         sendObj.put("restaurentTableId","6");
         result= mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
@@ -136,7 +135,7 @@ class BillControllerTests {
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","guest@mail.com");
         sendObj.put("restaurentTableId","6");
 
@@ -157,18 +156,18 @@ class BillControllerTests {
 
     @Test
     public void testCreateMakeOrderByClient() throws Exception {
-        //ARRANGE
         MockMvc mvc = initMockMvc();
+        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
 
         BillDTO billDTO = initBillDTO();
         ObjectMapper objectMapper = new ObjectMapper();
 
+
         JSONObject sendObj = new JSONObject();
-        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","client1@mail.com");
         sendObj.put("restaurentTableId","6");
 
-        //ACT
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
@@ -178,8 +177,6 @@ class BillControllerTests {
 
         objectMapper.registerModule(new JavaTimeModule());
         BillDTO reponse = objectMapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
-
-        //ASSERT
         assertEquals(29.99, reponse.getPrixTotal());
         assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
@@ -195,7 +192,7 @@ class BillControllerTests {
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","guest@mail.com");
         sendObj.put("restaurentTableId","6");
 

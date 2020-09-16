@@ -47,7 +47,7 @@ class ProductControllerTest {
         JSONObject sendObj = new JSONObject();
         sendObj.put("productDTO",objectMapper.writeValueAsString(productDTO));
 
-        MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/product/setProductSpecial").
+        MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/product/setMenuSpecial").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
@@ -87,7 +87,7 @@ class ProductControllerTest {
         JSONObject sendObj = new JSONObject();
         sendObj.put("productDTO",objectMapper.writeValueAsString(productDTO));
 
-        MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/product/setProductSpecial").
+        MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/product/setMenuSpecial").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
@@ -167,7 +167,7 @@ class ProductControllerTest {
         JSONObject sendObj = new JSONObject();
         sendObj.put("productDTO",objectMapper.writeValueAsString(productDTO));
 
-        MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/product/setProductSpecial").
+        MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/product/setMenuSpecial").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
@@ -204,7 +204,7 @@ class ProductControllerTest {
         JSONObject sendObj = new JSONObject();
         sendObj.put("productDTO",objectMapper.writeValueAsString(productDTO));
 
-        MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/product/setProductSpecial").
+        MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/product/setMenuSpecial").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
@@ -222,7 +222,7 @@ class ProductControllerTest {
          sendObj = new JSONObject();
         sendObj.put("productDTO",objectMapper.writeValueAsString(productDTO));
 
-         result= mvc.perform(MockMvcRequestBuilders.post(   "/product/setProductSpecial").
+         result= mvc.perform(MockMvcRequestBuilders.post(   "/product/setMenuSpecial").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
@@ -239,7 +239,7 @@ class ProductControllerTest {
         sendObj = new JSONObject();
         sendObj.put("menuDTO",objectMapper.writeValueAsString(menuDTO));
 
-        result= mvc.perform(MockMvcRequestBuilders.post(   "/product/findMenuSpecial").
+        result= mvc.perform(MockMvcRequestBuilders.get(   "/product/findMenuSpecial").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
@@ -301,7 +301,7 @@ class ProductControllerTest {
         sendObj = new JSONObject();
         sendObj.put("menuDTO",objectMapper.writeValueAsString(menuDTO));
 
-        result= mvc.perform(MockMvcRequestBuilders.post(   "/product/findChoixDuChef").
+        result= mvc.perform(MockMvcRequestBuilders.get(   "/product/findChoixDuChef").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).

@@ -37,7 +37,6 @@ public class RatingService {
         productRepository.save(product);
         return RateToRateDTOImpl.instance.convert(rateRepository.save(rate));
     }
-
     public double findAverageRate(Product product){
         if(Objects.nonNull(product.getRates()))
         {
@@ -46,6 +45,7 @@ public class RatingService {
                     .map(Rate::getRate)
                     .collect(Collectors.summarizingDouble(Double::doubleValue))
                     .getAverage();
+
         }
         return 0;
     }

@@ -43,10 +43,6 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void createAccount(){
-        // make sure method wasnt executed before
-        if (!guestRepository.existsByUsername("client1@mail.com"))
-            return;
-
         //create restaurant
         Restaurant restaurant = new Restaurant();
         restaurant.setName("le resto chico");

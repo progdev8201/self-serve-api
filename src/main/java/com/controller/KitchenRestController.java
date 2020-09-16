@@ -40,7 +40,6 @@ public class KitchenRestController {
     @Autowired
     private KitchenService kitchenService;
 
-    //TODO ce code doit se retrouver dans un service
 
     //ALLOW SERVER AND COOK TO LIST REQUEST
     @GetMapping("/request-all")
@@ -53,8 +52,6 @@ public class KitchenRestController {
 
         return requestList;
     }
-
-    //TODO ce dode doit se retourver dans un service
 
     //ALLOW COOK TO LIST ORDERS
     @GetMapping("/orders-all")
@@ -75,8 +72,6 @@ public class KitchenRestController {
         orderItemRepository.save(orderItem);
     }
 
-
-    //TODO code de logique dans le controller au lieux du service
     @PostMapping("/findAllTables")
     public ResponseEntity<List<RestaurentTableDTO>> findAllTables(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long restaurentId = new ObjectMapper().readValue(json.get("restaurentId"),Long.class);
@@ -84,8 +79,6 @@ public class KitchenRestController {
     }
 
 
-
-    //TODO code de logique dans le controller au lieux du service
 
     @PostMapping("/changeOrderItemStatus")
     public ResponseEntity changeOrderItemStatus(@RequestBody Map<String, String> json) throws JsonProcessingException {

@@ -59,19 +59,19 @@ public class ProductController {
         productService.delete(id);
     }
 
-    @PostMapping("/findMenuSpecial")
+    @GetMapping("/findMenuSpecial")
     public ResponseEntity<List<ProductDTO>> findMenuSpecials(@RequestBody Map<String, String> json) throws JsonProcessingException {
         MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menuDTO"), MenuDTO.class);
         return ResponseEntity.ok(productService.findMenuSpecials(menuDTO));
     }
 
-    @PostMapping("/findChoixDuChef")
+    @GetMapping("/findChoixDuChef")
     public ResponseEntity<List<ProductDTO>> findMenuChoixDuChef(@RequestBody Map<String, String> json) throws JsonProcessingException {
         MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menuDTO"), MenuDTO.class);
         return ResponseEntity.ok(productService.findMenuChoixDuChef(menuDTO));
     }
 
-    @PostMapping("/setProductSpecial")
+    @PostMapping("/setMenuSpecial")
     public ResponseEntity<ProductDTO> setProductSpecial(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ProductDTO productDTO = new ObjectMapper().readValue(json.get("productDTO"), ProductDTO.class);
         return ResponseEntity.ok(productService.setProductSpecial(productDTO));
