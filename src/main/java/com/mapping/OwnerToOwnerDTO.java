@@ -11,6 +11,6 @@ public interface OwnerToOwnerDTO {
     OwnerToOwnerDTO instance = Mappers.getMapper(OwnerToOwnerDTO.class);
 
     @Mapping(target = "bills", ignore = true)
-    @Mapping(target = "restaurantList", ignore = true)
+    @Mapping(target = "restaurants", ignore = true)
     OwnerDTO convert(Owner orderOwner);
 }
