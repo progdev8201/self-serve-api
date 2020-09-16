@@ -1,14 +1,5 @@
 package com.model.dto;
 
-import com.model.entity.Bill;
-import com.model.entity.CustomProprety;
-import com.model.entity.Menu;
-import com.model.entity.Owner;
-
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import java.util.List;
 
 public class RoleDTO {

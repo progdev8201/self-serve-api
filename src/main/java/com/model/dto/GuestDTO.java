@@ -1,9 +1,5 @@
 package com.model.dto;
 
-import com.model.entity.Bill;
-import com.model.entity.Role;
-
-import javax.persistence.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +12,7 @@ public class GuestDTO {
 
     private List<BillDTO> bills;
 
-    protected Set<Role> roles = new HashSet<>();
+    protected Set<RoleDTO> roles = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -50,11 +46,11 @@ public class GuestDTO {
         this.bills = bills;
     }
 
-    public Set<Role> getRoles() {
+    public Set<RoleDTO> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(Set<RoleDTO> roles) {
         this.roles = roles;
     }
 }

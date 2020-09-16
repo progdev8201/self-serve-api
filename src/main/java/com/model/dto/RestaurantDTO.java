@@ -1,11 +1,5 @@
 package com.model.dto;
 
-import com.model.entity.*;
-
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import java.util.List;
 
 public class RestaurantDTO {
@@ -21,7 +15,7 @@ public class RestaurantDTO {
 
     private MenuDTO menu;
 
-    private List <RestaurentTableDTO> restaurentTablesDTO;
+    private List<RestaurentTableDTO> restaurentTables;
 
 
     public Long getId() {
@@ -72,12 +66,12 @@ public class RestaurantDTO {
         this.menu = menu;
     }
 
-    public List<RestaurentTableDTO> getRestaurentTablesDTO() {
-        return restaurentTablesDTO;
+    public List<RestaurentTableDTO> getRestaurentTables() {
+        return restaurentTables;
     }
 
-    public void setRestaurentTablesDTO(List<RestaurentTableDTO> restaurentTablesDTO) {
-        this.restaurentTablesDTO = restaurentTablesDTO;
+    public void setRestaurentTables(List<RestaurentTableDTO> restaurentTables) {
+        this.restaurentTables = restaurentTables;
     }
 
     @Override
@@ -89,7 +83,7 @@ public class RestaurantDTO {
                 ", owner=" + owner +
                 ", customProprety=" + customProprety +
                 ", menu=" + menu +
-                ", restaurentTablesDTO=" + restaurentTablesDTO +
+                ", restaurentTablesDTO=" + restaurentTables +
                 '}';
     }
 }

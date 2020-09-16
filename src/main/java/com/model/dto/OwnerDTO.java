@@ -1,24 +1,22 @@
 package com.model.dto;
 
-import com.model.entity.Restaurant;
-
 import java.util.List;
 
 public class  OwnerDTO extends GuestDTO{
-    private List<RestaurantDTO> restaurantList;
+    private List<RestaurantDTO> restaurants;
 
-    public List<RestaurantDTO> getRestaurantList() {
-        return restaurantList;
+    public List<RestaurantDTO> getRestaurants() {
+        return restaurants;
     }
 
-    public void setRestaurantList(List<RestaurantDTO> restaurantList) {
-        this.restaurantList = restaurantList;
+    public void setRestaurants(List<RestaurantDTO> restaurants) {
+        this.restaurants = restaurants;
     }
 
     @Override
     public String toString() {
         return "OwnerDTO{" +
-                "restaurantList=" + restaurantList +
+                "restaurantList=" + restaurants +
                 '}';
     }
 }

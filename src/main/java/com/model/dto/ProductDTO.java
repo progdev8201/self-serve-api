@@ -6,7 +6,6 @@ import com.model.entity.Rate;
 import com.model.enums.ProductMenuType;
 import com.model.enums.ProductType;
 
-import javax.persistence.*;
 import java.util.List;
 
 public class ProductDTO {
@@ -27,7 +26,7 @@ public class ProductDTO {
 
     private List<RateDTO> rates;
 
-    ProductType productType ;
+    ProductType productType;
 
     private ProductMenuType productMenuType;
 
