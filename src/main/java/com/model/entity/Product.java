@@ -19,17 +19,17 @@ public class Product {
 
     private String description;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Menu menu;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Option> options;
 
     private double prix;
     ///en minutes
     private int tempsDePreparation;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Rate> rates;
 
     @Enumerated(EnumType.STRING)

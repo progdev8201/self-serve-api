@@ -78,7 +78,7 @@ class KitchenRestControllerTest {
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","client1@mail.com");
         sendObj.put("restaurentTableId","6");
 
@@ -140,7 +140,7 @@ class KitchenRestControllerTest {
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","client1@mail.com");
         sendObj.put("restaurentTableId","6");
 

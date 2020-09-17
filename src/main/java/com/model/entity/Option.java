@@ -11,7 +11,7 @@ public class Option {
 
     private String name;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<CheckItem> checkItemList;
 
     public Long getId() {

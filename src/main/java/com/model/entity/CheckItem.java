@@ -3,12 +3,15 @@ package com.model.entity;
 import javax.persistence.*;
 
 @Entity
-public class CheckItem {
+public class  CheckItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String name;
+
+    private boolean isActive;
+
 
     @ManyToOne
     private Option option;
@@ -35,6 +38,14 @@ public class CheckItem {
 
     public void setOption(Option option) {
         this.option = option;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     @Override

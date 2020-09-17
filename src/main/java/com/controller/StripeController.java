@@ -37,7 +37,9 @@ public class StripeController {
 
     @PostMapping("/fetchPaymentIntent")
     public ResponseEntity<StripeClientSecretDTO> processPayment(@RequestBody Map<String, String> json) throws JsonProcessingException, StripeException {
-        BillDTO billDTO = new ObjectMapper().readValue(json.get("billDTO"), BillDTO.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        BillDTO billDTO = objectMapper.readValue(json.get("billDTO"), BillDTO.class);
         String restaurentStripeAccount =json.get("restaurentStripeAccount");
         return ResponseEntity.ok(stripeService.processPayment(restaurentStripeAccount, BillDTOToBill.instance.convert(billDTO)));
     }

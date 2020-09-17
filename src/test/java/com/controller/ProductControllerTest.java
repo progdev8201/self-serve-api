@@ -21,7 +21,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -63,8 +65,8 @@ class ProductControllerTest {
         JSONObject sendObj2 = new JSONObject();
         sendObj2.put("menuId","3");
         mvc = initMockMvcMenuController();
-        result= mvc.perform(MockMvcRequestBuilders.get(   "/menu/getMenu").
-                content("3").
+        result= mvc.perform(MockMvcRequestBuilders.post(   "/menu/getMenu").
+                content(sendObj2.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
@@ -103,8 +105,8 @@ class ProductControllerTest {
         JSONObject sendObj2 = new JSONObject();
         sendObj2.put("menuId","3");
         mvc = initMockMvcMenuController();
-        result= mvc.perform(MockMvcRequestBuilders.get(   "/menu/getMenu").
-                content("3").
+        result= mvc.perform(MockMvcRequestBuilders.post(   "/menu/getMenu").
+                content(sendObj2.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
@@ -143,8 +145,8 @@ class ProductControllerTest {
         JSONObject sendObj2 = new JSONObject();
         sendObj2.put("menuId","3");
         mvc = initMockMvcMenuController();
-        result= mvc.perform(MockMvcRequestBuilders.get(   "/menu/getMenu").
-                content("3").
+        result= mvc.perform(MockMvcRequestBuilders.post(   "/menu/getMenu").
+                content(sendObj2.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
@@ -247,7 +249,7 @@ class ProductControllerTest {
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
-        List<ProductDTO> productDTOResponse = mapper.readValue(result.getResponse().getContentAsString(), List.class);
+        List<ProductDTO> productDTOResponse = Arrays.stream(mapper.readValue(result.getResponse().getContentAsString(), ProductDTO[].class)).collect(Collectors.toList());
         for(ProductDTO x : productDTOResponse){
             assertEquals(ProductType.SPECIAL, x.getProductType());
         }
@@ -309,7 +311,7 @@ class ProductControllerTest {
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
-        List<ProductDTO> productDTOResponse = mapper.readValue(result.getResponse().getContentAsString(), List.class);
+        List<ProductDTO> productDTOResponse =Arrays.stream(mapper.readValue(result.getResponse().getContentAsString(), ProductDTO[].class)).collect(Collectors.toList());
         for(ProductDTO x : productDTOResponse){
             assertEquals(ProductType.CHEFCHOICE, x.getProductType());
         }
