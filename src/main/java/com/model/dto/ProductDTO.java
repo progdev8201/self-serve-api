@@ -22,7 +22,7 @@ public class ProductDTO {
 
     private List<RateDTO> rates;
 
-    ProductType productType;
+    private ProductType productType;
 
     public ProductType getProductType() {
         return productType;

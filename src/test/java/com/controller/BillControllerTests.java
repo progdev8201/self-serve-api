@@ -33,7 +33,6 @@ class BillControllerTests {
     @Test
     public void testCreateMakeOrderByGuest() throws Exception {
         MockMvc mvc = initMockMvc();
-        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
 
         BillDTO billDTO = initBillDTO();
         ObjectMapper objectMapper = new ObjectMapper();
