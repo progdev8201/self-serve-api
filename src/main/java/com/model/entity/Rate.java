@@ -8,7 +8,7 @@ import javax.persistence.Id;
 @Entity
 public class Rate {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private double rate;
     private String raterUsername;

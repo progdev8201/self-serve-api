@@ -67,7 +67,7 @@ public class DataLoader implements CommandLineRunner {
         checkItem2.setName("faible");
         option.getCheckItemList().add(checkItem2);
         CheckItem checkItem3 = new CheckItem();
-        checkItem3.setName("faible");
+        checkItem3.setName("fort");
         option.getCheckItemList().add(checkItem3);
         product.setOptions(new ArrayList<>());
         product.getOptions().add(option);
@@ -87,7 +87,7 @@ public class DataLoader implements CommandLineRunner {
         checkItem2.setName("faible");
         option.getCheckItemList().add(checkItem2);
         checkItem3 = new CheckItem();
-        checkItem3.setName("faible");
+        checkItem3.setName("fort");
         option.getCheckItemList().add(checkItem3);
         product2.setOptions(new ArrayList<>());
         product2.getOptions().add(option);

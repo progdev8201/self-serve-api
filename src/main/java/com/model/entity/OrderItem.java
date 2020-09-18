@@ -7,7 +7,7 @@ import java.util.List;
 @Entity
 public class OrderItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @OneToOne
     private Product product;
@@ -23,7 +23,7 @@ public class OrderItem {
     private double prix;
     //quand le plat doit etre pret
     private LocalDateTime delaiDePreparation ;
-    @OneToMany
+    @OneToMany(cascade =CascadeType.PERSIST)
     private List<Option> option;
 
     private int numeroTable;

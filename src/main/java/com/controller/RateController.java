@@ -30,8 +30,8 @@ public class RateController {
     @PostMapping("/createRate")
     public ResponseEntity<RateDTO> find(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Rate rate = new ObjectMapper().readValue(json.get("rate"),Rate.class);
-        Product product = new ObjectMapper().readValue(json.get("product"),Product.class);
-        return ResponseEntity.ok(ratingService.createRate(rate,product));
+        Long productId = new ObjectMapper().readValue(json.get("productDTOID"),Long.class);
+        return ResponseEntity.ok(ratingService.createRate(rate,productId));
     }
 
 

@@ -7,10 +7,10 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface OptionDTOToOption {
-    OptionDTOToOption instance = Mappers.getMapper(OptionDTOToOption.class);
+public interface OptionToOption {
+    OptionToOption instance = Mappers.getMapper(OptionToOption.class);
 
     @Mapping(target = "checkItemList", ignore = true)
     @Mapping(target = "id", ignore = true)
-    Option convert(OptionDTO option);
+    Option convert(Option option);
 }

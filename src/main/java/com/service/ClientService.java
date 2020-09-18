@@ -1,9 +1,7 @@
 package com.service;
 
 import com.mapping.*;
-import com.model.dto.BillDTO;
-import com.model.dto.OrderItemDTO;
-import com.model.dto.ProductDTO;
+import com.model.dto.*;
 import com.model.entity.*;
 import com.model.enums.BillStatus;
 import com.model.enums.ProgressStatus;
@@ -52,7 +50,7 @@ public class ClientService {
         Bill bill = findBill(billId);
         List<OrderItem> orderItemList = findOrderItemsInDb(productToAdd, bill);
         Guest guest = guestRepository.findByUsername(guestUsername).get();
-
+       // Guest guest = new Guest();
         //TODO:meilleur solution?? a voir mais il faut retrouver le restaurent pour l'associé au bill
        // Restaurant restaurant = orderItemList.get(0).getProduct().getMenu().getRestaurant();
         RestaurentTable restaurentTable = restaurentTableRepository.findById(restaurentTableId).get();
@@ -95,16 +93,27 @@ public class ClientService {
         orderItem.setOrderStatus(ProgressStatus.PROGRESS);
         orderItem.setBill(bill);
         orderItem.setDelaiDePreparation(LocalDateTime.now().minusMinutes(product.getTempsDePreparation()));
-        orderItem = orderItemRepository.save(orderItem);
         //orderItem = orderItemRepository.save(orderItem);
-
+        orderItem.setOption(new ArrayList<>());
+        for(OptionDTO optionDTO : productToAdd.getOptions()){
+            Option option = OptionDTOToOption.instance.convert(optionDTO);
+            option.setCheckItemList(new ArrayList<>());
+            for(CheckItemDTO checkItemDTO :optionDTO.getCheckItemList()){
+                CheckItem checkItem =CheckItemDTOCheckItem.instance.convert(checkItemDTO);
+                option.getCheckItemList().add(checkItem);
+            }
+            orderItem.getOption().add(option);
+        }
         orderItems.add(orderItem);
+        orderItem = orderItemRepository.save(orderItem);
+
        // bill =billRepository.save(bill);
         bill.setPrixTotal( bill.getPrixTotal()+orderItem.getPrix());
 
 
         return orderItems;
     }
+
     private Boolean isBillInStream(Stream stream,Long billId){
        return stream.anyMatch(x -> ((Bill)x).getId().equals(billId));
     }

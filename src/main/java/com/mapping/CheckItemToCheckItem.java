@@ -7,8 +7,9 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface CheckItemDTOCheckItem {
-    CheckItemDTOCheckItem instance = Mappers.getMapper(CheckItemDTOCheckItem.class);
+public interface CheckItemToCheckItem {
+    CheckItemToCheckItem instance = Mappers.getMapper(CheckItemToCheckItem.class);
+
     @Mapping(target = "id", ignore = true)
-    CheckItem convert(CheckItemDTO checkItem);
+    CheckItem convert(CheckItem checkItem);
 }
