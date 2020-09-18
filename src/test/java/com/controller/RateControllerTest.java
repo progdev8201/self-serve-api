@@ -43,7 +43,7 @@ class RateControllerTest {
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("rate",objectMapper.writeValueAsString(rate));
-        sendObj.put("product",objectMapper.writeValueAsString(rate));
+        sendObj.put("productDTOID","1");
 
         MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/rate/createRate").
                 content(sendObj.toString()).

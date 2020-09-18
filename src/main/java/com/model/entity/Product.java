@@ -12,24 +12,24 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String name;
 
     private String description;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Menu menu;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Option> options;
 
     private double prix;
     ///en minutes
     private int tempsDePreparation;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Rate> rates;
 
     @Enumerated(EnumType.STRING)

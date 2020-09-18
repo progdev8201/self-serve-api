@@ -8,6 +8,7 @@ import com.repository.ProductRepository;
 import com.repository.RateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class RatingService {
 
     private RateRepository rateRepository;
@@ -27,8 +29,9 @@ public class RatingService {
         this.productRepository = productRepository;
     }
 
-    public RateDTO createRate(Rate rate,Product product){
+    public RateDTO createRate(Rate rate,Long productId){
         rate = rateRepository.save(rate);
+        Product product =productRepository.findById(productId).get();
         if(Objects.isNull(product.getRates()))
             product.setRates(new ArrayList<>());
 

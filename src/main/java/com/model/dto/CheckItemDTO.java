@@ -1,11 +1,6 @@
 package com.model.dto;
 
-import com.model.entity.Option;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CheckItemDTO {
     private Long id;
@@ -13,6 +8,17 @@ public class CheckItemDTO {
     private String name;
 
     private OptionDTO option;
+
+    @JsonProperty("isActive")
+    private boolean isActive;
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        this.isActive = active;
+    }
 
     public Long getId() {
         return id;

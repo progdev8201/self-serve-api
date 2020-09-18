@@ -1,10 +1,16 @@
 package com.service;
 
+import com.mapping.CheckItemToCheckItemDTO;
+import com.mapping.OptionToOptionDTO;
 import com.mapping.ProductDTOToProduct;
 import com.mapping.ProductToProductDTO;
+import com.model.dto.CheckItemDTO;
 import com.model.dto.MenuDTO;
+import com.model.dto.OptionDTO;
 import com.model.dto.ProductDTO;
+import com.model.entity.CheckItem;
 import com.model.entity.Menu;
+import com.model.entity.Option;
 import com.model.entity.Product;
 import com.model.enums.ProductMenuType;
 import com.model.enums.ProductType;
@@ -59,12 +65,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        List<ProductDTO> productDTOS = new ArrayList<>();
-        for (Product product : productList) {
-            productDTOS.add(ProductToProductDTO.instance.convert(product));
-        }
-
-        return productDTOS;
+        return generateProductDTO(productList);
 
     }
 
@@ -76,14 +77,10 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        List<ProductDTO> productDTOS = new ArrayList<>();
-        for (Product product : productList) {
-            productDTOS.add(ProductToProductDTO.instance.convert(product));
-        }
-
-        return productDTOS;
+        return generateProductDTO(productList);
 
     }
+
     public List<ProductDTO> findMenuDejeunerProduct(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
         List<Product> productList = menu.getProducts().stream().filter(r -> {
@@ -92,14 +89,10 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        List<ProductDTO> productDTOS = new ArrayList<>();
-        for (Product product : productList) {
-            productDTOS.add(ProductToProductDTO.instance.convert(product));
-        }
-
-        return productDTOS;
+        return generateProductDTO(productList);
 
     }
+
     public List<ProductDTO> findMenuSouper(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
         List<Product> productList = menu.getProducts().parallelStream().filter(r -> {
@@ -108,12 +101,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        List<ProductDTO> productDTOS = new ArrayList<>();
-        for (Product product : productList) {
-            productDTOS.add(ProductToProductDTO.instance.convert(product));
-        }
-
-        return productDTOS;
+        return generateProductDTO(productList);
 
     }
 
@@ -125,12 +113,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        List<ProductDTO> productDTOS = new ArrayList<>();
-        for (Product product : productList) {
-            productDTOS.add(ProductToProductDTO.instance.convert(product));
-        }
-
-        return productDTOS;
+        return generateProductDTO(productList);
 
     }
 
@@ -158,5 +141,25 @@ public class ProductService {
         ProductDTO retour = ProductToProductDTO.instance.convert(productRepository.save(product));
         retour.setProductType(product.getProductType());
         return retour;
+    }
+
+    public List<ProductDTO> generateProductDTO(List<Product> products) {
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        for (Product product : products) {
+            ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
+            productDTO.setProductType(product.getProductType());
+            productDTO.setOptions(new ArrayList<>());
+            for (Option option : product.getOptions()) {
+                OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
+                optionDTO.setCheckItemList(new ArrayList<>());
+                for (CheckItem checkItem : option.getCheckItemList()) {
+                    CheckItemDTO checkItemDTO = CheckItemToCheckItemDTO.instance.convert(checkItem);
+                    optionDTO.getCheckItemList().add(checkItemDTO);
+                }
+                productDTO.getOptions().add(optionDTO);
+            }
+            productDTOS.add(productDTO);
+        }
+        return productDTOS;
     }
 }

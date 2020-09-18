@@ -1,11 +1,13 @@
 package com.service;
 
-import com.mapping.MenuToMenuDTO;
-import com.mapping.MenuToMenuDTOImpl;
-import com.mapping.ProductToProductDTO;
+import com.mapping.*;
+import com.model.dto.CheckItemDTO;
 import com.model.dto.MenuDTO;
+import com.model.dto.OptionDTO;
 import com.model.dto.ProductDTO;
+import com.model.entity.CheckItem;
 import com.model.entity.Menu;
+import com.model.entity.Option;
 import com.model.entity.Product;
 import com.repository.MenuRepository;
 import com.repository.ProductRepository;
@@ -68,12 +70,7 @@ public class MenuService {
         menuDTO.setDejeuner(productService.findMenuDejeunerProduct(menuDTO));
         menuDTO.setSouper(productService.findMenuSouper(menuDTO));
         menuDTO.setDiner(productService.findMenuDinerProduct(menuDTO));
-        menuDTO.setProducts(new ArrayList<>());
-        for (Product product : menu.getProducts()) {
-            ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
-            productDTO.setProductType(product.getProductType());
-            menuDTO.getProducts().add(productDTO);
-        }
+        menuDTO.setProducts(productService.generateProductDTO(menu.getProducts()));
 
         return menuDTO;
 

@@ -78,9 +78,10 @@ class KitchenRestControllerTest {
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","client1@mail.com");
-        sendObj.put("restaurentTableId","6");
+        sendObj.put("restaurentTableId","1");
+        sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
 
         MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
                 content(sendObj.toString()).
@@ -140,9 +141,10 @@ class KitchenRestControllerTest {
 
 
         JSONObject sendObj = new JSONObject();
-        sendObj.put("bill",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername","client1@mail.com");
-        sendObj.put("restaurentTableId","6");
+        sendObj.put("restaurentTableId","1");
+        sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
 
         mvc = initMockMvcBillController();
 
@@ -202,8 +204,16 @@ class KitchenRestControllerTest {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setRestaurant(restaurantDTO);
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(4);
+        productDTO.setId(1);
         productDTO.setMenu(menuDTO);
+        productDTO.setOptions(new ArrayList<>());
+        OptionDTO optionDTO = new OptionDTO();
+        optionDTO.setName("cuisson");
+        optionDTO.setCheckItemList(new ArrayList<>());
+        CheckItemDTO checkItemDTO = new CheckItemDTO();
+        checkItemDTO.setActive(true);
+        optionDTO.getCheckItemList().add(checkItemDTO);
+        productDTO.getOptions().add(optionDTO);
         OrderItemDTO orderItemDTO1 = new OrderItemDTO();
         orderItemDTO1.setProduct(productDTO);
         orderItemDTO1.setPrix(29.99);

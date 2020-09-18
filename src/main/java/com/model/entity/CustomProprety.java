@@ -8,7 +8,7 @@ import javax.persistence.Id;
 @Entity
 public class CustomProprety {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String backGroundColor;
     private String logoImage;
