@@ -29,6 +29,16 @@ public class Product {
     ///en minutes
     private int tempsDePreparation;
 
+    private String imgUrl;
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
     @OneToMany(cascade = CascadeType.PERSIST)
     private List<Rate> rates;
 

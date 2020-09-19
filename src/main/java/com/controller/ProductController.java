@@ -12,9 +12,12 @@ import com.repository.MenuRepository;
 import com.repository.ProductRepository;
 import com.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -88,6 +91,15 @@ public class ProductController {
     public ResponseEntity<ProductDTO> setProductChefChoice(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ProductDTO productDTO = new ObjectMapper().readValue(json.get("productDTO"), ProductDTO.class);
         return ResponseEntity.ok(productService.setProductChefChoice(productDTO));
+    }
+
+    @RequestMapping(path = "/saveProductImg",method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<?> createStyle( @RequestParam("file") MultipartFile styleImg,
+                                          @RequestPart("productDTO") ProductDTO productDTO ) throws IOException {
+        return ResponseEntity.ok(productService.uploadFile(styleImg,productDTO));
+
+
     }
 
 

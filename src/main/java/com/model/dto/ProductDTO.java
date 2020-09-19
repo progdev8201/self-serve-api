@@ -24,11 +24,22 @@ public class ProductDTO {
     ///en minutes
     private int tempsDePreparation;
 
+    private String imgUrl;
+
     private List<RateDTO> rates;
 
     ProductType productType;
 
     private ProductMenuType productMenuType;
+
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
 
     public ProductMenuType getProductMenuType() {
         return productMenuType;

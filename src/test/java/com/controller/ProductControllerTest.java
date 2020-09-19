@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -21,11 +22,15 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -307,6 +312,26 @@ class ProductControllerTest {
         }
     }
 
+    @Test
+    public void testCreateProductImage() throws Exception {
+        MockMvc mvc = initMockMvc();
+        JSONObject productDTO= new JSONObject();
+        productDTO.put("id","1");
+        MockMultipartFile multipartFile = new MockMultipartFile("file", "img.png",
+                "image/jpg", "Spring Framework".getBytes());
+        MockMultipartFile employee = new MockMultipartFile("productDTO", "",
+                "application/json", productDTO.toString().getBytes());
+        MvcResult result=mvc.perform(multipart("/product/saveProductImg").file(multipartFile).file(employee))
+                .andExpect(status().isOk())
+                .andReturn();
+        Path currentRelativePath = Paths.get("");
+        String absolutePath = currentRelativePath.toAbsolutePath().toString();
+        JSONObject returnValue = new JSONObject(result.getResponse().getContentAsString());
+        ProductDTO reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ProductDTO.class);
+        File file =new File(absolutePath+reponse.getImgUrl());
+        assertTrue(file.exists());
+
+    }
     private MockMvc initMockMvc(){
         return MockMvcBuilders.standaloneSetup(productController).build();
     }
