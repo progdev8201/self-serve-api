@@ -61,6 +61,7 @@ public class DataLoader implements CommandLineRunner {
         product.setPrix(29.99);
         product.setTempsDePreparation(30);
         product.setProductMenuType(ProductMenuType.DINER);
+        product.setImgUrl("\\src\\main\\resources\\img\\download.jpg");
         product.setDescription("cest bon cest bon cest bon");
         Option option = new Option();
         option.setName("Cuisson");
@@ -79,6 +80,7 @@ public class DataLoader implements CommandLineRunner {
         productList.add(product);
         Product product2 = new Product();
         product2.setProductMenuType(ProductMenuType.DEJEUNER);
+        product2.setImgUrl("\\src\\main\\resources\\img\\download.jpg");
         product2.setName("le steak chico2");
         product2.setDescription("cest po bon cest po bon cest po bon");
         product2.setPrix(29.99);
