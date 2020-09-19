@@ -31,6 +31,17 @@ public class Product {
 
     private String imgUrl;
 
+    @OneToOne(cascade = CascadeType.PERSIST)
+    private ImgFile imgFile;
+
+    public ImgFile getImgFile() {
+        return imgFile;
+    }
+
+    public void setImgFile(ImgFile imgFile) {
+        this.imgFile = imgFile;
+    }
+
     public String getImgUrl() {
         return imgUrl;
     }

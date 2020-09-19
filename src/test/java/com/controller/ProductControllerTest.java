@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -330,7 +331,30 @@ class ProductControllerTest {
         ProductDTO reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ProductDTO.class);
         File file =new File(absolutePath+reponse.getImgUrl());
         assertTrue(file.exists());
-
+    }
+    @Test
+    public void testCreateProductImageCheckIfImgReturnAsByteArray() throws Exception {
+        MockMvc mvc = initMockMvc();
+        JSONObject productDTO= new JSONObject();
+        productDTO.put("id","1");
+        MockMultipartFile multipartFile = new MockMultipartFile("file", "img.png",
+                "image/jpg", "Spring Framework".getBytes());
+        MockMultipartFile employee = new MockMultipartFile("productDTO", "",
+                "application/json", productDTO.toString().getBytes());
+        MvcResult result=mvc.perform(multipart("/product/saveProductImg").file(multipartFile).file(employee))
+                .andExpect(status().isOk())
+                .andReturn();
+        ProductDTO reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ProductDTO.class);
+        result =mvc.perform(MockMvcRequestBuilders.get(   "/product/getProductImg/{imgId}",reponse.getImgFileDTO().getId()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        Path currentRelativePath = Paths.get("");
+        String absolutePath = currentRelativePath.toAbsolutePath().toString();
+        File file =new File(absolutePath+reponse.getImgUrl());
+        assertNotNull(result.getResponse().getContentAsString());
+        assertTrue(file.exists());
     }
     private MockMvc initMockMvc(){
         return MockMvcBuilders.standaloneSetup(productController).build();

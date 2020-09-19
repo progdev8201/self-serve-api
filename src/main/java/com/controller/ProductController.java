@@ -93,13 +93,16 @@ public class ProductController {
         return ResponseEntity.ok(productService.setProductChefChoice(productDTO));
     }
 
-    @RequestMapping(path = "/saveProductImg",method = RequestMethod.POST)
+    @RequestMapping(path = "/saveProductImg", method = RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<?> createStyle( @RequestParam("file") MultipartFile styleImg,
-                                          @RequestPart("productDTO") ProductDTO productDTO ) throws IOException {
-        return ResponseEntity.ok(productService.uploadFile(styleImg,productDTO));
+    public ResponseEntity<?> saveProductImg(@RequestParam("file") MultipartFile styleImg,
+                                            @RequestPart("productDTO") ProductDTO productDTO) throws IOException {
+        return ResponseEntity.ok(productService.uploadFile(styleImg, productDTO));
+    }
 
-
+    @RequestMapping(path = "/getProductImg/{imgId}", method = RequestMethod.GET)
+    public ResponseEntity<?> getImg(@PathVariable(value = "imgId") Long id) throws IOException {
+        return ResponseEntity.ok(productService.returnImgAsByteArrayString(id));
     }
 
 

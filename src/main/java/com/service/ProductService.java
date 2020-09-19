@@ -1,21 +1,17 @@
 package com.service;
 
-import com.mapping.CheckItemToCheckItemDTO;
-import com.mapping.OptionToOptionDTO;
-import com.mapping.ProductDTOToProduct;
-import com.mapping.ProductToProductDTO;
+import com.mapping.*;
 import com.model.dto.CheckItemDTO;
 import com.model.dto.MenuDTO;
 import com.model.dto.OptionDTO;
 import com.model.dto.ProductDTO;
-import com.model.entity.CheckItem;
-import com.model.entity.Menu;
-import com.model.entity.Option;
-import com.model.entity.Product;
+import com.model.entity.*;
 import com.model.enums.ProductMenuType;
 import com.model.enums.ProductType;
+import com.repository.ImgFileRepository;
 import com.repository.MenuRepository;
 import com.repository.ProductRepository;
+import javassist.bytecode.ByteArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -40,6 +37,9 @@ public class ProductService {
 
     @Autowired
     MenuRepository menuRepository;
+
+    @Autowired
+    ImgFileRepository imgFileRepository;
 
     @Value("${config.styles.images.path}")
     private String fileBasePath;
@@ -164,10 +164,18 @@ public class ProductService {
 
         Product product =productRepository.findById(productDTO.getId()).get();
         product.setImgUrl(pathDansProjet);
+        ImgFile img = new ImgFile();
+        img.setFileType("image");
+        img.setData(file.getBytes());
+        product.setImgFile(imgFileRepository.save(img));
         product=productRepository.save(product);
         return generateProductDTO(product);
     }
 
+    public byte[] returnImgAsByteArrayString(Long id){
+        String returnValue = new String(imgFileRepository.findById(id).get().getData(), StandardCharsets.UTF_8);
+        return imgFileRepository.findById(id).get().getData();
+    }
     public List<ProductDTO> generateProductDTO(List<Product> products) {
         List<ProductDTO> productDTOS = new ArrayList<>();
         for (Product product : products) {
@@ -189,6 +197,7 @@ public class ProductService {
     }
     public ProductDTO generateProductDTO(Product product) {
             ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
+            productDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(product.getImgFile()));
             productDTO.setProductType(product.getProductType());
             productDTO.setOptions(new ArrayList<>());
             for (Option option : product.getOptions()) {

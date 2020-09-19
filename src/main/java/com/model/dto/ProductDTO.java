@@ -1,5 +1,6 @@
 package com.model.dto;
 
+import com.model.entity.ImgFile;
 import com.model.entity.Menu;
 import com.model.entity.Option;
 import com.model.entity.Rate;
@@ -32,6 +33,16 @@ public class ProductDTO {
 
     private ProductMenuType productMenuType;
 
+    private ImgFileDTO imgFileDTO;
+
+
+    public ImgFileDTO getImgFileDTO() {
+        return imgFileDTO;
+    }
+
+    public void setImgFileDTO(ImgFileDTO imgFileDTO) {
+        this.imgFileDTO = imgFileDTO;
+    }
 
     public String getImgUrl() {
         return imgUrl;
