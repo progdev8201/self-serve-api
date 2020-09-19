@@ -30,7 +30,7 @@ public class StripeController {
 
 
     @PostMapping("/createStripeAcccount")
-    public ResponseEntity<String> makeOrder(@RequestBody Map<String, String> json) throws JsonProcessingException, StripeException {
+    public ResponseEntity<String> createStripeAccounr(@RequestBody Map<String, String> json) throws JsonProcessingException, StripeException {
         OwnerDTO ownerDTO = new ObjectMapper().readValue(json.get("ownerDto"), OwnerDTO.class);
         return ResponseEntity.ok(stripeService.createStripeAccount(OwnerDTOToOwner.instance.convert(ownerDTO)));
     }

@@ -20,7 +20,7 @@ class StripeServiceTest {
     @Test
     public void creeStripeAccount() throws StripeException {
         Owner owner = new Owner();
-        owner.setId(2L);
+        owner.setId(3L);
         stripeService.createStripeAccount(owner);
     }
 }

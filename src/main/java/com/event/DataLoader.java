@@ -12,11 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Order(3)
 @Component
+@Transactional
 public class DataLoader implements CommandLineRunner {
     @Autowired
     GuestRepository guestRepository;
@@ -32,6 +34,9 @@ public class DataLoader implements CommandLineRunner {
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    OwnerRepository ownerRepository;
 
     @Autowired
     AuthentificationService authentificationService;
@@ -135,11 +140,18 @@ public class DataLoader implements CommandLineRunner {
             LOGGER.info("Creating default client and guest");
             SignUpForm client = new SignUpForm("client1@mail.com", "123456", "5147887884", "client");
             SignUpForm guest = new SignUpForm("guest@mail.com", "123456", "5147887884", "guest");
+            SignUpForm owner = new SignUpForm("owner@mail.com", "123456", "5147887884", "owner");
+
             authentificationService.registerUser(client);
             authentificationService.registerUser(guest);
+            authentificationService.registerUser(owner);
+
 
             System.out.println("APPLICATION IS READY!!!");
 
         }
+        Owner ownerEntity = ownerRepository.findByUsername("owner@mail.com").get();
+        ownerEntity.getRestaurantList().add(restaurant);
+        ownerRepository.save(ownerEntity);
     }
 }

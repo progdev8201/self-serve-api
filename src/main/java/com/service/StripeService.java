@@ -15,11 +15,14 @@ import com.stripe.param.PaymentIntentCreateParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Transactional
 public class StripeService {
     @Value("${stripe.apiKey}")
     private String stripeAPIKey;
@@ -27,11 +30,13 @@ public class StripeService {
     @Autowired
     private OwnerRepository ownerRepository;
 
-    public String createStripeAccount(Owner owner) throws StripeException {
+    public String createStripeAccount(Owner thisowner) throws StripeException {
         Stripe.apiKey = stripeAPIKey;
 
+        Owner owner =ownerRepository.findById(thisowner.getId()).get();
 
-        /*AccountCreateParams params =
+
+        AccountCreateParams params =
                 AccountCreateParams.builder()
                         .setEmail(owner.getUsername())
                         .setBusinessType(AccountCreateParams.BusinessType.INDIVIDUAL)
@@ -39,19 +44,16 @@ public class StripeService {
                                 setProductDescription("produitDescription").
                                 setName(owner.getRestaurantList().get(0).getName()).
                                 setSupportEmail(owner.getUsername()).build())
-                        .setCapabilities(AccountCreateParams.Capabilities.builder().
-                                setTransfers(AccountCreateParams.Capabilities.Transfers.builder().
-                                        setRequested(true).build()).
-                                setCardPayments(AccountCreateParams.Capabilities.CardPayments.builder().setRequested(true).build()).
-                                build())
+                        .addRequestedCapability(AccountCreateParams.RequestedCapability.CARD_PAYMENTS)
+                        .addRequestedCapability(AccountCreateParams.RequestedCapability.TRANSFERS)
                         .setCompany(AccountCreateParams.Company.builder().
                                 setName(owner.getRestaurantList().get(0).getName()).
                                 setPhone("5143652481").
                                 build())
                         .setType(AccountCreateParams.Type.EXPRESS)
-                        .build();*/
+                        .build();
 
-
+/*
         AccountCreateParams params =
                 AccountCreateParams.builder()
                         .setEmail(owner.getUsername())
@@ -61,7 +63,7 @@ public class StripeService {
                         .addRequestedCapability(AccountCreateParams.RequestedCapability.TRANSFERS)
                         .build();
 
-
+*/
         Account account = Account.create(params);
 
         AccountLinkCreateParams accountLinkparams =
