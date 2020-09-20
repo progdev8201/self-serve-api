@@ -3,6 +3,7 @@ package com.event;
 import com.model.dto.SignUpForm;
 import com.model.entity.*;
 import com.model.enums.ProductMenuType;
+import com.model.enums.ProductType;
 import com.model.enums.RoleName;
 import com.repository.*;
 import com.service.AuthentificationService;
@@ -71,70 +72,41 @@ public class DataLoader implements CommandLineRunner {
 
         //create product list
         List<Product> productList = new ArrayList<>();
-        Product product = new Product();
-        product.setName("le steak chico");
-        product.setPrix(29.99);
-        product.setTempsDePreparation(30);
-
-        String pathDansProjet=fileBasePath + "download.jpg";
-        Path currentRelativePath = Paths.get("");
-        String absolutePath = currentRelativePath.toAbsolutePath().toString();
-        File imgFile = new File(absolutePath+pathDansProjet);
-        ImgFile img= new ImgFile();
-        img.setData(FileUtils.readFileToByteArray(imgFile));
-        img.setFileType("image");
-        img.setProduct(product);
-        product.setImgFile(img);
+        Product product =createProduct();
+        product.setProductMenuType(ProductMenuType.DEJEUNER);
+        productList.add( product);
+        product =createProduct();
         product.setProductMenuType(ProductMenuType.DINER);
-       // product.setImgUrl(serverPort+absolutePath+1);
-        product.setDescription("cest bon cest bon cest bon");
-        Option option = new Option();
-        option.setName("Cuisson");
-        option.setCheckItemList(new ArrayList<>());
-        CheckItem checkItem = new CheckItem();
-        checkItem.setName("moyen");
-        option.getCheckItemList().add(checkItem);
-        CheckItem checkItem2 = new CheckItem();
-        checkItem2.setName("faible");
-        option.getCheckItemList().add(checkItem2);
-        CheckItem checkItem3 = new CheckItem();
-        checkItem3.setName("fort");
-        option.getCheckItemList().add(checkItem3);
-        product.setOptions(new ArrayList<>());
-        product.getOptions().add(option);
-        productList.add(product);
-        Product product2 = new Product();
-        ImgFile img2= new ImgFile();
-        img2.setData(FileUtils.readFileToByteArray(imgFile));
-        img2.setFileType("image");
-        img2.setProduct(product2);
-        product2.setImgFile(img2);
-        product2.setProductMenuType(ProductMenuType.DEJEUNER);
-       // product2.setImgUrl(serverPort+absolutePath+1);
-        product2.setName("le steak chico2");
-        product2.setDescription("cest po bon cest po bon cest po bon");
-        product2.setPrix(29.99);
-        option = new Option();
-        option.setName("Cuisson");
-        option.setCheckItemList(new ArrayList<>());
-        checkItem = new CheckItem();
-        checkItem.setName("moyen");
-        option.getCheckItemList().add(checkItem);
-        checkItem2 = new CheckItem();
-        checkItem2.setName("faible");
-        option.getCheckItemList().add(checkItem2);
-        checkItem3 = new CheckItem();
-        checkItem3.setName("fort");
-        option.getCheckItemList().add(checkItem3);
-        product2.setOptions(new ArrayList<>());
-        product2.getOptions().add(option);
-        productList.add(product2);
+        productList.add( product);
+        product =createProduct();
+        product.setProductMenuType(ProductMenuType.SOUPER);
+        productList.add( product);
+        product =createProduct();
+        product.setProductType(ProductType.SPECIAL);
+        productList.add( product);
+        product =createProduct();
+        product.setProductType(ProductType.SPECIAL);
+        productList.add( product);
+        product =createProduct();
+        product.setProductType(ProductType.SPECIAL);
+        productList.add( product);
+        product =createProduct();
+        product.setProductType(ProductType.CHEFCHOICE);
+        productList.add( product);
+        product =createProduct();
+        product.setProductType(ProductType.CHEFCHOICE);
+        productList.add( product);
+        product =createProduct();
+        product.setProductType(ProductType.CHEFCHOICE);
+        productList.add( product);
 
         //create menu
         Menu menu = new Menu();
         menu.setProducts(productList);
-        product.setMenu(menu);
-        product2.setMenu(menu);
+        for(Product x:productList){
+            x.setMenu(menu);
+
+        }
 
         RestaurentTable restaurentTable = new RestaurentTable();
         restaurentTable.setTableNumber(1);
@@ -185,5 +157,39 @@ public class DataLoader implements CommandLineRunner {
         Owner ownerEntity = ownerRepository.findByUsername("owner@mail.com").get();
         ownerEntity.getRestaurantList().add(restaurant);
         ownerRepository.save(ownerEntity);
+    }
+
+    private Product createProduct() throws IOException {
+        Product product = new Product();
+        product.setName("le steak chico");
+        product.setPrix(29.99);
+        product.setTempsDePreparation(30);
+
+        String pathDansProjet=fileBasePath + "download.jpg";
+        Path currentRelativePath = Paths.get("");
+        String absolutePath = currentRelativePath.toAbsolutePath().toString();
+        File imgFile = new File(absolutePath+pathDansProjet);
+        ImgFile img= new ImgFile();
+        img.setData(FileUtils.readFileToByteArray(imgFile));
+        img.setFileType("image");
+        img.setProduct(product);
+        product.setImgFile(img);
+        // product.setImgUrl(serverPort+absolutePath+1);
+        product.setDescription("cest bon cest bon cest bon");
+        Option option = new Option();
+        option.setName("Cuisson");
+        option.setCheckItemList(new ArrayList<>());
+        CheckItem checkItem = new CheckItem();
+        checkItem.setName("moyen");
+        option.getCheckItemList().add(checkItem);
+        CheckItem checkItem2 = new CheckItem();
+        checkItem2.setName("faible");
+        option.getCheckItemList().add(checkItem2);
+        CheckItem checkItem3 = new CheckItem();
+        checkItem3.setName("fort");
+        option.getCheckItemList().add(checkItem3);
+        product.setOptions(new ArrayList<>());
+        product.getOptions().add(option);
+        return product;
     }
 }
