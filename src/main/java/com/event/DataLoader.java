@@ -6,20 +6,35 @@ import com.model.enums.ProductMenuType;
 import com.model.enums.RoleName;
 import com.repository.*;
 import com.service.AuthentificationService;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Order(3)
 @Component
 @Transactional
 public class DataLoader implements CommandLineRunner {
+
+    @Value("${config.styles.images.path}")
+    private String fileBasePath;
+
+    /*@Value("${server.port}")
+    private String serverPort;
+*/
+
     @Autowired
     GuestRepository guestRepository;
 
@@ -48,7 +63,7 @@ public class DataLoader implements CommandLineRunner {
         createAccount();
     }
 
-    private void createAccount() {
+    private void createAccount() throws IOException {
         //create restaurant
         Restaurant restaurant = new Restaurant();
         restaurant.setName("le resto chico");
@@ -60,8 +75,18 @@ public class DataLoader implements CommandLineRunner {
         product.setName("le steak chico");
         product.setPrix(29.99);
         product.setTempsDePreparation(30);
+
+        String pathDansProjet=fileBasePath + "download.jpg";
+        Path currentRelativePath = Paths.get("");
+        String absolutePath = currentRelativePath.toAbsolutePath().toString();
+        File imgFile = new File(absolutePath+pathDansProjet);
+        ImgFile img= new ImgFile();
+        img.setData(FileUtils.readFileToByteArray(imgFile));
+        img.setFileType("image");
+        img.setProduct(product);
+        product.setImgFile(img);
         product.setProductMenuType(ProductMenuType.DINER);
-        product.setImgUrl("\\src\\main\\resources\\img\\download.jpg");
+       // product.setImgUrl(serverPort+absolutePath+1);
         product.setDescription("cest bon cest bon cest bon");
         Option option = new Option();
         option.setName("Cuisson");
@@ -79,8 +104,13 @@ public class DataLoader implements CommandLineRunner {
         product.getOptions().add(option);
         productList.add(product);
         Product product2 = new Product();
+        ImgFile img2= new ImgFile();
+        img2.setData(FileUtils.readFileToByteArray(imgFile));
+        img2.setFileType("image");
+        img2.setProduct(product2);
+        product2.setImgFile(img2);
         product2.setProductMenuType(ProductMenuType.DEJEUNER);
-        product2.setImgUrl("\\src\\main\\resources\\img\\download.jpg");
+       // product2.setImgUrl(serverPort+absolutePath+1);
         product2.setName("le steak chico2");
         product2.setDescription("cest po bon cest po bon cest po bon");
         product2.setPrix(29.99);

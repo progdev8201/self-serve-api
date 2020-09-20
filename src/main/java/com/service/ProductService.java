@@ -180,6 +180,7 @@ public class ProductService {
         List<ProductDTO> productDTOS = new ArrayList<>();
         for (Product product : products) {
             ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
+            productDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(product.getImgFile()));
             productDTO.setProductType(product.getProductType());
             productDTO.setOptions(new ArrayList<>());
             for (Option option : product.getOptions()) {

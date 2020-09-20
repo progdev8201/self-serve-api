@@ -11,6 +11,6 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface ImgFileToImgFileDTO {
     ImgFileToImgFileDTO instance = Mappers.getMapper(ImgFileToImgFileDTO.class);
-
+    @Mapping(target = "data", ignore = true)
     ImgFileDTO convert(ImgFile imgFile);
 }
