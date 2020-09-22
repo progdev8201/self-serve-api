@@ -15,7 +15,10 @@ public class DTOUtils {
         List<OrderItemDTO> returnBillOrderItems = new ArrayList<>();
         for (OrderItem orderItem : bill.getOrderItems()) {
             OrderItemDTO orderItemDTO = OrderItemToOrderItemDTO.instance.convert(orderItem);
-            orderItemDTO.setProduct(ProductToProductDTO.instance.convert(orderItem.getProduct()));
+            ProductDTO productDTO =ProductToProductDTO.instance.convert(orderItem.getProduct());
+            ImgFileDTO imgFileDTO =ImgFileToImgFileDTO.instance.convert(orderItem.getProduct().getImgFile());
+            productDTO.setImgFileDTO(imgFileDTO);
+            orderItemDTO.setProduct(productDTO);
             orderItemDTO.setOption(new ArrayList<>());
             for(Option option :orderItem.getOption()){
                 OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
