@@ -1,8 +1,7 @@
 package com.service;
 
 import com.mapping.*;
-import com.model.dto.BillDTO;
-import com.model.dto.OrderItemDTO;
+import com.model.dto.*;
 import com.model.entity.*;
 import com.model.enums.BillStatus;
 import com.model.enums.ProgressStatus;
@@ -47,14 +46,15 @@ public class ClientService {
         this.dtoUtils = dtoUtils;
     }
 
-    public BillDTO makeOrder(List<OrderItemDTO> orderItemDTOList, String guestUsername, Long billId, Long restaurentTableId) {
+    public BillDTO makeOrder(ProductDTO productToAdd, String guestUsername, Long billId, Long restaurentTableId) {
         Bill bill = findBill(billId);
-        List<OrderItem> orderItemList = findOrderItemsInDb(orderItemDTOList, bill);
+        List<OrderItem> orderItemList = findOrderItemsInDb(productToAdd, bill);
         Guest guest = guestRepository.findByUsername(guestUsername).get();
-
+       // Guest guest = new Guest();
         //TODO:meilleur solution?? a voir mais il faut retrouver le restaurent pour l'associé au bill
-        Restaurant restaurant = orderItemList.get(0).getProduct().getMenu().getRestaurant();
+       // Restaurant restaurant = orderItemList.get(0).getProduct().getMenu().getRestaurant();
         RestaurentTable restaurentTable = restaurentTableRepository.findById(restaurentTableId).get();
+        Restaurant restaurant = orderItemList.get(0).getProduct().getMenu().getRestaurant();
 
         bill.setOrderCustomer(guest);
         //
@@ -75,31 +75,45 @@ public class ClientService {
             }
             restaurant.getBill().add(bill);
         }
-         restaurantRepository.save(restaurant);
+         restaurant =restaurantRepository.save(restaurant);
         //TODO notify kitchen
         //set valeur retour
-        BillDTO returnValue = dtoUtils.constructBillDTOWithOrderItems(bill);
+        BillDTO returnValue = dtoUtils.constructBillDTOWithOrderItems(restaurant.getBill().stream().filter(x -> x.getId().equals(bill.getId())).findFirst().get());
 
         return returnValue;
     }
 
 
-    private List<OrderItem> findOrderItemsInDb(List<OrderItemDTO> orderItemDTOList, Bill bill) {
-        List<OrderItem> orderItemList = new ArrayList<>();
-        for (OrderItemDTO orderItemDTO : orderItemDTOList) {
+    private List<OrderItem> findOrderItemsInDb(ProductDTO productToAdd, Bill bill) {
+        List<OrderItem> orderItems = new ArrayList<>();
+        Product product = productRepository.findById(productToAdd.getId()).get();
 
-            Product product = productRepository.findById(orderItemDTO.getProduct().getId()).get();
-            OrderItem orderItem = OrderItemDTOToOrderItem.instance.convert(orderItemDTO);
-            orderItem.setProduct(product);
-            orderItem.setOrderStatus(ProgressStatus.PROGRESS);
-            orderItem.setBill(bill);
-            orderItem.setDelaiDePreparation(LocalDateTime.now().minusMinutes(product.getTempsDePreparation()));
-            orderItem = orderItemRepository.save(orderItem);
-            orderItemList.add(orderItem);
-            bill.setPrixTotal(bill.getPrixTotal() + orderItem.getPrix());
+        OrderItem orderItem = ProductToOrderItems.instance.convert(product);
+        orderItem.setProduct(product);
+        orderItem.setOrderStatus(ProgressStatus.PROGRESS);
+        orderItem.setBill(bill);
+        orderItem.setDelaiDePreparation(LocalDateTime.now().minusMinutes(product.getTempsDePreparation()));
+        //orderItem = orderItemRepository.save(orderItem);
+        orderItem.setOption(new ArrayList<>());
+        for(OptionDTO optionDTO : productToAdd.getOptions()){
+            Option option = OptionDTOToOption.instance.convert(optionDTO);
+            option.setCheckItemList(new ArrayList<>());
+            for(CheckItemDTO checkItemDTO :optionDTO.getCheckItemList()){
+                CheckItem checkItem =CheckItemDTOCheckItem.instance.convert(checkItemDTO);
+                option.getCheckItemList().add(checkItem);
+            }
+            orderItem.getOption().add(option);
         }
-        return orderItemList;
+        orderItems.add(orderItem);
+        orderItem = orderItemRepository.save(orderItem);
+
+       // bill =billRepository.save(bill);
+        bill.setPrixTotal( bill.getPrixTotal()+orderItem.getPrix());
+
+
+        return orderItems;
     }
+
     private Boolean isBillInStream(Stream stream,Long billId){
        return stream.anyMatch(x -> ((Bill)x).getId().equals(billId));
     }
@@ -110,6 +124,7 @@ public class ClientService {
         }
         if (Objects.isNull(bill)) {
             bill = new Bill();
+            bill =billRepository.save(bill);
         }
         return bill;
     }

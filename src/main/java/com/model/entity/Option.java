@@ -6,12 +6,12 @@ import java.util.List;
 @Entity
 public class Option {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<CheckItem> checkItemList;
 
     public Long getId() {

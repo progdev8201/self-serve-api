@@ -29,8 +29,9 @@ public class MenuController {
         MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menu"),MenuDTO.class);
         return ResponseEntity.ok(menuService.removeSpecial(menuDTO,menuDTO.getProducts()));
     }
-    @GetMapping("/getMenu")
-    public ResponseEntity<MenuDTO> getMenu(@RequestBody Long menuId) throws JsonProcessingException {
+    @PostMapping("/getMenu")
+    public ResponseEntity<MenuDTO> getMenu(@RequestBody Map<String, String> json) throws JsonProcessingException {
+        Long menuId = new ObjectMapper().readValue(json.get("menuId"),Long.class);
         return ResponseEntity.ok(menuService.findMenu(menuId));
     }
 }

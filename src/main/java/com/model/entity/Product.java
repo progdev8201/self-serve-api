@@ -1,6 +1,7 @@
 package com.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.model.enums.ProductMenuType;
 import com.model.enums.ProductType;
 
 import javax.persistence.*;
@@ -11,29 +12,63 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String name;
 
     private String description;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Menu menu;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Option> options;
 
     private double prix;
     ///en minutes
     private int tempsDePreparation;
 
-    @OneToMany
+    private String imgUrl;
+
+    @OneToOne(cascade = CascadeType.PERSIST)
+    private ImgFile imgFile;
+
+    public ImgFile getImgFile() {
+        return imgFile;
+    }
+
+    public void setImgFile(ImgFile imgFile) {
+        this.imgFile = imgFile;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Rate> rates;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 60)
     private ProductType productType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 60)
+    private ProductMenuType productMenuType;
+
+
+    public ProductMenuType getProductMenuType() {
+        return productMenuType;
+    }
+
+    public void setProductMenuType(ProductMenuType productMenuType) {
+        this.productMenuType = productMenuType;
+    }
 
     public long getId() {
         return id;

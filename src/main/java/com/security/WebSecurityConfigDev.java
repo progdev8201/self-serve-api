@@ -31,8 +31,8 @@ import java.util.Collections;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@ConditionalOnProperty(name = "config.securite.active", havingValue = "true")
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter  implements WebSecurityConfigInterface{
+@ConditionalOnProperty(name = "config.securite.active", havingValue = "false")
+public class WebSecurityConfigDev extends WebSecurityConfigurerAdapter implements  WebSecurityConfigInterface{
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
@@ -95,11 +95,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter  implements 
         }; // new RequestMatcher
         http.cors();
         http.csrf().requireCsrfProtectionMatcher(csrfRequestMatcher).and().authorizeRequests()
-                .antMatchers("/csrf/**","/auth/**","/h2-console/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .antMatchers("/***").permitAll();
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }

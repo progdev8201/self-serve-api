@@ -1,5 +1,10 @@
 package com.model.dto;
 
+import com.model.entity.ImgFile;
+import com.model.entity.Menu;
+import com.model.entity.Option;
+import com.model.entity.Rate;
+import com.model.enums.ProductMenuType;
 import com.model.enums.ProductType;
 
 import java.util.List;
@@ -20,9 +25,40 @@ public class ProductDTO {
     ///en minutes
     private int tempsDePreparation;
 
+    private String imgUrl;
+
     private List<RateDTO> rates;
 
     private ProductType productType;
+
+    private ProductMenuType productMenuType;
+
+    private ImgFileDTO imgFileDTO;
+
+
+    public ImgFileDTO getImgFileDTO() {
+        return imgFileDTO;
+    }
+
+    public void setImgFileDTO(ImgFileDTO imgFileDTO) {
+        this.imgFileDTO = imgFileDTO;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+    public ProductMenuType getProductMenuType() {
+        return productMenuType;
+    }
+
+    public void setProductMenuType(ProductMenuType productMenuType) {
+        this.productMenuType = productMenuType;
+    }
 
     public ProductType getProductType() {
         return productType;

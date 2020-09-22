@@ -1,11 +1,13 @@
 package com.service;
 
-import com.mapping.MenuToMenuDTO;
-import com.mapping.MenuToMenuDTOImpl;
-import com.mapping.ProductToProductDTO;
+import com.mapping.*;
+import com.model.dto.CheckItemDTO;
 import com.model.dto.MenuDTO;
+import com.model.dto.OptionDTO;
 import com.model.dto.ProductDTO;
+import com.model.entity.CheckItem;
 import com.model.entity.Menu;
+import com.model.entity.Option;
 import com.model.entity.Product;
 import com.repository.MenuRepository;
 import com.repository.ProductRepository;
@@ -25,6 +27,9 @@ public class MenuService {
 
     @Autowired
     ProductRepository productRepository;
+
+    @Autowired
+    private ProductService productService;
 
     @Autowired
     public MenuService(MenuRepository menuRepository) {
@@ -60,13 +65,12 @@ public class MenuService {
     public MenuDTO findMenu(Long id) {
         Menu menu = menuRepository.findById(id).get();
         MenuDTO menuDTO = MenuToMenuDTO.instance.convert(menu);
-
-        menuDTO.setProducts(new ArrayList<>());
-        for (Product product : menu.getProducts()) {
-            ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
-            productDTO.setProductType(product.getProductType());
-            menuDTO.getProducts().add(productDTO);
-        }
+        menuDTO.setSpeciaux(productService.findMenuSpecials(menuDTO));
+        menuDTO.setFeatured(productService.findMenuChoixDuChef(menuDTO));
+        menuDTO.setDejeuner(productService.findMenuDejeunerProduct(menuDTO));
+        menuDTO.setSouper(productService.findMenuSouper(menuDTO));
+        menuDTO.setDiner(productService.findMenuDinerProduct(menuDTO));
+        menuDTO.setProducts(productService.generateProductDTO(menu.getProducts()));
 
         return menuDTO;
 

@@ -2,10 +2,12 @@ package com.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mapping.BillDTOToBill;
 import com.mapping.OwnerDTOToOwner;
 import com.model.dto.BillDTO;
 import com.model.dto.OwnerDTO;
+import com.model.dto.StripeClientSecretDTO;
 import com.model.entity.Owner;
 import com.service.ClientService;
 import com.service.StripeService;
@@ -28,15 +30,17 @@ public class StripeController {
 
 
     @PostMapping("/createStripeAcccount")
-    public ResponseEntity<String> makeOrder(@RequestBody Map<String, String> json) throws JsonProcessingException, StripeException {
+    public ResponseEntity<String> createStripeAccounr(@RequestBody Map<String, String> json) throws JsonProcessingException, StripeException {
         OwnerDTO ownerDTO = new ObjectMapper().readValue(json.get("ownerDto"), OwnerDTO.class);
         return ResponseEntity.ok(stripeService.createStripeAccount(OwnerDTOToOwner.instance.convert(ownerDTO)));
     }
 
     @PostMapping("/fetchPaymentIntent")
-    public ResponseEntity<String> processPayment(@RequestBody Map<String, String> json) throws JsonProcessingException, StripeException {
-        BillDTO billDTO = new ObjectMapper().readValue(json.get("billDto"), BillDTO.class);
-        String restaurentStripeAccount =new ObjectMapper().readValue(json.get("restaurentStripeAccount"), String.class);
+    public ResponseEntity<StripeClientSecretDTO> processPayment(@RequestBody Map<String, String> json) throws JsonProcessingException, StripeException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        BillDTO billDTO = objectMapper.readValue(json.get("billDTO"), BillDTO.class);
+        String restaurentStripeAccount =json.get("restaurentStripeAccount");
         return ResponseEntity.ok(stripeService.processPayment(restaurentStripeAccount, BillDTOToBill.instance.convert(billDTO)));
     }
 

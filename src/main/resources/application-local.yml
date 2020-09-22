@@ -19,8 +19,17 @@ spring:
           auth: true
           starttls:
             enable: true
+  servlet:
+    multipart:
+      max-file-size: -1
+      max-request-size: -1
 
-
+config:
+  securite:
+    active: true
+  styles:
+    images:
+      path: "\\src\\main\\resources\\img\\"
 
 
 stripe:
