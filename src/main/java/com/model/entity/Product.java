@@ -31,7 +31,7 @@ public class Product {
 
     private String imgUrl;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
     private ImgFile imgFile;
 
     public ImgFile getImgFile() {

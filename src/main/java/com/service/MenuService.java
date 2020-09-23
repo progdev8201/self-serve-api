@@ -1,15 +1,10 @@
 package com.service;
 
 import com.mapping.*;
-import com.model.dto.CheckItemDTO;
-import com.model.dto.MenuDTO;
-import com.model.dto.OptionDTO;
-import com.model.dto.ProductDTO;
-import com.model.entity.CheckItem;
-import com.model.entity.Menu;
-import com.model.entity.Option;
-import com.model.entity.Product;
+import com.model.dto.*;
+import com.model.entity.*;
 import com.repository.MenuRepository;
+import com.repository.OwnerRepository;
 import com.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,15 +13,19 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class MenuService {
     @Autowired
-    MenuRepository menuRepository;
+    private MenuRepository menuRepository;
 
     @Autowired
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
+
+    @Autowired
+    private OwnerRepository ownerRepository;
 
     @Autowired
     private ProductService productService;
@@ -95,5 +94,16 @@ public class MenuService {
         return returnValue;
     }
 
+    public List<RestaurantSelectionDTO> findAllRestaurantName(String ownerUsername){
+        List<RestaurantSelectionDTO> restaurantSelectionDTOS = new ArrayList<>();
+
+        ownerRepository.findByUsername(ownerUsername).ifPresent(owner ->{
+            owner.getRestaurantList().parallelStream().forEach(restaurant -> {
+                restaurantSelectionDTOS.add(new RestaurantSelectionDTO(restaurant.getMenu().getId(),restaurant.getName()));
+            });
+        });
+
+        return restaurantSelectionDTOS;
+    }
 
 }
