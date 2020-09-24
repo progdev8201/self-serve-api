@@ -11,6 +11,7 @@ import com.model.enums.ProductType;
 import com.repository.ImgFileRepository;
 import com.repository.MenuRepository;
 import com.repository.ProductRepository;
+import com.service.DtoUtil.DTOUtils;
 import javassist.bytecode.ByteArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,6 +41,9 @@ public class ProductService {
 
     @Autowired
     ImgFileRepository imgFileRepository;
+
+    @Autowired
+    DTOUtils dtoUtils;
 
     @Value("${config.styles.images.path}")
     private String fileBasePath;
@@ -76,7 +80,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return generateProductDTO(productList);
+        return dtoUtils.generateProductDTO(productList);
 
     }
 
@@ -88,7 +92,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return generateProductDTO(productList);
+        return dtoUtils.generateProductDTO(productList);
 
     }
 
@@ -100,7 +104,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return generateProductDTO(productList);
+        return dtoUtils.generateProductDTO(productList);
 
     }
 
@@ -112,7 +116,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return generateProductDTO(productList);
+        return dtoUtils.generateProductDTO(productList);
 
     }
 
@@ -124,14 +128,14 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return generateProductDTO(productList);
+        return dtoUtils.generateProductDTO(productList);
 
     }
 
     public ProductDTO setProductSpecial(ProductDTO productDTO) {
         Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(ProductType.SPECIAL);
-        ProductDTO retour = ProductToProductDTO.instance.convert(productRepository.save(product));
+        ProductDTO retour =dtoUtils.generateProductDTO(productRepository.save(product));
         retour.setProductType(product.getProductType());
         return retour;
     }
@@ -140,7 +144,7 @@ public class ProductService {
         Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(null);
         product = productRepository.save(product);
-        ProductDTO retour = ProductToProductDTO.instance.convert(product);
+        ProductDTO retour =dtoUtils.generateProductDTO(productRepository.save(product));
         retour.setProductType(product.getProductType());
         return retour;
     }
@@ -149,7 +153,7 @@ public class ProductService {
 
         Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(ProductType.CHEFCHOICE);
-        ProductDTO retour = ProductToProductDTO.instance.convert(productRepository.save(product));
+        ProductDTO retour =dtoUtils.generateProductDTO(productRepository.save(product));;
         retour.setProductType(product.getProductType());
         return retour;
     }
@@ -169,47 +173,12 @@ public class ProductService {
         img.setData(file.getBytes());
         product.setImgFile(imgFileRepository.save(img));
         product=productRepository.save(product);
-        return generateProductDTO(product);
+        return dtoUtils.generateProductDTO(product);
     }
 
     public byte[] returnImgAsByteArrayString(Long id){
         String returnValue = new String(imgFileRepository.findById(id).get().getData(), StandardCharsets.UTF_8);
         return imgFileRepository.findById(id).get().getData();
     }
-    public List<ProductDTO> generateProductDTO(List<Product> products) {
-        List<ProductDTO> productDTOS = new ArrayList<>();
-        for (Product product : products) {
-            ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
-            productDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(product.getImgFile()));
-            productDTO.setProductType(product.getProductType());
-            productDTO.setOptions(new ArrayList<>());
-            for (Option option : product.getOptions()) {
-                OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
-                optionDTO.setCheckItemList(new ArrayList<>());
-                for (CheckItem checkItem : option.getCheckItemList()) {
-                    CheckItemDTO checkItemDTO = CheckItemToCheckItemDTO.instance.convert(checkItem);
-                    optionDTO.getCheckItemList().add(checkItemDTO);
-                }
-                productDTO.getOptions().add(optionDTO);
-            }
-            productDTOS.add(productDTO);
-        }
-        return productDTOS;
-    }
-    public ProductDTO generateProductDTO(Product product) {
-            ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
-            productDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(product.getImgFile()));
-            productDTO.setProductType(product.getProductType());
-            productDTO.setOptions(new ArrayList<>());
-            for (Option option : product.getOptions()) {
-                OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
-                optionDTO.setCheckItemList(new ArrayList<>());
-                for (CheckItem checkItem : option.getCheckItemList()) {
-                    CheckItemDTO checkItemDTO = CheckItemToCheckItemDTO.instance.convert(checkItem);
-                    optionDTO.getCheckItemList().add(checkItemDTO);
-                }
-                productDTO.getOptions().add(optionDTO);
-            }
-        return productDTO;
-    }
+
 }

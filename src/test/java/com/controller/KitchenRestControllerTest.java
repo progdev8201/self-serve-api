@@ -146,6 +146,7 @@ class KitchenRestControllerTest {
         sendObj.put("restaurentTableId","1");
         sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
 
+
         mvc = initMockMvcBillController();
 
         MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
@@ -162,7 +163,7 @@ class KitchenRestControllerTest {
         BillDTO responseBill=mapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
 
         sendObj = new JSONObject();
-        sendObj.put("orderItem",mapper.writeValueAsString(responseBill.getOrderItems().get(0)));
+        sendObj.put("orderItemDTO",mapper.writeValueAsString(responseBill.getOrderItems().get(0)));
 
         mvc=initMockMvc();
         mvc.perform(MockMvcRequestBuilders.post(   "/rest/kitchen/changeOrderItemStatus").

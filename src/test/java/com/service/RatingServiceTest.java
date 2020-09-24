@@ -26,7 +26,7 @@ class RatingServiceTest {
 
     @Test
     public void testerChercherNoteMoyenneProduit3Item(){
-        ratingService = new RatingService(rateRepository,null);
+        ratingService = new RatingService(rateRepository,null,null);
         List<Rate> rateList = new ArrayList<>();
         Rate rate = new Rate();
         rate.setRate(5);
@@ -47,7 +47,7 @@ class RatingServiceTest {
     }
     @Test
     public void testerChercherNoteMoyenneProduit2Item(){
-        ratingService = new RatingService(rateRepository,null);
+        ratingService = new RatingService(rateRepository,null,null);
         List<Rate> rateList = new ArrayList<>();
         Rate rate = new Rate();
         rate.setRate(5);
@@ -67,7 +67,7 @@ class RatingServiceTest {
 
     @Test
     public void testerChercherNoteMoyenneProduitPasDeRateRetourne0(){
-        ratingService = new RatingService(rateRepository,null);
+        ratingService = new RatingService(rateRepository,null,null);
 
 
         Product product = new Product();

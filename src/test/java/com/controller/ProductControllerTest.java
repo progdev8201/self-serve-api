@@ -62,7 +62,7 @@ class ProductControllerTest {
                 andReturn();
         ObjectMapper mapper=new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        Product reponse = mapper.readValue(result.getResponse().getContentAsString(), Product.class);
+        ProductDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
         assertEquals(ProductType.SPECIAL, reponse.getProductType());
 
         JSONObject sendObj2 = new JSONObject();
@@ -107,7 +107,7 @@ class ProductControllerTest {
                 andReturn();
         ObjectMapper mapper=new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        Product reponse = mapper.readValue(result.getResponse().getContentAsString(), Product.class);
+        ProductDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
         assertEquals(ProductType.SPECIAL, reponse.getProductType());
 
         JSONObject sendObj2 = new JSONObject();
@@ -144,7 +144,7 @@ class ProductControllerTest {
                 andReturn();
         ObjectMapper mapper=new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        Product reponse = mapper.readValue(result.getResponse().getContentAsString(), Product.class);
+        ProductDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
         assertEquals(ProductType.CHEFCHOICE, reponse.getProductType());
 
         JSONObject sendObj2 = new JSONObject();
@@ -181,7 +181,7 @@ class ProductControllerTest {
                 andReturn();
         ObjectMapper mapper=new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        Product reponse = mapper.readValue(result.getResponse().getContentAsString(), Product.class);
+        ProductDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
         assertEquals(ProductType.SPECIAL, reponse.getProductType());
 
          result= mvc.perform(MockMvcRequestBuilders.post(   "/product/deleteProductType").
@@ -234,7 +234,7 @@ class ProductControllerTest {
 
         ObjectMapper mapper=new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        Product reponse = mapper.readValue(result.getResponse().getContentAsString(), Product.class);
+        ProductDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
         assertEquals(ProductType.SPECIAL, reponse.getProductType());
 
         MenuDTO menuDTO = new MenuDTO();
@@ -293,7 +293,7 @@ class ProductControllerTest {
 
         ObjectMapper mapper=new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        Product reponse = mapper.readValue(result.getResponse().getContentAsString(), Product.class);
+        ProductDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
         assertEquals(ProductType.CHEFCHOICE, reponse.getProductType());
 
         MenuDTO menuDTO = new MenuDTO();

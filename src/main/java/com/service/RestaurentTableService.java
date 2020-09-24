@@ -41,16 +41,7 @@ public class RestaurentTableService {
         Restaurant restaurant = restaurantRepository.findById(restaurentId).get();
         List<RestaurentTableDTO> restaurentTableDTOS = new ArrayList<>();
         restaurant.getRestaurentTables().forEach(restaurentTable -> {
-
-            RestaurentTableDTO restaurentTableDTO = RestaurentTableToRestaurenTableDTO.instance.convert(restaurentTable);
-            List<BillDTO> billDTOS = new ArrayList<>();
-            restaurentTable.getBills().forEach(bill -> {
-                BillDTO billDTO =dtoUtils.constructBillDTOWithOrderItems(bill);
-                billDTOS.add(billDTO);
-            });
-            restaurentTableDTO.setBillDTOList(billDTOS);
-            restaurentTableDTOS.add(restaurentTableDTO);
-
+            restaurentTableDTOS.add(dtoUtils.generateRestaurentTableDTO(restaurentTable));
         });
         return restaurentTableDTOS;
     }

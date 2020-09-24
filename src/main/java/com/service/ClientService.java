@@ -50,9 +50,7 @@ public class ClientService {
         Bill bill = findBill(billId);
         List<OrderItem> orderItemList = findOrderItemsInDb(productToAdd, bill);
         Guest guest = guestRepository.findByUsername(guestUsername).get();
-       // Guest guest = new Guest();
         //TODO:meilleur solution?? a voir mais il faut retrouver le restaurent pour l'associé au bill
-       // Restaurant restaurant = orderItemList.get(0).getProduct().getMenu().getRestaurant();
         RestaurentTable restaurentTable = restaurentTableRepository.findById(restaurentTableId).get();
         Restaurant restaurant = orderItemList.get(0).getProduct().getMenu().getRestaurant();
 
@@ -107,7 +105,6 @@ public class ClientService {
         orderItems.add(orderItem);
         orderItem = orderItemRepository.save(orderItem);
 
-       // bill =billRepository.save(bill);
         bill.setPrixTotal( bill.getPrixTotal()+orderItem.getPrix());
 
 

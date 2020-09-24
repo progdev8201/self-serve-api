@@ -1,16 +1,13 @@
 package com.service;
 
 import com.mapping.*;
-import com.model.dto.CheckItemDTO;
 import com.model.dto.MenuDTO;
-import com.model.dto.OptionDTO;
 import com.model.dto.ProductDTO;
-import com.model.entity.CheckItem;
 import com.model.entity.Menu;
-import com.model.entity.Option;
 import com.model.entity.Product;
 import com.repository.MenuRepository;
 import com.repository.ProductRepository;
+import com.service.DtoUtil.DTOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +29,9 @@ public class MenuService {
     private ProductService productService;
 
     @Autowired
+    DTOUtils dtoUtils;
+
+    @Autowired
     public MenuService(MenuRepository menuRepository) {
         this.menuRepository = menuRepository;
     }
@@ -47,7 +47,7 @@ public class MenuService {
             menu.setSpeciaux(menu.getSpeciaux());
         }
         menu = menuRepository.save(menu);
-        return returnMenu(menu);
+        return dtoUtils.generateMenuDTO(menu);
     }
 
 
@@ -59,7 +59,7 @@ public class MenuService {
         speciauxDuMenu.removeAll(products);
         menu.setSpeciaux(speciauxDuMenu);
         menu = menuRepository.save(menu);
-        return returnMenu(menu);
+        return dtoUtils.generateMenuDTO(menu);
     }
 
     public MenuDTO findMenu(Long id) {
@@ -70,7 +70,7 @@ public class MenuService {
         menuDTO.setDejeuner(productService.findMenuDejeunerProduct(menuDTO));
         menuDTO.setSouper(productService.findMenuSouper(menuDTO));
         menuDTO.setDiner(productService.findMenuDinerProduct(menuDTO));
-        menuDTO.setProducts(productService.generateProductDTO(menu.getProducts()));
+        menuDTO.setProducts(dtoUtils.generateProductDTO(menu.getProducts()));
 
         return menuDTO;
 
@@ -84,16 +84,4 @@ public class MenuService {
         }
         return products;
     }
-
-    private MenuDTO returnMenu(Menu menu) {
-        MenuDTO returnValue = MenuToMenuDTOImpl.instance.convert(menuRepository.save(menu));
-        returnValue.setSpeciaux(new ArrayList<>());
-        for (Product special : menu.getSpeciaux()) {
-            returnValue.getSpeciaux().add(ProductToProductDTO.instance.convert(special));
-            returnValue.setSpeciaux(returnValue.getSpeciaux());
-        }
-        return returnValue;
-    }
-
-
 }
