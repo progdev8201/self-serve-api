@@ -1,4 +1,5 @@
 package com.model.entity;
+import com.model.enums.ProductType;
 import com.model.enums.ProgressStatus;
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -20,9 +21,14 @@ public class OrderItem {
     @ManyToOne(cascade = CascadeType.PERSIST)
     private  Bill bill;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 60)
+    private ProductType productType;
+
     private double prix;
     //quand le plat doit etre pret
     private LocalDateTime delaiDePreparation ;
+
     @OneToMany(cascade =CascadeType.PERSIST)
     private List<Option> option;
 
@@ -90,6 +96,14 @@ public class OrderItem {
 
     public void setBill(Bill bill) {
         this.bill = bill;
+    }
+
+    public ProductType getProductType() {
+        return productType;
+    }
+
+    public void setProductType(ProductType productType) {
+        this.productType = productType;
     }
 
     @Override

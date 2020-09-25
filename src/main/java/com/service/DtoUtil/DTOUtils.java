@@ -96,5 +96,8 @@ public class DTOUtils {
         restaurentTableDTO.setBillDTOList(billDTOS);
         return  restaurentTableDTO;
     }
+    public OrderItemDTO generateOrderItemDTO(OrderItem orderItem){
+        return OrderItemToOrderItemDTO.instance.convert(orderItem);
+    }
 
 }

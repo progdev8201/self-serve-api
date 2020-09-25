@@ -89,5 +89,14 @@ public class KitchenRestController {
         return  ResponseEntity.ok(kitchenService.changeOrderItemStatus(orderItemDTO));
     }
 
+    @PostMapping("/changeOrderItemStatus")
+    public ResponseEntity<List<OrderItemDTO>> getWaiterRequests(@RequestBody Map<String, String> json) throws JsonProcessingException {
+        ObjectMapper mapper=new ObjectMapper();
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        mapper.registerModule(new JavaTimeModule());
+        Long restaurentId = mapper.readValue(json.get("restaurentId"), Long.class);
+        return  ResponseEntity.ok(kitchenService.fetchWaiterRequest(restaurentId));
+    }
+
 
 }

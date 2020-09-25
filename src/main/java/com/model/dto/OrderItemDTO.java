@@ -1,7 +1,11 @@
 package com.model.dto;
 
+import com.model.enums.ProductType;
 import com.model.enums.ProgressStatus;
 
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,6 +21,10 @@ public class OrderItemDTO {
     private LocalDateTime delaiDePreparation;
 
     private List<OptionDTO> option;
+
+
+    private ProductType productType;
+
 
     public Long getId() {
         return id;
@@ -64,6 +72,14 @@ public class OrderItemDTO {
 
     public void setOption(List<OptionDTO> option) {
         this.option = option;
+    }
+
+    public ProductType getProductType() {
+        return productType;
+    }
+
+    public void setProductType(ProductType productType) {
+        this.productType = productType;
     }
 
     @Override

@@ -189,6 +189,65 @@ class KitchenRestControllerTest {
         assertEquals(OrderStatus.READY.toString(),((LinkedHashMap)orderItemList.get(0)).get("orderStatus"));
     }
 
+    @Test
+    public void testWaiterRequestFetchOrderItems() throws Exception {
+        MockMvc mvc = initMockMvcBillController();
+        LinkedMultiValueMap<String,String> requestParams = new LinkedMultiValueMap<>();
+
+
+        BillDTO billDTO = initBillDTO();
+        ObjectMapper objectMapper =new ObjectMapper();
+
+
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("billDTO",objectMapper.writeValueAsString(billDTO));
+        sendObj.put("guestUsername","client1@mail.com");
+        sendObj.put("restaurentTableId","1");
+        sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
+
+
+        mvc = initMockMvcBillController();
+
+        MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/order/makeOrder").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+
+        ObjectMapper mapper=new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+
+        BillDTO responseBill=mapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
+
+        sendObj = new JSONObject();
+        sendObj.put("orderItemDTO",mapper.writeValueAsString(responseBill.getOrderItems().get(0)));
+
+        mvc=initMockMvc();
+        mvc.perform(MockMvcRequestBuilders.post(   "/rest/kitchen/changeOrderItemStatus").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+
+        sendObj = new JSONObject();
+        sendObj.put("restaurentId",2);
+        mvc = initMockMvc();
+        result= mvc.perform(MockMvcRequestBuilders.post(   "/rest/kitchen/findAllTables").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        List<LinkedHashMap<String,Object>> reponse = mapper.readValue(result.getResponse().getContentAsString(), ArrayList.class);
+
+        ArrayList billDTOS = (ArrayList)reponse.get(0).get("billDTOList");
+        ArrayList orderItemList =(ArrayList)((LinkedHashMap) billDTOS.get(0)).get("orderItems");
+        assertEquals(OrderStatus.READY.toString(),((LinkedHashMap)orderItemList.get(0)).get("orderStatus"));
+    }
+
 
     private MenuDTO createMenuDTO() {
         List<ProductDTO> productDTOS = new ArrayList<>();
