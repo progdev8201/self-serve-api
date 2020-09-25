@@ -120,6 +120,7 @@ public class DataLoader implements CommandLineRunner {
         restaurant.getRestaurentTables().add(restaurentTable);
         restaurant = restaurantRepository.save(restaurant);
 
+        LOGGER.info("Restaurant menuid: "+restaurant.getMenu().getId());
 
         if (roleRepository.findAll().size() == 0) {
             LOGGER.info("READY!...Populating database...");

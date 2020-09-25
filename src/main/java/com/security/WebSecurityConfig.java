@@ -95,7 +95,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter  implements 
         }; // new RequestMatcher
         http.cors();
         http.csrf().requireCsrfProtectionMatcher(csrfRequestMatcher).and().authorizeRequests()
-                .antMatchers("/csrf/**","/auth/**","/h2-console/**").permitAll()
+                .antMatchers("/csrf/**","/auth/**","/h2/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()

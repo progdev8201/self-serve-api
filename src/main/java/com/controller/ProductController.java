@@ -48,11 +48,11 @@ public class ProductController {
     }
 
     @PostMapping("/{menuId}")
-    public void create(@RequestBody ProductDTO productDTO, @PathVariable Long menuId) {
-        productService.create(productDTO, menuId);
+    public ProductDTO create(@RequestBody ProductDTO productDTO, @PathVariable Long menuId) {
+        return productService.create(productDTO, menuId);
     }
 
-    @PutMapping()
+    @PutMapping
     public void update(@RequestBody ProductDTO productDTO) {
         productService.update(productDTO);
     }
