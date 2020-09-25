@@ -11,7 +11,7 @@ public class Restaurant {
 
     private String name;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<Bill> bill;
 
     @ManyToOne(cascade = CascadeType.PERSIST)

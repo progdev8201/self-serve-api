@@ -46,10 +46,8 @@ public class KitchenService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
         List<OrderItem> orderItemList = new ArrayList<>();
         List<OrderItemDTO> returnValue = new ArrayList<>();
-        List<Bill> onGoingBill = restaurant.getBill().stream().filter(  bill ->
-                                                                        bill.getBillStatus() == BillStatus.PROGRESS)
-                                                                        .collect(Collectors.toList());
-        onGoingBill.forEach( bill -> {
+
+        restaurant.getBill().forEach( bill -> {
             orderItemList.addAll(bill.getOrderItems().stream().filter(  orderItem ->
                                                                         (orderItem.getOrderStatus()== ProgressStatus.READY)||(orderItem.getProductType()== ProductType.WAITERREQUEST))
                                                                         .collect(Collectors.toList()));
@@ -59,6 +57,6 @@ public class KitchenService {
             returnValue.add(dtoUtils.generateOrderItemDTO(orderItem));
         });
 
-        return null;
+        return returnValue;
     }
 }

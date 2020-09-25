@@ -1,10 +1,9 @@
 package com.event;
 
+import com.model.dto.OrderItemDTO;
 import com.model.dto.SignUpForm;
 import com.model.entity.*;
-import com.model.enums.ProductMenuType;
-import com.model.enums.ProductType;
-import com.model.enums.RoleName;
+import com.model.enums.*;
 import com.repository.*;
 import com.service.AuthentificationService;
 import org.apache.commons.io.FileUtils;
@@ -69,35 +68,42 @@ public class DataLoader implements CommandLineRunner {
         Restaurant restaurant = new Restaurant();
         restaurant.setName("le resto chico");
         restaurantRepository.save(restaurant);
-
+        Bill bill = new Bill();
+        bill.setOrderItems(new ArrayList<>());
+        OrderItem orderItem ;
         //create product list
         List<Product> productList = new ArrayList<>();
-        Product product =createProduct();
-        product.setProductMenuType(ProductMenuType.DEJEUNER);
+
+        Product product =createProduct(ProductMenuType.DEJEUNER,null);
         productList.add( product);
-        product =createProduct();
-        product.setProductMenuType(ProductMenuType.DINER);
+        bill.getOrderItems().add(createOrderItem(ProgressStatus.READY,ProductType.SPECIAL,product));
+
+        product =createProduct(ProductMenuType.DINER,null);
         productList.add( product);
-        product =createProduct();
-        product.setProductMenuType(ProductMenuType.SOUPER);
+        bill.getOrderItems().add(createOrderItem(ProgressStatus.READY,ProductType.SPECIAL,product));
+
+
+        product =createProduct(ProductMenuType.SOUPER,null);
         productList.add( product);
-        product =createProduct();
-        product.setProductType(ProductType.SPECIAL);
+        bill.getOrderItems().add(createOrderItem(ProgressStatus.PROGRESS,ProductType.WAITERREQUEST,product));
+
+        product =createProduct(ProductMenuType.SOUPER,ProductType.SPECIAL);
         productList.add( product);
-        product =createProduct();
-        product.setProductType(ProductType.SPECIAL);
+        bill.getOrderItems().add(createOrderItem(ProgressStatus.PROGRESS,ProductType.WAITERREQUEST,product));
+
+        product =createProduct(ProductMenuType.SOUPER,ProductType.SPECIAL);
         productList.add( product);
-        product =createProduct();
-        product.setProductType(ProductType.SPECIAL);
+
+        product =createProduct(ProductMenuType.SOUPER,ProductType.SPECIAL);
         productList.add( product);
-        product =createProduct();
-        product.setProductType(ProductType.CHEFCHOICE);
+
+        product =createProduct(ProductMenuType.DINER,ProductType.CHEFCHOICE);
         productList.add( product);
-        product =createProduct();
-        product.setProductType(ProductType.CHEFCHOICE);
+
+        product =createProduct(ProductMenuType.DINER,ProductType.CHEFCHOICE);
         productList.add( product);
-        product =createProduct();
-        product.setProductType(ProductType.CHEFCHOICE);
+
+        product =createProduct(ProductMenuType.DINER,ProductType.CHEFCHOICE);
         productList.add( product);
 
         //create menu
@@ -112,10 +118,11 @@ public class DataLoader implements CommandLineRunner {
         restaurentTable.setTableNumber(1);
 
         restaurant = new Restaurant();
+        restaurant.setBill(new ArrayList<>());
         restaurant.setName("le resto chico");
-        // menu=menuRepository.save(menu);
         menu.setRestaurant(restaurant);
         restaurant.setMenu(menu);
+        restaurant.getBill().add(bill);
         restaurant.setRestaurentTables(new ArrayList<>());
         restaurant.getRestaurentTables().add(restaurentTable);
         restaurant = restaurantRepository.save(restaurant);
@@ -159,7 +166,7 @@ public class DataLoader implements CommandLineRunner {
         ownerRepository.save(ownerEntity);
     }
 
-    private Product createProduct() throws IOException {
+    private Product createProduct(ProductMenuType productMenuType,ProductType productType) throws IOException {
         Product product = new Product();
         product.setName("le steak chico");
         product.setPrix(29.99);
@@ -174,6 +181,8 @@ public class DataLoader implements CommandLineRunner {
         img.setFileType("image");
         img.setProduct(product);
         product.setImgFile(img);
+        product.setProductMenuType(productMenuType);
+        product.setProductType(productType);
         // product.setImgUrl(serverPort+absolutePath+1);
         product.setDescription("cest bon cest bon cest bon");
         Option option = new Option();
@@ -191,5 +200,12 @@ public class DataLoader implements CommandLineRunner {
         product.setOptions(new ArrayList<>());
         product.getOptions().add(option);
         return product;
+    }
+    public OrderItem createOrderItem(ProgressStatus progressStatus,ProductType productType,Product product){
+        OrderItem orderItem = new OrderItem();
+        orderItem.setOrderStatus(progressStatus);
+        orderItem.setProductType(productType);
+        orderItem.setProduct(product);
+        return orderItem;
     }
 }
