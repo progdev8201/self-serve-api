@@ -1,5 +1,6 @@
 package com.service;
 
+import com.event.DataLoader;
 import com.mapping.*;
 import com.model.dto.CheckItemDTO;
 import com.model.dto.MenuDTO;
@@ -13,6 +14,8 @@ import com.repository.MenuRepository;
 import com.repository.ProductRepository;
 import com.service.DtoUtil.DTOUtils;
 import javassist.bytecode.ByteArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -44,6 +47,7 @@ public class ProductService {
 
     @Autowired
     DTOUtils dtoUtils;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 
     @Value("${config.styles.images.path}")
     private String fileBasePath;
@@ -56,16 +60,81 @@ public class ProductService {
         return menuRepository.findById(id).get().getProducts();
     }
 
-    public void create(ProductDTO productDTO, Long menuId) {
+    public ProductDTO create(ProductDTO productDTO, Long menuId) {
+        List<Option> options = new ArrayList<>();
+        List<CheckItem> checkItems = new ArrayList<>();
+
+        // convert product dto to a product
         Product product = ProductDTOToProduct.instance.convert(productDTO);
-        Menu menu = menuRepository.findById(menuId).get();
-        menu.getProducts().add(product);
-        menuRepository.save(menu);
+
+        if (productDTO.getOptions() != null) {
+
+            //add all product dto options to product
+            productDTO.getOptions().parallelStream().forEach(optionDTO -> {
+
+                //empty array
+                checkItems.clear();
+
+                //map check item list dto to check item list
+                optionDTO.getCheckItemList().parallelStream().forEach(checkItemDTO -> {
+                    checkItems.add(CheckItemDTOCheckItem.instance.convert(checkItemDTO));
+                });
+
+                Option option = OptionDTOToOption.instance.convert(optionDTO);
+                option.setCheckItemList(checkItems);
+
+                options.add(option);
+            });
+
+        }
+
+        product.setOptions(options);
+
+        product = productRepository.save(product);
+        Product finalProduct = product;
+
+        menuRepository.findById(menuId).ifPresent(menu -> {
+            finalProduct.setMenu(menu);
+            menu.getProducts().add(finalProduct);
+            menu = menuRepository.save(menu);
+        });
+
+        //map product to
+
+        return ProductToProductDTO.instance.convert(product);
     }
 
     public void update(ProductDTO productDTO) {
+        List<Option> options = new ArrayList<>();
+        List<CheckItem> checkItems = new ArrayList<>();
+
+        // convert product dto to a product
         Product product = ProductDTOToProduct.instance.convert(productDTO);
-        productRepository.save(product);
+
+        if (productDTO.getOptions() != null) {
+
+            //add all product dto options to product
+            productDTO.getOptions().parallelStream().forEach(optionDTO -> {
+
+                //empty array
+                checkItems.clear();
+
+                //map check item list dto to check item list
+                optionDTO.getCheckItemList().parallelStream().forEach(checkItemDTO -> {
+                    checkItems.add(CheckItemDTOCheckItem.instance.convert(checkItemDTO));
+                });
+
+                Option option = OptionDTOToOption.instance.convert(optionDTO);
+                option.setCheckItemList(checkItems);
+
+                options.add(option);
+            });
+
+        }
+
+        product.setOptions(options);
+
+        System.out.println(productRepository.save(product));
     }
 
     public void delete(Long id) {
@@ -158,15 +227,15 @@ public class ProductService {
         return retour;
     }
 
-    public ProductDTO uploadFile(MultipartFile file,ProductDTO productDTO) throws IOException {
+    public ProductDTO uploadFile(MultipartFile file, ProductDTO productDTO) throws IOException {
         Path currentRelativePath = Paths.get("");
         String absolutePath = currentRelativePath.toAbsolutePath().toString();
         String fileName = StringUtils.cleanPath(UUID.randomUUID().toString());
-        String pathDansProjet=fileBasePath + fileName+".jpg";
-        File imgFile = new File(absolutePath+pathDansProjet);
+        String pathDansProjet = fileBasePath + fileName + ".jpg";
+        File imgFile = new File(absolutePath + pathDansProjet);
         file.transferTo(imgFile);
 
-        Product product =productRepository.findById(productDTO.getId()).get();
+        Product product = productRepository.findById(productDTO.getId()).get();
         product.setImgUrl(pathDansProjet);
         ImgFile img = new ImgFile();
         img.setFileType("image");
@@ -176,9 +245,46 @@ public class ProductService {
         return dtoUtils.generateProductDTO(product);
     }
 
-    public byte[] returnImgAsByteArrayString(Long id){
+    public byte[] returnImgAsByteArrayString(Long id) {
         String returnValue = new String(imgFileRepository.findById(id).get().getData(), StandardCharsets.UTF_8);
         return imgFileRepository.findById(id).get().getData();
     }
 
+    public List<ProductDTO> generateProductDTO(List<Product> products) {
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        for (Product product : products) {
+            ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
+            productDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(product.getImgFile()));
+            productDTO.setProductType(product.getProductType());
+            productDTO.setOptions(new ArrayList<>());
+            for (Option option : product.getOptions()) {
+                OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
+                optionDTO.setCheckItemList(new ArrayList<>());
+                for (CheckItem checkItem : option.getCheckItemList()) {
+                    CheckItemDTO checkItemDTO = CheckItemToCheckItemDTO.instance.convert(checkItem);
+                    optionDTO.getCheckItemList().add(checkItemDTO);
+                }
+                productDTO.getOptions().add(optionDTO);
+            }
+            productDTOS.add(productDTO);
+        }
+        return productDTOS;
+    }
+
+    public ProductDTO generateProductDTO(Product product) {
+        ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
+        productDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(product.getImgFile()));
+        productDTO.setProductType(product.getProductType());
+        productDTO.setOptions(new ArrayList<>());
+        for (Option option : product.getOptions()) {
+            OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
+            optionDTO.setCheckItemList(new ArrayList<>());
+            for (CheckItem checkItem : option.getCheckItemList()) {
+                CheckItemDTO checkItemDTO = CheckItemToCheckItemDTO.instance.convert(checkItem);
+                optionDTO.getCheckItemList().add(checkItemDTO);
+            }
+            productDTO.getOptions().add(optionDTO);
+        }
+        return productDTO;
+    }
 }

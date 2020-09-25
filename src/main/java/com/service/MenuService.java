@@ -1,11 +1,10 @@
 package com.service;
 
 import com.mapping.*;
-import com.model.dto.MenuDTO;
-import com.model.dto.ProductDTO;
-import com.model.entity.Menu;
-import com.model.entity.Product;
+import com.model.dto.*;
+import com.model.entity.*;
 import com.repository.MenuRepository;
+import com.repository.OwnerRepository;
 import com.repository.ProductRepository;
 import com.service.DtoUtil.DTOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +14,19 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class MenuService {
     @Autowired
-    MenuRepository menuRepository;
+    private MenuRepository menuRepository;
 
     @Autowired
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
+
+    @Autowired
+    private OwnerRepository ownerRepository;
 
     @Autowired
     private ProductService productService;
@@ -84,4 +87,27 @@ public class MenuService {
         }
         return products;
     }
+
+    private MenuDTO returnMenu(Menu menu) {
+        MenuDTO returnValue = MenuToMenuDTOImpl.instance.convert(menuRepository.save(menu));
+        returnValue.setSpeciaux(new ArrayList<>());
+        for (Product special : menu.getSpeciaux()) {
+            returnValue.getSpeciaux().add(ProductToProductDTO.instance.convert(special));
+            returnValue.setSpeciaux(returnValue.getSpeciaux());
+        }
+        return returnValue;
+    }
+
+    public List<RestaurantSelectionDTO> findAllRestaurantName(String ownerUsername){
+        List<RestaurantSelectionDTO> restaurantSelectionDTOS = new ArrayList<>();
+
+        ownerRepository.findByUsername(ownerUsername).ifPresent(owner ->{
+            owner.getRestaurantList().parallelStream().forEach(restaurant -> {
+                restaurantSelectionDTOS.add(new RestaurantSelectionDTO(restaurant.getMenu().getId(),restaurant.getName()));
+            });
+        });
+
+        return restaurantSelectionDTOS;
+    }
+
 }

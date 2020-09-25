@@ -1,9 +1,5 @@
 package com.model.dto;
 
-import com.model.entity.ImgFile;
-import com.model.entity.Menu;
-import com.model.entity.Option;
-import com.model.entity.Rate;
 import com.model.enums.ProductMenuType;
 import com.model.enums.ProductType;
 
@@ -22,6 +18,7 @@ public class ProductDTO {
     private List<OptionDTO> options;
 
     private double prix;
+
     ///en minutes
     private int tempsDePreparation;
 
@@ -29,7 +26,7 @@ public class ProductDTO {
 
     private List<RateDTO> rates;
 
-    ProductType productType;
+    private ProductType productType;
 
     private ProductMenuType productMenuType;
 
