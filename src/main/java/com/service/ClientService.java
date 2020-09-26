@@ -104,6 +104,10 @@ public class ClientService {
         }
         orderItems.add(orderItem);
         orderItem = orderItemRepository.save(orderItem);
+        product.setOrderItems(initEmptyList(product.getOrderItems()));
+        product.getOrderItems().add(orderItem);
+        productRepository.save(product);
+
 
         bill.setPrixTotal( bill.getPrixTotal()+orderItem.getPrix());
 

@@ -19,11 +19,14 @@ public class Product {
 
     private String description;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     private Menu menu;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
     private List<Option> options;
+
+    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+    private List <OrderItem> orderItems;
 
     private double prix;
     ///en minutes
@@ -33,6 +36,15 @@ public class Product {
 
     @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
     private ImgFile imgFile;
+
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
 
     public ImgFile getImgFile() {
         return imgFile;

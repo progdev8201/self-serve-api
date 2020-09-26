@@ -10,7 +10,7 @@ public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
+    @ManyToOne
     private Product product;
 
     @Enumerated(EnumType.STRING)

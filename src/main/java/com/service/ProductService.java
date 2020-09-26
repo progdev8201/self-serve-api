@@ -9,6 +9,7 @@ import com.model.dto.ProductDTO;
 import com.model.entity.*;
 import com.model.enums.ProductMenuType;
 import com.model.enums.ProductType;
+import com.repository.BillRepository;
 import com.repository.ImgFileRepository;
 import com.repository.MenuRepository;
 import com.repository.ProductRepository;
@@ -46,7 +47,12 @@ public class ProductService {
     ImgFileRepository imgFileRepository;
 
     @Autowired
+    BillRepository billRepository;
+
+    @Autowired
     DTOUtils dtoUtils;
+
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 
     @Value("${config.styles.images.path}")
@@ -138,7 +144,24 @@ public class ProductService {
     }
 
     public void delete(Long id) {
-        productRepository.deleteById(id);
+        List<Product> prod = productRepository.findAll();
+        Product product = productRepository.findById(id).get();
+        Menu menu = product.getMenu();
+        List<Product> productList =menu.getProducts().stream().filter(product1 -> product1.getId()==id).collect(Collectors.toList());
+        menu.getProducts().removeAll(productList);
+        menu= menuRepository.save(menu);
+        LOGGER.info(String.valueOf(prod.size()));
+        product.getOrderItems().forEach(orderItem -> {
+            Bill bill =orderItem.getBill();
+            bill.getOrderItems().remove(orderItem);
+            orderItem.setBill(null);
+            billRepository.save(bill);
+        });
+        product.setMenu(null);
+        productRepository.delete(product);
+        prod = productRepository.findAll();
+        LOGGER.info(String.valueOf(prod.size()));
+
     }
 
     public List<ProductDTO> findMenuSpecials(MenuDTO menuDTO) {

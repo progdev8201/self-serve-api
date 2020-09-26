@@ -75,21 +75,33 @@ public class DataLoader implements CommandLineRunner {
         List<Product> productList = new ArrayList<>();
 
         Product product =createProduct(ProductMenuType.DEJEUNER,null);
+        orderItem = createOrderItem(ProgressStatus.READY,ProductType.SPECIAL,product);
+        orderItem.setBill(bill);
+        product.getOrderItems().add(orderItem);
         productList.add( product);
-        bill.getOrderItems().add(createOrderItem(ProgressStatus.READY,ProductType.SPECIAL,product));
+        bill.getOrderItems().add(orderItem);
 
         product =createProduct(ProductMenuType.DINER,null);
+        orderItem = createOrderItem(ProgressStatus.READY,ProductType.SPECIAL,product);
+        orderItem.setBill(bill);
+        product.getOrderItems().add(orderItem);
         productList.add( product);
-        bill.getOrderItems().add(createOrderItem(ProgressStatus.READY,ProductType.SPECIAL,product));
+        bill.getOrderItems().add(orderItem);
 
 
         product =createProduct(ProductMenuType.SOUPER,null);
+        orderItem =createOrderItem(ProgressStatus.PROGRESS,ProductType.WAITERREQUEST,product);
+        orderItem.setBill(bill);
+        product.getOrderItems().add(orderItem);
         productList.add( product);
-        bill.getOrderItems().add(createOrderItem(ProgressStatus.PROGRESS,ProductType.WAITERREQUEST,product));
+        bill.getOrderItems().add(orderItem);
 
         product =createProduct(ProductMenuType.SOUPER,ProductType.SPECIAL);
+        orderItem =createOrderItem(ProgressStatus.PROGRESS,ProductType.WAITERREQUEST,product);
+        orderItem.setBill(bill);
+        product.getOrderItems().add(orderItem);
         productList.add( product);
-        bill.getOrderItems().add(createOrderItem(ProgressStatus.PROGRESS,ProductType.WAITERREQUEST,product));
+        bill.getOrderItems().add(orderItem);
 
         product =createProduct(ProductMenuType.SOUPER,ProductType.SPECIAL);
         productList.add( product);
@@ -186,6 +198,7 @@ public class DataLoader implements CommandLineRunner {
         product.setProductType(productType);
         // product.setImgUrl(serverPort+absolutePath+1);
         product.setDescription("cest bon cest bon cest bon");
+        product.setOrderItems(new ArrayList<>());
         Option option = new Option();
         option.setName("Cuisson");
         option.setCheckItemList(new ArrayList<>());
