@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 public class DTOUtils {
-    public BillDTO constructBillDTOWithOrderItems(Bill bill) {
+    public BillDTO generateBillDTOWithOrderItems(Bill bill) {
         BillDTO returnValue = BillToBillDTO.instance.convert(bill);
         List<OrderItemDTO> returnBillOrderItems = new ArrayList<>();
         for (OrderItem orderItem : bill.getOrderItems()) {
@@ -90,7 +90,7 @@ public class DTOUtils {
         RestaurentTableDTO restaurentTableDTO = RestaurentTableToRestaurenTableDTO.instance.convert(restaurentTable);
         List<BillDTO> billDTOS = new ArrayList<>();
         restaurentTable.getBills().forEach(bill -> {
-            BillDTO billDTO =constructBillDTOWithOrderItems(bill);
+            BillDTO billDTO = generateBillDTOWithOrderItems(bill);
             billDTOS.add(billDTO);
         });
         restaurentTableDTO.setBillDTOList(billDTOS);

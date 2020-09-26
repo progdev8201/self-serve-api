@@ -59,4 +59,13 @@ public class KitchenService {
 
         return returnValue;
     }
+
+    public OrderItemDTO changeOrderItem (Long orderItemId,int tempsAjoute,int tempsRestant){
+        OrderItem orderItem = orderItemRepository.findById(orderItemId).get();
+        orderItem.setTempsDePreparation(tempsRestant);
+        orderItem.setTempsDePreparation((orderItem.getTempsDePreparation()+tempsAjoute));
+        return dtoUtils.generateOrderItemDTO(orderItemRepository.save(orderItem));
+
+    }
+
 }

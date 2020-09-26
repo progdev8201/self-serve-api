@@ -34,6 +34,8 @@ public class OrderItem {
 
     private int numeroTable;
 
+    private int tempsDePreparation;
+
     public int getNumeroTable() {
         return numeroTable;
     }
@@ -52,6 +54,14 @@ public class OrderItem {
 
     public Product getProduct() {
         return product;
+    }
+
+    public int getTempsDePreparation() {
+        return tempsDePreparation;
+    }
+
+    public void setTempsDePreparation(int tempsDePreparation) {
+        this.tempsDePreparation = tempsDePreparation;
     }
 
     public void setProduct(Product product) {

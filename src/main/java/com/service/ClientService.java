@@ -76,9 +76,14 @@ public class ClientService {
          restaurant =restaurantRepository.save(restaurant);
         //TODO notify kitchen
         //set valeur retour
-        BillDTO returnValue = dtoUtils.constructBillDTOWithOrderItems(restaurant.getBill().stream().filter(x -> x.getId().equals(bill.getId())).findFirst().get());
+        BillDTO returnValue = dtoUtils.generateBillDTOWithOrderItems(restaurant.getBill().stream().filter(x -> x.getId().equals(bill.getId())).findFirst().get());
 
         return returnValue;
+    }
+
+    public BillDTO fetchBill (Long billId){
+        Bill bill = billRepository.findById(billId).get();
+        return dtoUtils.generateBillDTOWithOrderItems(bill);
     }
 
 

@@ -58,6 +58,17 @@ public class OrderItemDTO {
         this.prix = prix;
     }
 
+    private int tempsDePreparation;
+
+
+    public int getTempsDePreparation() {
+        return tempsDePreparation;
+    }
+
+    public void setTempsDePreparation(int tempsDePreparation) {
+        this.tempsDePreparation = tempsDePreparation;
+    }
+
     public LocalDateTime getDelaiDePreparation() {
         return delaiDePreparation;
     }
