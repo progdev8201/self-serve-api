@@ -3,6 +3,7 @@ import com.model.enums.ProductType;
 import com.model.enums.ProgressStatus;
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -34,7 +35,7 @@ public class OrderItem {
 
     private int numeroTable;
 
-    private int tempsDePreparation;
+    private Date tempsDePreparation;
 
     public int getNumeroTable() {
         return numeroTable;
@@ -56,11 +57,11 @@ public class OrderItem {
         return product;
     }
 
-    public int getTempsDePreparation() {
+    public Date getTempsDePreparation() {
         return tempsDePreparation;
     }
 
-    public void setTempsDePreparation(int tempsDePreparation) {
+    public void setTempsDePreparation(Date tempsDePreparation) {
         this.tempsDePreparation = tempsDePreparation;
     }
 

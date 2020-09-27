@@ -21,6 +21,7 @@ import org.springframework.util.LinkedMultiValueMap;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -223,7 +224,6 @@ class KitchenRestControllerTest {
         JSONObject sendObj = new JSONObject();
         sendObj.put("orderItemId", 1);
         sendObj.put("tempsAjoute", 5);
-        sendObj.put("tempsRestant", 20);
 
         MvcResult result =mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/changeOrderItemTime").
                 content(sendObj.toString()).
@@ -237,7 +237,8 @@ class KitchenRestControllerTest {
 
 
         OrderItemDTO response = mapper.readValue(result.getResponse().getContentAsString(),OrderItemDTO.class);
-        assertEquals(25,response.getTempsDePreparation());
+        Date date = new Date(System.currentTimeMillis());
+        assertTrue(date.before(response.getTempsDePreparation()));
     }
 
 

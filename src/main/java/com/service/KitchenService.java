@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,10 +61,9 @@ public class KitchenService {
         return returnValue;
     }
 
-    public OrderItemDTO changeOrderItem (Long orderItemId,int tempsAjoute,int tempsRestant){
+    public OrderItemDTO changeOrderItem (Long orderItemId,int tempsAjoute){
         OrderItem orderItem = orderItemRepository.findById(orderItemId).get();
-        orderItem.setTempsDePreparation(tempsRestant);
-        orderItem.setTempsDePreparation((orderItem.getTempsDePreparation()+tempsAjoute));
+        orderItem.setTempsDePreparation(new Date(orderItem.getTempsDePreparation().getTime()+(tempsAjoute*60000)));
         return dtoUtils.generateOrderItemDTO(orderItemRepository.save(orderItem));
 
     }

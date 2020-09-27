@@ -13,5 +13,6 @@ public interface ProductToOrderItems {
 
     @Mapping(target = "option", ignore = true)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "tempsDePreparation", ignore = true)
     OrderItem convert(Product product);
 }

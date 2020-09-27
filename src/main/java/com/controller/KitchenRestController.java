@@ -105,9 +105,8 @@ public class KitchenRestController {
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.registerModule(new JavaTimeModule());
         Long orderItemId = mapper.readValue(json.get("orderItemId"), Long.class);
-        int tempsRestant = mapper.readValue(json.get("tempsRestant"), Integer.class);
         int tempsAjoute = mapper.readValue(json.get("tempsAjoute"), Integer.class);
-        return   ResponseEntity.ok(kitchenService.changeOrderItem(orderItemId,tempsAjoute,tempsRestant));
+        return   ResponseEntity.ok(kitchenService.changeOrderItem(orderItemId,tempsAjoute));
     }
 
 

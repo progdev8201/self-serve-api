@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -94,9 +95,10 @@ public class ClientService {
         OrderItem orderItem = ProductToOrderItems.instance.convert(product);
         orderItem.setProduct(product);
         orderItem.setOrderStatus(ProgressStatus.PROGRESS);
+        Date dateCommandeFini = new Date(System.currentTimeMillis()+(product.getTempsDePreparation())*60000);
+        orderItem.setTempsDePreparation(dateCommandeFini);
         orderItem.setBill(bill);
         orderItem.setDelaiDePreparation(LocalDateTime.now().minusMinutes(product.getTempsDePreparation()));
-        //orderItem = orderItemRepository.save(orderItem);
         orderItem.setOption(new ArrayList<>());
         for(OptionDTO optionDTO : productToAdd.getOptions()){
             Option option = OptionDTOToOption.instance.convert(optionDTO);

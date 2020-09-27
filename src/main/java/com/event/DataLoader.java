@@ -220,6 +220,7 @@ public class DataLoader implements CommandLineRunner {
         orderItem.setOrderStatus(progressStatus);
         orderItem.setProductType(productType);
         orderItem.setProduct(product);
+        orderItem.setTempsDePreparation(new Date(System.currentTimeMillis()));
         return orderItem;
     }
 }
