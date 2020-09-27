@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public class OrderItemDTO {
@@ -56,6 +57,17 @@ public class OrderItemDTO {
 
     public void setPrix(double prix) {
         this.prix = prix;
+    }
+
+    private Date tempsDePreparation;
+
+
+    public Date getTempsDePreparation() {
+        return tempsDePreparation;
+    }
+
+    public void setTempsDePreparation(Date tempsDePreparation) {
+        this.tempsDePreparation = tempsDePreparation;
     }
 
     public LocalDateTime getDelaiDePreparation() {

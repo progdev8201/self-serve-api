@@ -6,6 +6,7 @@ import com.model.dto.*;
 import com.model.entity.OrderItem;
 import com.model.enums.OrderStatus;
 import com.service.ClientService;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.util.LinkedMultiValueMap;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -213,6 +215,30 @@ class KitchenRestControllerTest {
         List<OrderItemDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), ArrayList.class);
 
         assertEquals(4,reponse.size() );
+    }
+    @Test
+    public void testAjouteTempsAjoute5Min() throws Exception {
+        MockMvc mvc;
+        mvc = initMockMvc();
+
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("orderItemId", 1);
+        sendObj.put("tempsAjoute", 5);
+
+        MvcResult result =mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/changeOrderItemTime").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+
+        OrderItemDTO response = mapper.readValue(result.getResponse().getContentAsString(),OrderItemDTO.class);
+        Date date = new Date(System.currentTimeMillis());
+        assertTrue(date.before(response.getTempsDePreparation()));
     }
 
 

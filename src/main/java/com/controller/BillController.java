@@ -33,8 +33,15 @@ public class BillController {
     @PostMapping("/makePayment")
     public ResponseEntity<Boolean> makePayment(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long billId = new ObjectMapper().readValue(json.get("billId"),Long.class);
-        Long restaurentTableId = new ObjectMapper().readValue(json.get("restaurentTableId"),Long.class);
         return ResponseEntity.ok(clientService.makePayment(billId));
     }
+    @PostMapping("/getBill")
+    public ResponseEntity<BillDTO> getBill(@RequestBody Map<String, String> json) throws JsonProcessingException {
+        Long billId = new ObjectMapper().readValue(json.get("billId"),Long.class);
+        return ResponseEntity.ok(clientService.fetchBill(billId));
+    }
+
+
+
 
 }

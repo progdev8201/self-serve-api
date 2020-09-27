@@ -3,6 +3,7 @@ package com.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.model.dto.*;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,25 @@ class BillControllerTests {
         assertEquals(1, reponse.getOrderItems().size());
         assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
     }
+    @Test
+    public void fetchBillByIdGetRightBill() throws Exception {
+        MockMvc mvc = initMockMvc();
 
+
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("billId", "1");
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/getBill").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        BillDTO response = mapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
+        assertEquals(1,response.getId());
+
+    }
     @Test
     public void testCreateMakeOrderAddItemToBillByGuest() throws Exception {
         MockMvc mvc = initMockMvc();
