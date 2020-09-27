@@ -78,25 +78,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter  implements 
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        RequestMatcher csrfRequestMatcher = new RequestMatcher() {
 
-            private RegexRequestMatcher requestMatcher =
-                    new RegexRequestMatcher("/gs-guide-websocket/", null);
-
-            @Override
-            public boolean matches(HttpServletRequest request) {
-
-                // Enable the CSRF
-                if(requestMatcher.matches(request))
-                    return true;
-                return false;
-            }
-
-        }; // new RequestMatcher
         http.cors();
-        http.csrf().requireCsrfProtectionMatcher(csrfRequestMatcher).and().authorizeRequests()
-                .antMatchers("/csrf/**","/auth/**","/h2/**").permitAll()
-                .anyRequest().authenticated()
+        http.cors().and().csrf().disable()
+                .authorizeRequests().antMatchers("/csrf/**","/auth/**","/h2/**").permitAll()
+                .anyRequest().authenticated().and().httpBasic()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

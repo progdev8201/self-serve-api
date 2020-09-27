@@ -12,18 +12,17 @@ public class SignUpForm {
     @Size(min = 6, max = 40)
     private String password;
     private String role;
-    @NotBlank
     private String telephone;
 
-    @NotBlank
     private String adresse;
 
 
-    public SignUpForm(@NotBlank @Size(min = 3, max = 50) String username, @NotBlank @Size(min = 6, max = 40) String password, String phone, String role) {
+    public SignUpForm(@NotBlank @Size(min = 3, max = 50) String username, @NotBlank @Size(min = 6, max = 40) String password, String telephone,String role) {
         this.username = username;
         this.password = password;
-        this.telephone = phone;
         this.role = role;
+        this.telephone = telephone;
+        this.adresse = "";
     }
 
     public String getTelephone() {
