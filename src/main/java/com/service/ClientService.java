@@ -47,9 +47,9 @@ public class ClientService {
         this.dtoUtils = dtoUtils;
     }
 
-    public BillDTO makeOrder(ProductDTO productToAdd, String guestUsername, Long billId, Long restaurentTableId) {
+    public BillDTO makeOrder(ProductDTO productToAdd, String guestUsername, Long billId, Long restaurentTableId,String commentaire) {
         Bill bill = findBill(billId);
-        List<OrderItem> orderItemList = findOrderItemsInDb(productToAdd, bill);
+        List<OrderItem> orderItemList = findOrderItemsInDb(productToAdd, bill,commentaire);
         Guest guest = guestRepository.findByUsername(guestUsername).get();
         //TODO:meilleur solution?? a voir mais il faut retrouver le restaurent pour l'associé au bill
         RestaurentTable restaurentTable = restaurentTableRepository.findById(restaurentTableId).get();
@@ -88,7 +88,7 @@ public class ClientService {
     }
 
 
-    private List<OrderItem> findOrderItemsInDb(ProductDTO productToAdd, Bill bill) {
+    private List<OrderItem> findOrderItemsInDb(ProductDTO productToAdd, Bill bill,String commentaire) {
         List<OrderItem> orderItems = new ArrayList<>();
         Product product = productRepository.findById(productToAdd.getId()).get();
 
@@ -99,6 +99,7 @@ public class ClientService {
         orderItem.setTempsDePreparation(dateCommandeFini);
         orderItem.setBill(bill);
         orderItem.setDelaiDePreparation(LocalDateTime.now().minusMinutes(product.getTempsDePreparation()));
+        orderItem.setCommentaires(commentaire);
         orderItem.setOption(new ArrayList<>());
         for(OptionDTO optionDTO : productToAdd.getOptions()){
             Option option = OptionDTOToOption.instance.convert(optionDTO);

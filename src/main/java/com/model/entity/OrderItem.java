@@ -26,6 +26,8 @@ public class OrderItem {
     @Column(length = 60)
     private ProductType productType;
 
+    private String commentaires;
+
     private double prix;
     //quand le plat doit etre pret
     private LocalDateTime delaiDePreparation ;
@@ -36,6 +38,15 @@ public class OrderItem {
     private int numeroTable;
 
     private Date tempsDePreparation;
+
+
+    public String getCommentaires() {
+        return commentaires;
+    }
+
+    public void setCommentaires(String commentaires) {
+        this.commentaires = commentaires;
+    }
 
     public int getNumeroTable() {
         return numeroTable;
