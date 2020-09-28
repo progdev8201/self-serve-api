@@ -46,6 +46,7 @@ class BillControllerTests {
         sendObj.put("guestUsername", "guest@mail.com");
         sendObj.put("restaurentTableId", "1");
         sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
+        sendObj.put("commentaire", "po de bacon po de bacon po de bacon");
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
@@ -58,6 +59,7 @@ class BillControllerTests {
         BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
 
         assertEquals(1,reponse.getOrderItems().get(0).getOption().size());
+        assertEquals("po de bacon po de bacon po de bacon",reponse.getOrderItems().get(0).getCommentaires());
         assertEquals(1,reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
         assertEquals(29.99, reponse.getPrixTotal());
@@ -98,7 +100,7 @@ class BillControllerTests {
         sendObj.put("guestUsername", "guest@mail.com");
         sendObj.put("restaurentTableId", "1");
         sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
-
+        sendObj.put("commentaire", "po de bacon po de bacon po de bacon");
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
@@ -119,6 +121,7 @@ class BillControllerTests {
         sendObj.put("billDTO", objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername", "guest@mail.com");
         sendObj.put("restaurentTableId", "1");
+        sendObj.put("commentaire", "po de bacon po de bacon po de bacon");
         sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
 
         result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
@@ -131,6 +134,7 @@ class BillControllerTests {
         reponse = objectMapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
 
         assertEquals(1,reponse.getOrderItems().get(0).getOption().size());
+        assertEquals("po de bacon po de bacon po de bacon",reponse.getOrderItems().get(0).getCommentaires());
         assertEquals(1,reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
         assertEquals(59.98, reponse.getPrixTotal());
@@ -220,7 +224,7 @@ class BillControllerTests {
         sendObj.put("guestUsername", "client1@mail.com");
         sendObj.put("restaurentTableId", "1");
         sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
-
+        sendObj.put("commentaire", "po de bacon po de bacon po de bacon");
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
@@ -233,6 +237,7 @@ class BillControllerTests {
         BillDTO reponse = objectMapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
 
         assertEquals(1,reponse.getOrderItems().get(0).getOption().size());
+        assertEquals("po de bacon po de bacon po de bacon",reponse.getOrderItems().get(0).getCommentaires());
         assertEquals(1,reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
         assertEquals(29.99, reponse.getPrixTotal());
@@ -255,6 +260,7 @@ class BillControllerTests {
         sendObj.put("guestUsername", "guest@mail.com");
         sendObj.put("restaurentTableId", "1");
         sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
+        sendObj.put("commentaire", "po de bacon po de bacon po de bacon");
 
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").

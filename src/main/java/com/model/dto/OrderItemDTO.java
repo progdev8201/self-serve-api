@@ -26,6 +26,16 @@ public class OrderItemDTO {
 
     private ProductType productType;
 
+    private String commentaires;
+
+
+    public String getCommentaires() {
+        return commentaires;
+    }
+
+    public void setCommentaires(String commentaires) {
+        this.commentaires = commentaires;
+    }
 
     public Long getId() {
         return id;
