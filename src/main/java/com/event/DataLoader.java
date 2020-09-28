@@ -70,6 +70,8 @@ public class DataLoader implements CommandLineRunner {
         restaurant.setName("le resto chico");
         restaurantRepository.save(restaurant);
 
+
+        //todo trop long pour rien mieux de faire un loop
         //create product list
         List<Product> productList = new ArrayList<>();
         Product product =createProduct();

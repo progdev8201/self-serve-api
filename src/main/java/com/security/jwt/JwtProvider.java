@@ -29,7 +29,7 @@ public class JwtProvider {
 
         Map<String, Object> claimsMap = new HashMap<>();
         try {
-            claimsMap.put("rol", userPrincipal.getAuthorities().toArray()[0].toString());
+            claimsMap.put("role", userPrincipal.getAuthorities().toArray()[0].toString());
         } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
             return null;
