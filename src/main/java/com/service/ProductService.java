@@ -66,6 +66,16 @@ public class ProductService {
         return menuRepository.findById(id).get().getProducts();
     }
 
+    public List<ProductDTO> findAllWaiterRequestProductFromMenu(Long id) {
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        menuRepository.findById(id).get().getProducts().stream().forEach(product -> {
+            if(product.getProductType() == ProductType.WAITERREQUEST){
+                productDTOS.add(dtoUtils.generateProductDTO(product));
+            }
+        });
+
+        return productDTOS;
+    }
     public ProductDTO create(ProductDTO productDTO, Long menuId) {
         List<Option> options = new ArrayList<>();
         List<CheckItem> checkItems = new ArrayList<>();

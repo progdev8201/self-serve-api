@@ -77,14 +77,14 @@ public class DataLoader implements CommandLineRunner {
         //create product list
         List<Product> productList = new ArrayList<>();
 
-        Product product =createProduct(ProductMenuType.DEJEUNER,null);
+        Product product =createProduct(ProductMenuType.DEJEUNER,null,"download.jpg");
         orderItem = createOrderItem(ProgressStatus.READY,ProductType.SPECIAL,product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
         productList.add( product);
         bill.getOrderItems().add(orderItem);
 
-        product =createProduct(ProductMenuType.DINER,null);
+        product =createProduct(ProductMenuType.DINER,null,"download.jpg");
         orderItem = createOrderItem(ProgressStatus.READY,ProductType.SPECIAL,product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
@@ -92,35 +92,44 @@ public class DataLoader implements CommandLineRunner {
         bill.getOrderItems().add(orderItem);
 
 
-        product =createProduct(ProductMenuType.SOUPER,null);
+        product =createProduct(ProductMenuType.SOUPER,null,"download.jpg");
         orderItem =createOrderItem(ProgressStatus.PROGRESS,ProductType.WAITERREQUEST,product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
         productList.add( product);
         bill.getOrderItems().add(orderItem);
 
-        product =createProduct(ProductMenuType.SOUPER,ProductType.SPECIAL);
+        product =createProduct(ProductMenuType.SOUPER,ProductType.SPECIAL,"download.jpg");
         orderItem =createOrderItem(ProgressStatus.PROGRESS,ProductType.WAITERREQUEST,product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
         productList.add( product);
         bill.getOrderItems().add(orderItem);
 
-        product =createProduct(ProductMenuType.SOUPER,ProductType.SPECIAL);
+        product =createProduct(ProductMenuType.SOUPER,ProductType.SPECIAL,"download.jpg");
         productList.add( product);
 
-        product =createProduct(ProductMenuType.SOUPER,ProductType.SPECIAL);
+        product =createProduct(ProductMenuType.SOUPER,ProductType.SPECIAL,"download.jpg");
         productList.add( product);
 
-        product =createProduct(ProductMenuType.DINER,ProductType.CHEFCHOICE);
+        product =createProduct(ProductMenuType.DINER,ProductType.CHEFCHOICE,"download.jpg");
         productList.add( product);
 
-        product =createProduct(ProductMenuType.DINER,ProductType.CHEFCHOICE);
+        product =createProduct(ProductMenuType.DINER,ProductType.CHEFCHOICE,"download.jpg");
         productList.add( product);
 
-        product =createProduct(ProductMenuType.DINER,ProductType.CHEFCHOICE);
+        product =createProduct(ProductMenuType.DINER,ProductType.CHEFCHOICE,"download.jpg");
         productList.add( product);
-
+        product =createProduct(null,ProductType.WAITERREQUEST,"fork.png");
+        productList.add( product);
+        product =createProduct(null,ProductType.WAITERREQUEST,"knife.png");
+        productList.add( product);
+        product =createProduct(null,ProductType.WAITERREQUEST,"salt.png");
+        productList.add( product);
+        product =createProduct(null,ProductType.WAITERREQUEST,"sauce.png");
+        productList.add( product);
+        product =createProduct(null,ProductType.WAITERREQUEST,"sugar.png");
+        productList.add( product);
         //create menu
         Menu menu = new Menu();
         menu.setProducts(productList);
@@ -182,13 +191,13 @@ public class DataLoader implements CommandLineRunner {
         ownerRepository.save(ownerEntity);
     }
 
-    private Product createProduct(ProductMenuType productMenuType,ProductType productType) throws IOException {
+    private Product createProduct(ProductMenuType productMenuType,ProductType productType,String fileToCopy) throws IOException {
         Product product = new Product();
         product.setName("le steak chico");
         product.setPrix(29.99);
         product.setTempsDePreparation(30);
 
-        String pathDansProjet=fileBasePath + "download.jpg";
+        String pathDansProjet=fileBasePath + fileToCopy;
         Path currentRelativePath = Paths.get("");
         String absolutePath = currentRelativePath.toAbsolutePath().toString();
         File imgFile = new File(absolutePath+pathDansProjet);

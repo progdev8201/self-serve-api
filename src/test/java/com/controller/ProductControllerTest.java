@@ -88,6 +88,20 @@ class ProductControllerTest {
     }
 
     @Test
+    public void testFetchMenuWaiterRequest() throws Exception {
+        MockMvc mvc = initMockMvc();
+        MvcResult result= mvc.perform(MockMvcRequestBuilders.get(   "/product/findWaiterRequestProducts/{id}","1").
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        ObjectMapper mapper=new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        List<ProductDTO> productDTOS = mapper.readValue(result.getResponse().getContentAsString(),List.class);
+        assertEquals(5,productDTOS.size());
+    }
+
+    @Test
     public void testSetSpecialPourProduitChercherTypeProduitNonModifie() throws Exception {
         MockMvc mvc = initMockMvc();
         LinkedMultiValueMap<String,String> requestParams = new LinkedMultiValueMap<>();

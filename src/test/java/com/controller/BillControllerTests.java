@@ -293,7 +293,7 @@ class BillControllerTests {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setRestaurant(restaurantDTO);
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(1);
+        productDTO.setId(4);
         productDTO.setMenu(menuDTO);
         productDTO.setOptions(new ArrayList<>());
         OptionDTO optionDTO = new OptionDTO();

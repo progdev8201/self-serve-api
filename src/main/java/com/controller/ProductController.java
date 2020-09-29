@@ -52,6 +52,10 @@ public class ProductController {
         return productService.create(productDTO, menuId);
     }
 
+    @GetMapping("/findWaiterRequestProducts/{id}")
+    public List<ProductDTO> findAllWaiterRequestProductFromMenu(@PathVariable Long id) {
+        return productService.findAllWaiterRequestProductFromMenu(id);
+    }
     @PutMapping
     public void update(@RequestBody ProductDTO productDTO) {
         productService.update(productDTO);
