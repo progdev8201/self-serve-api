@@ -98,7 +98,7 @@ class ProductControllerTest {
         ObjectMapper mapper=new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         List<ProductDTO> productDTOS = mapper.readValue(result.getResponse().getContentAsString(),List.class);
-        assertEquals(5,productDTOS.size());
+        assertEquals(6,productDTOS.size());
     }
 
     @Test

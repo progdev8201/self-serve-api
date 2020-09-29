@@ -33,25 +33,27 @@ public class KitchenService {
     @Autowired
     DTOUtils dtoUtils;
 
-    public OrderItemDTO changeOrderItemStatus(OrderItemDTO orderItemDTO){
+    public OrderItemDTO changeOrderItemStatus(OrderItemDTO orderItemDTO) {
         OrderItem orderItem = orderItemRepository.findById(orderItemDTO.getId()).get();
         orderItem.setOrderStatus(ProgressStatus.READY);
-        orderItem=orderItemRepository.save(orderItem);
+        orderItem = orderItemRepository.save(orderItem);
 
         OrderItemDTO returnValue = OrderItemToOrderItemDTO.instance.convert(orderItem);
         returnValue.setProduct(dtoUtils.generateProductDTO(orderItem.getProduct()));
         return returnValue;
     }
 
-    public List<OrderItemDTO> fetchWaiterRequest(Long restaurantId){
+    public List<OrderItemDTO> fetchWaiterRequest(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
         List<OrderItem> orderItemList = new ArrayList<>();
         List<OrderItemDTO> returnValue = new ArrayList<>();
 
-        restaurant.getBill().forEach( bill -> {
-            orderItemList.addAll(bill.getOrderItems().stream().filter(  orderItem ->
-                                                                        (orderItem.getOrderStatus()== ProgressStatus.READY)||(orderItem.getProductType()== ProductType.WAITERREQUEST))
-                                                                        .collect(Collectors.toList()));
+        restaurant.getBill().forEach(bill -> {
+            orderItemList.addAll(bill.getOrderItems().stream().filter(orderItem ->
+                            (orderItem.getOrderStatus() == ProgressStatus.READY) ||
+                            (orderItem.getProductType() == ProductType.WAITERREQUEST) ||
+                            (orderItem.getProductType() == ProductType.WAITERCALL))
+                    .collect(Collectors.toList()));
         });
 
         orderItemList.forEach(orderItem -> {
@@ -61,9 +63,9 @@ public class KitchenService {
         return returnValue;
     }
 
-    public OrderItemDTO changeOrderItem (Long orderItemId,int tempsAjoute){
+    public OrderItemDTO changeOrderItem(Long orderItemId, int tempsAjoute) {
         OrderItem orderItem = orderItemRepository.findById(orderItemId).get();
-        orderItem.setTempsDePreparation(new Date(orderItem.getTempsDePreparation().getTime()+(tempsAjoute*60000)));
+        orderItem.setTempsDePreparation(new Date(orderItem.getTempsDePreparation().getTime() + (tempsAjoute * 60000)));
         return dtoUtils.generateOrderItemDTO(orderItemRepository.save(orderItem));
 
     }

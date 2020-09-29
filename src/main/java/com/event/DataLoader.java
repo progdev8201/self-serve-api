@@ -120,16 +120,32 @@ public class DataLoader implements CommandLineRunner {
 
         product =createProduct(ProductMenuType.DINER,ProductType.CHEFCHOICE,"download.jpg");
         productList.add( product);
+
         product =createProduct(null,ProductType.WAITERREQUEST,"fork.png");
+        product.setName("FORK");
         productList.add( product);
+
         product =createProduct(null,ProductType.WAITERREQUEST,"knife.png");
+        product.setName("KNIFE");
         productList.add( product);
+
         product =createProduct(null,ProductType.WAITERREQUEST,"salt.png");
+        product.setName("SALT");
         productList.add( product);
+
         product =createProduct(null,ProductType.WAITERREQUEST,"sauce.png");
+        product.setName("SAUCE");
         productList.add( product);
+
         product =createProduct(null,ProductType.WAITERREQUEST,"sugar.png");
+        product.setName("SUGAR");
         productList.add( product);
+
+        product =createProduct(null,ProductType.WAITERCALL,"sugar.png");
+        product.setName("CALL WAITER");
+        productList.add( product);
+
+
         //create menu
         Menu menu = new Menu();
         menu.setProducts(productList);

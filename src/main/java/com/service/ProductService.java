@@ -69,7 +69,7 @@ public class ProductService {
     public List<ProductDTO> findAllWaiterRequestProductFromMenu(Long id) {
         List<ProductDTO> productDTOS = new ArrayList<>();
         menuRepository.findById(id).get().getProducts().stream().forEach(product -> {
-            if(product.getProductType() == ProductType.WAITERREQUEST){
+            if((product.getProductType() == ProductType.WAITERREQUEST)||(product.getProductType() == ProductType.WAITERCALL)){
                 productDTOS.add(dtoUtils.generateProductDTO(product));
             }
         });

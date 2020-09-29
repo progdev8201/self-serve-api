@@ -38,6 +38,18 @@ public class Product {
     private ImgFile imgFile;
 
 
+    @OneToMany(cascade = CascadeType.PERSIST)
+    private List<Rate> rates;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 60)
+    private ProductType productType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 60)
+    private ProductMenuType productMenuType;
+
+
     public List<OrderItem> getOrderItems() {
         return orderItems;
     }
@@ -61,18 +73,6 @@ public class Product {
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
     }
-
-    @OneToMany(cascade = CascadeType.PERSIST)
-    private List<Rate> rates;
-
-    @Enumerated(EnumType.STRING)
-    @Column(length = 60)
-    private ProductType productType;
-
-    @Enumerated(EnumType.STRING)
-    @Column(length = 60)
-    private ProductMenuType productMenuType;
-
 
     public ProductMenuType getProductMenuType() {
         return productMenuType;
