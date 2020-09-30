@@ -67,7 +67,7 @@ class KitchenRestControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         List<RestaurentTableDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), List.class);
-        assertEquals(1, reponse.size());
+        assertEquals(5, reponse.size());
     }
 
     @Test
@@ -110,9 +110,9 @@ class KitchenRestControllerTest {
                 andReturn();
         List<LinkedHashMap<String, Object>> reponse = mapper.readValue(result.getResponse().getContentAsString(), ArrayList.class);
 
-        ArrayList billDTOS = (ArrayList) reponse.get(0).get("billDTOList");
-        // billDTOList
-        // List<BillDTO> billDTOS =reponse.get("billDTOList");
+        ArrayList billDTOS = (ArrayList) reponse.get(0).get("bills");
+        // bills
+        // List<BillDTO> billDTOS =reponse.get("bills");
         assertEquals(1, billDTOS.size());
 
         clientService.makePayment(responseBill.getId());
@@ -128,9 +128,9 @@ class KitchenRestControllerTest {
                 andReturn();
         reponse = mapper.readValue(result.getResponse().getContentAsString(), ArrayList.class);
 
-        billDTOS = (ArrayList) reponse.get(0).get("billDTOList");
-        // billDTOList
-        // List<BillDTO> billDTOS =reponse.get("billDTOList");
+        billDTOS = (ArrayList) reponse.get(0).get("bills");
+        // bills
+        // List<BillDTO> billDTOS =reponse.get("bills");
         assertEquals(0, billDTOS.size());
     }
 
@@ -188,7 +188,7 @@ class KitchenRestControllerTest {
                 andReturn();
         List<LinkedHashMap<String, Object>> reponse = mapper.readValue(result.getResponse().getContentAsString(), ArrayList.class);
 
-        ArrayList billDTOS = (ArrayList) reponse.get(0).get("billDTOList");
+        ArrayList billDTOS = (ArrayList) reponse.get(0).get("bills");
         ArrayList orderItemList = (ArrayList) ((LinkedHashMap) billDTOS.get(0)).get("orderItems");
         assertEquals(OrderStatus.READY.toString(), ((LinkedHashMap) orderItemList.get(0)).get("orderStatus"));
     }

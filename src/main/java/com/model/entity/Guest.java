@@ -72,15 +72,4 @@ public class Guest {
     public void setBills(List<Bill> bills) {
         this.bills = bills;
     }
-
-    @Override
-    public String toString() {
-        return "Guest{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", bills=" + bills +
-                ", roles=" + roles +
-                '}';
-    }
 }

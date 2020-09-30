@@ -12,14 +12,25 @@ public class RestaurentTable {
     private int tableNumber;
 
     //Todo: rajouter un s a bill
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private List<Bill> bills;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private Restaurant restaurant;
 
 
-    public Restaurant getRestaurentTable() {
+    @OneToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
+    private ImgFile imgFile;
+
+    public ImgFile getImgFile() {
+        return imgFile;
+    }
+
+    public void setImgFile(ImgFile imgFile) {
+        this.imgFile = imgFile;
+    }
+
+    public Restaurant getRestaurant() {
         return restaurant;
     }
 

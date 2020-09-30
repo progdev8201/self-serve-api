@@ -49,13 +49,4 @@ public class  CheckItem {
     public void setActive(boolean active) {
         isActive = active;
     }
-
-    @Override
-    public String toString() {
-        return "CheckItem{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", option=" + option +
-                '}';
-    }
 }

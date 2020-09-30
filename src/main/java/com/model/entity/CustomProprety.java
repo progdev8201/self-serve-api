@@ -36,13 +36,4 @@ public class CustomProprety {
     public void setLogoImage(String logoImage) {
         this.logoImage = logoImage;
     }
-
-    @Override
-    public String toString() {
-        return "CustomProprety{" +
-                "id=" + id +
-                ", backGroundColor='" + backGroundColor + '\'' +
-                ", logoImage='" + logoImage + '\'' +
-                '}';
-    }
 }

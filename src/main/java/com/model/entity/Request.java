@@ -40,13 +40,4 @@ public class Request {
     public void setRequestType(RequestType requestType) {
         this.requestType = requestType;
     }
-
-    @Override
-    public String toString() {
-        return "Request{" +
-                "id=" + id +
-                ", orderItem=" + orderItem +
-                ", requestType=" + requestType +
-                '}';
-    }
 }

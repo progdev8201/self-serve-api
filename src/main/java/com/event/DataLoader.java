@@ -1,11 +1,14 @@
 package com.event;
 
+import com.google.zxing.WriterException;
 import com.model.dto.OrderItemDTO;
+import com.model.dto.RestaurantDTO;
 import com.model.dto.SignUpForm;
 import com.model.entity.*;
 import com.model.enums.*;
 import com.repository.*;
 import com.service.AuthentificationService;
+import com.service.KitchenService;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +57,9 @@ public class DataLoader implements CommandLineRunner {
     OwnerRepository ownerRepository;
 
     @Autowired
+    private KitchenService kitchenService;
+
+    @Autowired
     AuthentificationService authentificationService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataLoader.class);
@@ -63,111 +69,96 @@ public class DataLoader implements CommandLineRunner {
         createAccount();
     }
 
-    private void createAccount() throws IOException {
+    private void createAccount() throws IOException, WriterException {
         //create restaurant
         Restaurant restaurant = new Restaurant();
-        restaurant.setName("le resto chico");
         restaurantRepository.save(restaurant);
         Bill bill = new Bill();
         bill.setOrderItems(new ArrayList<>());
-        OrderItem orderItem ;
+        OrderItem orderItem;
 
 
         //todo trop long pour rien mieux de faire un loop
         //create product list
         List<Product> productList = new ArrayList<>();
 
-        Product product =createProduct(ProductMenuType.DEJEUNER,null,"download.jpg");
-        orderItem = createOrderItem(ProgressStatus.READY,ProductType.SPECIAL,product);
+        Product product = createProduct(ProductMenuType.DEJEUNER, null, "download.jpg");
+        orderItem = createOrderItem(ProgressStatus.READY, ProductType.SPECIAL, product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
-        productList.add( product);
+        productList.add(product);
         bill.getOrderItems().add(orderItem);
 
-        product =createProduct(ProductMenuType.DINER,null,"download.jpg");
-        orderItem = createOrderItem(ProgressStatus.READY,ProductType.SPECIAL,product);
+        product = createProduct(ProductMenuType.DINER, null, "download.jpg");
+        orderItem = createOrderItem(ProgressStatus.READY, ProductType.SPECIAL, product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
-        productList.add( product);
+        productList.add(product);
         bill.getOrderItems().add(orderItem);
 
 
-        product =createProduct(ProductMenuType.SOUPER,null,"download.jpg");
-        orderItem =createOrderItem(ProgressStatus.PROGRESS,ProductType.WAITERREQUEST,product);
+        product = createProduct(ProductMenuType.SOUPER, null, "download.jpg");
+        orderItem = createOrderItem(ProgressStatus.PROGRESS, ProductType.WAITERREQUEST, product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
-        productList.add( product);
+        productList.add(product);
         bill.getOrderItems().add(orderItem);
 
-        product =createProduct(ProductMenuType.SOUPER,ProductType.SPECIAL,"download.jpg");
-        orderItem =createOrderItem(ProgressStatus.PROGRESS,ProductType.WAITERREQUEST,product);
+        product = createProduct(ProductMenuType.SOUPER, ProductType.SPECIAL, "download.jpg");
+        orderItem = createOrderItem(ProgressStatus.PROGRESS, ProductType.WAITERREQUEST, product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
-        productList.add( product);
+        productList.add(product);
         bill.getOrderItems().add(orderItem);
 
-        product =createProduct(ProductMenuType.SOUPER,ProductType.SPECIAL,"download.jpg");
-        productList.add( product);
+        product = createProduct(ProductMenuType.SOUPER, ProductType.SPECIAL, "download.jpg");
+        productList.add(product);
 
-        product =createProduct(ProductMenuType.SOUPER,ProductType.SPECIAL,"download.jpg");
-        productList.add( product);
+        product = createProduct(ProductMenuType.SOUPER, ProductType.SPECIAL, "download.jpg");
+        productList.add(product);
 
-        product =createProduct(ProductMenuType.DINER,ProductType.CHEFCHOICE,"download.jpg");
-        productList.add( product);
+        product = createProduct(ProductMenuType.DINER, ProductType.CHEFCHOICE, "download.jpg");
+        productList.add(product);
 
-        product =createProduct(ProductMenuType.DINER,ProductType.CHEFCHOICE,"download.jpg");
-        productList.add( product);
+        product = createProduct(ProductMenuType.DINER, ProductType.CHEFCHOICE, "download.jpg");
+        productList.add(product);
 
-        product =createProduct(ProductMenuType.DINER,ProductType.CHEFCHOICE,"download.jpg");
-        productList.add( product);
+        product = createProduct(ProductMenuType.DINER, ProductType.CHEFCHOICE, "download.jpg");
+        productList.add(product);
 
-        product =createProduct(null,ProductType.WAITERREQUEST,"fork.png");
+        product = createProduct(null, ProductType.WAITERREQUEST, "fork.png");
         product.setName("FORK");
-        productList.add( product);
+        productList.add(product);
 
-        product =createProduct(null,ProductType.WAITERREQUEST,"knife.png");
+        product = createProduct(null, ProductType.WAITERREQUEST, "knife.png");
         product.setName("KNIFE");
-        productList.add( product);
+        productList.add(product);
 
-        product =createProduct(null,ProductType.WAITERREQUEST,"salt.png");
+        product = createProduct(null, ProductType.WAITERREQUEST, "salt.png");
         product.setName("SALT");
-        productList.add( product);
+        productList.add(product);
 
-        product =createProduct(null,ProductType.WAITERREQUEST,"sauce.png");
+        product = createProduct(null, ProductType.WAITERREQUEST, "sauce.png");
         product.setName("SAUCE");
-        productList.add( product);
+        productList.add(product);
 
-        product =createProduct(null,ProductType.WAITERREQUEST,"sugar.png");
+        product = createProduct(null, ProductType.WAITERREQUEST, "sugar.png");
         product.setName("SUGAR");
-        productList.add( product);
+        productList.add(product);
 
-        product =createProduct(null,ProductType.WAITERCALL,"sugar.png");
+        product = createProduct(null, ProductType.WAITERCALL, "sugar.png");
         product.setName("CALL WAITER");
-        productList.add( product);
+        productList.add(product);
 
 
         //create menu
         Menu menu = new Menu();
         menu.setProducts(productList);
-        for(Product x:productList){
+        for (Product x : productList) {
             x.setMenu(menu);
 
         }
 
-        RestaurentTable restaurentTable = new RestaurentTable();
-        restaurentTable.setTableNumber(1);
-
-        restaurant = new Restaurant();
-        restaurant.setBill(new ArrayList<>());
-        restaurant.setName("le resto chico");
-        menu.setRestaurant(restaurant);
-        restaurant.setMenu(menu);
-        restaurant.getBill().add(bill);
-        restaurant.setRestaurentTables(new ArrayList<>());
-        restaurant.getRestaurentTables().add(restaurentTable);
-        restaurant = restaurantRepository.save(restaurant);
-
-        LOGGER.info("Restaurant menuid: "+restaurant.getMenu().getId());
 
         if (roleRepository.findAll().size() == 0) {
             LOGGER.info("READY!...Populating database...");
@@ -199,25 +190,31 @@ public class DataLoader implements CommandLineRunner {
             authentificationService.registerUser(owner);
 
 
-            System.out.println("APPLICATION IS READY!!!");
-
         }
-        Owner ownerEntity = ownerRepository.findByUsername("owner@mail.com").get();
-        ownerEntity.getRestaurantList().add(restaurant);
-        ownerRepository.save(ownerEntity);
+        RestaurantDTO restaurantDTO = kitchenService.createRestaurant("owner@mail.com", "le monde chico", 5);
+        restaurant = restaurantRepository.findById(restaurantDTO.getId()).get();
+        restaurant.setBill(new ArrayList<>());
+        restaurant.setName("le resto chico");
+        menu.setRestaurant(restaurant);
+        restaurant.setMenu(menu);
+        restaurant.getBill().add(bill);
+        restaurantRepository.save(restaurant);
+        restaurant = restaurantRepository.findById(restaurantDTO.getId()).get();
+        LOGGER.info("Restaurant menuid: " + restaurant.getMenu().getId());
+        System.out.println("APPLICATION IS READY!!!");
     }
 
-    private Product createProduct(ProductMenuType productMenuType,ProductType productType,String fileToCopy) throws IOException {
+    private Product createProduct(ProductMenuType productMenuType, ProductType productType, String fileToCopy) throws IOException {
         Product product = new Product();
         product.setName("le steak chico");
         product.setPrix(29.99);
         product.setTempsDePreparation(30);
 
-        String pathDansProjet=fileBasePath + fileToCopy;
+        String pathDansProjet = fileBasePath + fileToCopy;
         Path currentRelativePath = Paths.get("");
         String absolutePath = currentRelativePath.toAbsolutePath().toString();
-        File imgFile = new File(absolutePath+pathDansProjet);
-        ImgFile img= new ImgFile();
+        File imgFile = new File(absolutePath + pathDansProjet);
+        ImgFile img = new ImgFile();
         img.setData(FileUtils.readFileToByteArray(imgFile));
         img.setFileType("image");
         img.setProduct(product);
@@ -243,7 +240,8 @@ public class DataLoader implements CommandLineRunner {
         product.getOptions().add(option);
         return product;
     }
-    public OrderItem createOrderItem(ProgressStatus progressStatus,ProductType productType,Product product){
+
+    public OrderItem createOrderItem(ProgressStatus progressStatus, ProductType productType, Product product) {
         OrderItem orderItem = new OrderItem();
         orderItem.setOrderStatus(progressStatus);
         orderItem.setProductType(productType);

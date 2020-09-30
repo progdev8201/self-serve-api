@@ -7,12 +7,21 @@ public class RestaurentTableDTO {
 
     private int tableNumber;
 
-    private List<BillDTO> billDTOList;
+    private List<BillDTO> bills;
 
     private MenuDTO menuDTO;
 
-    private List <RestaurantDTO> restaurant;
+    private List<RestaurantDTO> restaurant;
 
+    private ImgFileDTO imgFileDTO;
+
+    public ImgFileDTO getImgFileDTO() {
+        return imgFileDTO;
+    }
+
+    public void setImgFileDTO(ImgFileDTO imgFileDTO) {
+        this.imgFileDTO = imgFileDTO;
+    }
 
     public Long getId() {
         return id;
@@ -30,12 +39,12 @@ public class RestaurentTableDTO {
         this.tableNumber = tableNumber;
     }
 
-    public List<BillDTO> getBillDTOList() {
-        return billDTOList;
+    public List<BillDTO> getBills() {
+        return bills;
     }
 
-    public void setBillDTOList(List<BillDTO> billDTOList) {
-        this.billDTOList = billDTOList;
+    public void setBills(List<BillDTO> bills) {
+        this.bills = bills;
     }
 
     public MenuDTO getMenuDTO() {

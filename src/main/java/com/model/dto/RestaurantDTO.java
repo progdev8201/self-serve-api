@@ -7,7 +7,7 @@ public class RestaurantDTO {
 
     private String name;
 
-    private List<BillDTO> billList;
+    private List<BillDTO> bill;
 
     private OwnerDTO owner;
 
@@ -34,12 +34,12 @@ public class RestaurantDTO {
         this.name = name;
     }
 
-    public List<BillDTO> getBillList() {
-        return billList;
+    public List<BillDTO> getBill() {
+        return bill;
     }
 
-    public void setBillList(List<BillDTO> billList) {
-        this.billList = billList;
+    public void setBill(List<BillDTO> bill) {
+        this.bill = bill;
     }
 
     public OwnerDTO getOwner() {
@@ -79,7 +79,7 @@ public class RestaurantDTO {
         return "RestaurantDTO{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", billList=" + billList +
+                ", billList=" + bill +
                 ", owner=" + owner +
                 ", customProprety=" + customProprety +
                 ", menu=" + menu +

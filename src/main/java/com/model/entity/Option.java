@@ -37,13 +37,4 @@ public class Option {
     public void setCheckItemList(List<CheckItem> checkItemList) {
         this.checkItemList = checkItemList;
     }
-
-    @Override
-    public String toString() {
-        return "Option{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", checkItemList=" + checkItemList +
-                '}';
-    }
 }

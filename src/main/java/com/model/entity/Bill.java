@@ -13,13 +13,13 @@ public class Bill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private List<OrderItem> orderItems;
 
     @ManyToOne
     private Guest orderCustomer;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private RestaurentTable restaurentTable;
 
     private LocalDateTime date;
@@ -31,7 +31,7 @@ public class Bill {
     @Column(length = 60)
     private BillStatus billStatus;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private Restaurant restaurant;
 
     public RestaurentTable getRestaurentTable() {

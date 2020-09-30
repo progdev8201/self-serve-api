@@ -11,7 +11,7 @@ public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
+    @ManyToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private Product product;
 
     @Enumerated(EnumType.STRING)
@@ -19,7 +19,7 @@ public class OrderItem {
     @Column(length = 60)
     private ProgressStatus orderStatus;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private  Bill bill;
 
     @Enumerated(EnumType.STRING)
@@ -40,22 +40,6 @@ public class OrderItem {
     private Date tempsDePreparation;
 
 
-    public String getCommentaires() {
-        return commentaires;
-    }
-
-    public void setCommentaires(String commentaires) {
-        this.commentaires = commentaires;
-    }
-
-    public int getNumeroTable() {
-        return numeroTable;
-    }
-
-    public void setNumeroTable(int numeroTable) {
-        this.numeroTable = numeroTable;
-    }
-
     public Long getId() {
         return id;
     }
@@ -68,14 +52,6 @@ public class OrderItem {
         return product;
     }
 
-    public Date getTempsDePreparation() {
-        return tempsDePreparation;
-    }
-
-    public void setTempsDePreparation(Date tempsDePreparation) {
-        this.tempsDePreparation = tempsDePreparation;
-    }
-
     public void setProduct(Product product) {
         this.product = product;
     }
@@ -86,6 +62,30 @@ public class OrderItem {
 
     public void setOrderStatus(ProgressStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public Bill getBill() {
+        return bill;
+    }
+
+    public void setBill(Bill bill) {
+        this.bill = bill;
+    }
+
+    public ProductType getProductType() {
+        return productType;
+    }
+
+    public void setProductType(ProductType productType) {
+        this.productType = productType;
+    }
+
+    public String getCommentaires() {
+        return commentaires;
+    }
+
+    public void setCommentaires(String commentaires) {
+        this.commentaires = commentaires;
     }
 
     public double getPrix() {
@@ -112,32 +112,20 @@ public class OrderItem {
         this.option = option;
     }
 
-    public Bill getBill() {
-        return bill;
+    public int getNumeroTable() {
+        return numeroTable;
     }
 
-    public void setBill(Bill bill) {
-        this.bill = bill;
+    public void setNumeroTable(int numeroTable) {
+        this.numeroTable = numeroTable;
     }
 
-    public ProductType getProductType() {
-        return productType;
+    public Date getTempsDePreparation() {
+        return tempsDePreparation;
     }
 
-    public void setProductType(ProductType productType) {
-        this.productType = productType;
-    }
-
-    @Override
-    public String toString() {
-        return "OrderItem{" +
-                "id=" + id +
-                ", product=" + product +
-                ", orderStatus=" + orderStatus +
-                ", prix=" + prix +
-                ", delaiDePreparation=" + delaiDePreparation +
-                ", option=" + option +
-                '}';
+    public void setTempsDePreparation(Date tempsDePreparation) {
+        this.tempsDePreparation = tempsDePreparation;
     }
 }
 

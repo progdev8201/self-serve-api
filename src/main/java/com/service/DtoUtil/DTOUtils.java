@@ -88,12 +88,13 @@ public class DTOUtils {
     public RestaurentTableDTO generateRestaurentTableDTO(RestaurentTable restaurentTable){
 
         RestaurentTableDTO restaurentTableDTO = RestaurentTableToRestaurenTableDTO.instance.convert(restaurentTable);
+        restaurentTableDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(restaurentTable.getImgFile()));
         List<BillDTO> billDTOS = new ArrayList<>();
         restaurentTable.getBills().forEach(bill -> {
             BillDTO billDTO = generateBillDTOWithOrderItems(bill);
             billDTOS.add(billDTO);
         });
-        restaurentTableDTO.setBillDTOList(billDTOS);
+        restaurentTableDTO.setBills(billDTOS);
         return  restaurentTableDTO;
     }
     public OrderItemDTO generateOrderItemDTO(OrderItem orderItem){

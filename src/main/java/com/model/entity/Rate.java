@@ -36,13 +36,4 @@ public class Rate {
     public void setRaterUsername(String raterUsername) {
         this.raterUsername = raterUsername;
     }
-
-    @Override
-    public String toString() {
-        return "Rate{" +
-                "id=" + id +
-                ", rate=" + rate +
-                ", raterUsername='" + raterUsername + '\'' +
-                '}';
-    }
 }

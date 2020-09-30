@@ -1,25 +1,34 @@
 package com.service;
 
-import com.mapping.ProductToProductDTO;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.mapping.RestaurantToRestaurantDTO;
 import com.model.dto.OrderItemDTO;
 import com.mapping.OrderItemToOrderItemDTO;
-import com.model.entity.Bill;
-import com.model.entity.OrderItem;
-import com.model.entity.Restaurant;
-import com.model.enums.BillStatus;
-import com.model.enums.OrderStatus;
+import com.model.dto.RestaurantDTO;
+import com.model.entity.*;
 import com.model.enums.ProductType;
 import com.model.enums.ProgressStatus;
 import com.repository.OrderItemRepository;
+import com.repository.OwnerRepository;
 import com.repository.RestaurantRepository;
 import com.service.DtoUtil.DTOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,8 +39,13 @@ public class KitchenService {
 
     @Autowired
     private RestaurantRepository restaurantRepository;
+
     @Autowired
-    DTOUtils dtoUtils;
+    private OwnerRepository ownerRepository;
+    @Autowired
+    private DTOUtils dtoUtils;
+
+    private final String QR_CODE_FILE_TYPE="QR Code";
 
     public OrderItemDTO changeOrderItemStatus(OrderItemDTO orderItemDTO) {
         OrderItem orderItem = orderItemRepository.findById(orderItemDTO.getId()).get();
@@ -42,6 +56,47 @@ public class KitchenService {
         returnValue.setProduct(dtoUtils.generateProductDTO(orderItem.getProduct()));
         return returnValue;
     }
+    ///generate qrCode
+    public RestaurantDTO createRestaurant(String ownerUsername, String restaurantName,int nombreDeTable) throws IOException, WriterException {
+        Owner owner = ownerRepository.findByUsername(ownerUsername).get();
+        Restaurant restaurant = new Restaurant();
+        restaurant.setName(restaurantName);
+        restaurant.setRestaurentTables(new ArrayList<>());
+        for (int i=0;i<nombreDeTable;i++)
+        {
+            RestaurentTable restaurentTable = new RestaurentTable();
+            restaurentTable.setTableNumber(i);
+            ImgFile imgFile = new ImgFile();
+            imgFile.setFileType("qrCode");
+            imgFile.setData(generateQRCode(Integer.toString(restaurentTable.getTableNumber())));
+            restaurentTable.setImgFile(imgFile);
+            restaurant.getRestaurentTables().add(restaurentTable);
+        }
+        restaurant = restaurantRepository.save(restaurant);
+
+        if (Objects.isNull(owner.getRestaurantList()))
+            owner.setRestaurantList(new ArrayList<>());
+        restaurant.setOwner(owner);
+        owner.getRestaurantList().add(restaurant);
+        owner = ownerRepository.save(owner);
+        RestaurantDTO restaurantDTO = RestaurantToRestaurantDTO.instance.convert(owner.getRestaurantList().stream().filter(resto -> {
+            if (resto.getName().contentEquals(restaurantName))
+                return true;
+            return false;
+        }).findFirst().get());
+        return restaurantDTO;
+    }
+
+    private byte[] generateQRCode (@Value("${font-end.url}") String frontEndUrl) throws WriterException, IOException {
+        QRCodeWriter barcodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix =
+                barcodeWriter.encode(frontEndUrl, BarcodeFormat.QR_CODE, 200, 200);
+        BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage,"jpg",byteArrayOutputStream);
+        byteArrayOutputStream.flush();
+        return byteArrayOutputStream.toByteArray();
+    }
 
     public List<OrderItemDTO> fetchWaiterRequest(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
@@ -50,7 +105,7 @@ public class KitchenService {
 
         restaurant.getBill().forEach(bill -> {
             orderItemList.addAll(bill.getOrderItems().stream().filter(orderItem ->
-                            (orderItem.getOrderStatus() == ProgressStatus.READY) ||
+                    (orderItem.getOrderStatus() == ProgressStatus.READY) ||
                             (orderItem.getProductType() == ProductType.WAITERREQUEST) ||
                             (orderItem.getProductType() == ProductType.WAITERCALL))
                     .collect(Collectors.toList()));

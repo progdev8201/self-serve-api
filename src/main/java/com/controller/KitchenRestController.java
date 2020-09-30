@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.zxing.WriterException;
 import com.model.dto.OrderItemDTO;
+import com.model.dto.RestaurantDTO;
 import com.model.dto.RestaurentTableDTO;
 import com.model.entity.OrderItem;
 import com.model.entity.Request;
@@ -20,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +69,7 @@ public class KitchenRestController {
     }
 
 
+
     //ALLOW COOK TO MODIFY ORDER TIME OR END ORDER
     @PutMapping("/edit-orderItem")
     public void updateOrderItem(@RequestBody OrderItem orderItem) {
@@ -76,6 +80,17 @@ public class KitchenRestController {
     public ResponseEntity<List<RestaurentTableDTO>> findAllTables(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long restaurentId = new ObjectMapper().readValue(json.get("restaurentId"),Long.class);
         return ResponseEntity.ok(restaurentTableService.findAllForRestaurent(restaurentId));
+    }
+
+    @PostMapping("/findRestaurant")
+    public ResponseEntity<RestaurantDTO> createRestaurant(@RequestBody Map<String, String> json) throws IOException, WriterException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String ownerUsername =objectMapper.readValue(json.get("ownerUsername"),String.class);
+        String restaurantName =objectMapper.readValue(json.get("restaurantName"),String.class);
+        int nombreDeTable =objectMapper.readValue(json.get("nombreDeTable"),Integer.class);
+
+        return ResponseEntity.ok(kitchenService.createRestaurant(ownerUsername,restaurantName,nombreDeTable));
+
     }
 
 

@@ -1,6 +1,5 @@
 package com.service;
 
-import com.mapping.RateToRateDTOImpl;
 import com.model.dto.RateDTO;
 import com.model.entity.Product;
 import com.model.entity.Rate;

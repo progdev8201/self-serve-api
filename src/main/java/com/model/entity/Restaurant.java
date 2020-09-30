@@ -11,19 +11,19 @@ public class Restaurant {
 
     private String name;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Bill> bill;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private Owner owner;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List <RestaurentTable> restaurentTables;
 
     @OneToOne
     private CustomProprety customProprety;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private Menu menu;
 
     public Long getId() {
@@ -82,15 +82,6 @@ public class Restaurant {
         this.restaurentTables = restaurentTables;
     }
 
-    @Override
-    public String toString() {
-        return "Restaurant{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", billList=" + bill +
-                ", owner=" + owner +
-                ", customProprety=" + customProprety +
-                ", menu=" + menu +
-                '}';
-    }
+
+
 }

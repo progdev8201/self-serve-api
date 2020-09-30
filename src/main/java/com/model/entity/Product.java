@@ -38,7 +38,7 @@ public class Product {
     private ImgFile imgFile;
 
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private List<Rate> rates;
 
     @Enumerated(EnumType.STRING)
@@ -152,20 +152,5 @@ public class Product {
 
     public void setProductType(ProductType productType) {
         this.productType = productType;
-    }
-
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", menu=" + menu +
-                ", options=" + options +
-                ", prix=" + prix +
-                ", tempsDePreparation=" + tempsDePreparation +
-                ", rates=" + rates +
-                ", productType=" + productType +
-                '}';
     }
 }

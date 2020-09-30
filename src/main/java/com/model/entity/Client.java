@@ -37,12 +37,4 @@ public class Client  extends  Guest{
     public Client(){
 
     }
-
-
-    @Override
-    public String toString() {
-        return "Client{" +
-                "telephone='" + telephone + '\'' +
-                '}';
-    }
 }

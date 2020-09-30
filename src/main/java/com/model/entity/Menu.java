@@ -10,10 +10,10 @@ public class Menu {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private List<Product> products;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private List<Product> speciaux;
 
     @OneToOne
@@ -49,14 +49,5 @@ public class Menu {
 
     public void setSpeciaux(List<Product> speciaux) {
         this.speciaux = speciaux;
-    }
-
-    @Override
-    public String toString() {
-        return "Menu{" +
-                "id=" + id +
-                ", products=" + products +
-                ", restaurant=" + restaurant +
-                '}';
     }
 }
