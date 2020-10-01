@@ -6,13 +6,14 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @PrimaryKeyJoinColumn(referencedColumnName = "id")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Owner extends Guest {
+public class Owner extends Guest  implements Serializable {
     @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private List<Restaurant> restaurantList;
 

@@ -1,13 +1,14 @@
 package com.model.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Guest {
+public class Guest  implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

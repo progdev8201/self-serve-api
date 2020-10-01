@@ -2,12 +2,13 @@ package com.model.entity;
 import com.model.enums.ProductType;
 import com.model.enums.ProgressStatus;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 @Entity
-public class OrderItem {
+public class OrderItem implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
