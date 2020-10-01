@@ -2,14 +2,19 @@ package com.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.zxing.*;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
+import com.google.zxing.common.HybridBinarizer;
 import com.model.dto.*;
 import com.model.entity.OrderItem;
 import com.model.enums.OrderStatus;
 import com.service.ClientService;
+import org.h2.store.fs.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -19,7 +24,14 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.lang.reflect.Array;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -42,7 +54,15 @@ class KitchenRestControllerTest {
     BillController billController;
 
     @Autowired
+    ProductController productController;
+
+    @Autowired
     ClientService clientService;
+
+    @Value("${config.styles.images.path}")
+    private String fileBasePath;
+    @Value("${font-end.url}")
+    private String frontEndUrl;
 
     @Test
     public void testFetchRestaurantTableBillFound() throws Exception {
@@ -194,6 +214,50 @@ class KitchenRestControllerTest {
     }
 
     @Test
+    public void createRestaurentVerifRestaurantTableQRCode() throws Exception {
+        MockMvc mvc = initMockMvc();
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("ownerUsername", "owner@mail.com");
+        sendObj.put("restaurantName", "le resto de momo");
+        sendObj.put("nombreDeTable", "5");
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/createRestaurant").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        RestaurantDTO response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), RestaurantDTO.class);
+        assertNotNull(response);
+        assertEquals("le resto de momo", response.getName());
+        mvc = MockMvcBuilders.standaloneSetup(productController).build();
+        for (RestaurentTableDTO restaurentTableDTO : response.getRestaurentTables()) {
+            String pathDansProjet = fileBasePath + "qr.jpg";
+            Path currentRelativePath = Paths.get("");
+            String absolutePath = currentRelativePath.toAbsolutePath().toString();
+            result = mvc.perform(MockMvcRequestBuilders.get("/product//getProductImg/{imgId}",restaurentTableDTO.getImgFileDTO().getId()).
+                    content(sendObj.toString()).
+                    contentType(MediaType.APPLICATION_JSON).
+                    accept(MediaType.APPLICATION_JSON)).
+                    andExpect(status().isOk()).
+                    andReturn();
+            byte[] bytes = result.getResponse().getContentAsByteArray();
+            Path path = Paths.get(absolutePath+pathDansProjet);
+            Files.write(path,bytes);
+            File imgFile = new File(absolutePath + pathDansProjet);
+            BufferedImage bufferedImage = ImageIO.read(imgFile);
+            LuminanceSource source = new BufferedImageLuminanceSource(bufferedImage);
+            BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+
+            try {
+                Result value = new MultiFormatReader().decode(bitmap);
+                assertEquals(frontEndUrl +String.valueOf(restaurentTableDTO.getTableNumber()),value.getText());
+            } catch (NotFoundException e) {
+                System.out.println("There is no QR code in the image");
+            }
+        }
+    }
+
+    @Test
     public void testWaiterRequestFetchOrderItems() throws Exception {
         MockMvc mvc;
         mvc = initMockMvc();
@@ -201,7 +265,7 @@ class KitchenRestControllerTest {
         JSONObject sendObj = new JSONObject();
         sendObj.put("restaurentId", 2);
 
-        MvcResult result =mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/getWaiterRequest").
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/getWaiterRequest").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
@@ -214,8 +278,9 @@ class KitchenRestControllerTest {
 
         List<OrderItemDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), ArrayList.class);
 
-        assertEquals(4,reponse.size() );
+        assertEquals(4, reponse.size());
     }
+
     @Test
     public void testAjouteTempsAjoute5Min() throws Exception {
         MockMvc mvc;
@@ -225,7 +290,7 @@ class KitchenRestControllerTest {
         sendObj.put("orderItemId", 1);
         sendObj.put("tempsAjoute", 5);
 
-        MvcResult result =mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/changeOrderItemTime").
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/changeOrderItemTime").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
@@ -236,7 +301,7 @@ class KitchenRestControllerTest {
         mapper.registerModule(new JavaTimeModule());
 
 
-        OrderItemDTO response = mapper.readValue(result.getResponse().getContentAsString(),OrderItemDTO.class);
+        OrderItemDTO response = mapper.readValue(result.getResponse().getContentAsString(), OrderItemDTO.class);
         Date date = new Date(System.currentTimeMillis());
         assertTrue(date.before(response.getTempsDePreparation()));
     }

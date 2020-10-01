@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class DTOUtils {
@@ -15,17 +16,16 @@ public class DTOUtils {
         List<OrderItemDTO> returnBillOrderItems = new ArrayList<>();
         for (OrderItem orderItem : bill.getOrderItems()) {
             OrderItemDTO orderItemDTO = OrderItemToOrderItemDTO.instance.convert(orderItem);
-            ProductDTO productDTO =ProductToProductDTO.instance.convert(orderItem.getProduct());
-            ImgFileDTO imgFileDTO =ImgFileToImgFileDTO.instance.convert(orderItem.getProduct().getImgFile());
+            ProductDTO productDTO = ProductToProductDTO.instance.convert(orderItem.getProduct());
+            ImgFileDTO imgFileDTO = ImgFileToImgFileDTO.instance.convert(orderItem.getProduct().getImgFile());
             productDTO.setImgFileDTO(imgFileDTO);
             orderItemDTO.setProduct(productDTO);
             orderItemDTO.setOption(new ArrayList<>());
-            for(Option option :orderItem.getOption()){
+            for (Option option : orderItem.getOption()) {
                 OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
                 optionDTO.setCheckItemList(new ArrayList<>());
-                for (CheckItem checkItem : option.getCheckItemList())
-                {
-                    CheckItemDTO checkItemDTO =CheckItemToCheckItemDTO.instance.convert(checkItem);
+                for (CheckItem checkItem : option.getCheckItemList()) {
+                    CheckItemDTO checkItemDTO = CheckItemToCheckItemDTO.instance.convert(checkItem);
                     checkItemDTO.setActive(checkItem.isActive());
                     optionDTO.getCheckItemList().add(checkItemDTO);
                 }
@@ -37,6 +37,7 @@ public class DTOUtils {
         returnValue.setOrderItems(returnBillOrderItems);
         return returnValue;
     }
+
     public MenuDTO generateMenuDTO(Menu menu) {
         MenuDTO returnValue = MenuToMenuDTOImpl.instance.convert(menu);
         returnValue.setSpeciaux(new ArrayList<>());
@@ -46,6 +47,7 @@ public class DTOUtils {
         }
         return returnValue;
     }
+
     public List<ProductDTO> generateProductDTO(List<Product> products) {
         List<ProductDTO> productDTOS = new ArrayList<>();
         for (Product product : products) {
@@ -66,6 +68,7 @@ public class DTOUtils {
         }
         return productDTOS;
     }
+
     public ProductDTO generateProductDTO(Product product) {
         ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
         productDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(product.getImgFile()));
@@ -82,23 +85,37 @@ public class DTOUtils {
         }
         return productDTO;
     }
-    public RateDTO generateRateDTO(Rate rate){
+
+    public RateDTO generateRateDTO(Rate rate) {
         return RateToRateDTOImpl.instance.convert(rate);
     }
-    public RestaurentTableDTO generateRestaurentTableDTO(RestaurentTable restaurentTable){
+
+    public RestaurentTableDTO generateRestaurentTableDTO(RestaurentTable restaurentTable) {
 
         RestaurentTableDTO restaurentTableDTO = RestaurentTableToRestaurenTableDTO.instance.convert(restaurentTable);
         restaurentTableDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(restaurentTable.getImgFile()));
         List<BillDTO> billDTOS = new ArrayList<>();
-        restaurentTable.getBills().forEach(bill -> {
-            BillDTO billDTO = generateBillDTOWithOrderItems(bill);
-            billDTOS.add(billDTO);
-        });
+        if (Objects.nonNull(restaurentTable.getBills())) {
+            restaurentTable.getBills().forEach(bill -> {
+                BillDTO billDTO = generateBillDTOWithOrderItems(bill);
+                billDTOS.add(billDTO);
+            });
+        }
         restaurentTableDTO.setBills(billDTOS);
-        return  restaurentTableDTO;
+        return restaurentTableDTO;
     }
-    public OrderItemDTO generateOrderItemDTO(OrderItem orderItem){
+
+    public OrderItemDTO generateOrderItemDTO(OrderItem orderItem) {
         return OrderItemToOrderItemDTO.instance.convert(orderItem);
+    }
+
+    public RestaurantDTO generateRestaurantDTO(Restaurant restaurant) {
+        RestaurantDTO restaurantDTO = RestaurantToRestaurantDTO.instance.convert(restaurant);
+        restaurantDTO.setRestaurentTables(new ArrayList<>());
+        restaurant.getRestaurentTables().forEach(restaurentTable -> {
+            restaurantDTO.getRestaurentTables().add(generateRestaurentTableDTO(restaurentTable));
+        });
+        return restaurantDTO;
     }
 
 }

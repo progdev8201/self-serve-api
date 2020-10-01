@@ -82,18 +82,16 @@ public class KitchenRestController {
         return ResponseEntity.ok(restaurentTableService.findAllForRestaurent(restaurentId));
     }
 
-    @PostMapping("/findRestaurant")
+    @PostMapping("/createRestaurant")
     public ResponseEntity<RestaurantDTO> createRestaurant(@RequestBody Map<String, String> json) throws IOException, WriterException {
         ObjectMapper objectMapper = new ObjectMapper();
-        String ownerUsername =objectMapper.readValue(json.get("ownerUsername"),String.class);
-        String restaurantName =objectMapper.readValue(json.get("restaurantName"),String.class);
+        String ownerUsername =json.get("ownerUsername");
+        String restaurantName =json.get("restaurantName");
         int nombreDeTable =objectMapper.readValue(json.get("nombreDeTable"),Integer.class);
 
         return ResponseEntity.ok(kitchenService.createRestaurant(ownerUsername,restaurantName,nombreDeTable));
 
     }
-
-
 
     @PostMapping("/changeOrderItemStatus")
     public ResponseEntity<OrderItemDTO> changeOrderItemStatus(@RequestBody Map<String, String> json) throws JsonProcessingException {

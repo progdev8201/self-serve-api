@@ -39,6 +39,8 @@ public class KitchenService {
 
     @Autowired
     private RestaurantRepository restaurantRepository;
+    @Value("${font-end.url}")
+    String frontEndUrl;
 
     @Autowired
     private OwnerRepository ownerRepository;
@@ -68,7 +70,7 @@ public class KitchenService {
             restaurentTable.setTableNumber(i);
             ImgFile imgFile = new ImgFile();
             imgFile.setFileType("qrCode");
-            imgFile.setData(generateQRCode(Integer.toString(restaurentTable.getTableNumber())));
+            imgFile.setData(generateQRCode(frontEndUrl,Integer.toString(restaurentTable.getTableNumber())));
             restaurentTable.setImgFile(imgFile);
             restaurant.getRestaurentTables().add(restaurentTable);
         }
@@ -79,18 +81,19 @@ public class KitchenService {
         restaurant.setOwner(owner);
         owner.getRestaurantList().add(restaurant);
         owner = ownerRepository.save(owner);
-        RestaurantDTO restaurantDTO = RestaurantToRestaurantDTO.instance.convert(owner.getRestaurantList().stream().filter(resto -> {
+        Restaurant savedRestaurant =owner.getRestaurantList().stream().filter(resto -> {
             if (resto.getName().contentEquals(restaurantName))
                 return true;
             return false;
-        }).findFirst().get());
+        }).findFirst().get();
+        RestaurantDTO restaurantDTO = dtoUtils.generateRestaurantDTO(savedRestaurant);
         return restaurantDTO;
     }
 
-    private byte[] generateQRCode (@Value("${font-end.url}") String frontEndUrl) throws WriterException, IOException {
+    private byte[] generateQRCode ( String frontEndUrl,String tableNumber) throws WriterException, IOException {
         QRCodeWriter barcodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix =
-                barcodeWriter.encode(frontEndUrl, BarcodeFormat.QR_CODE, 200, 200);
+                barcodeWriter.encode(frontEndUrl+tableNumber, BarcodeFormat.QR_CODE, 200, 200);
         BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage,"jpg",byteArrayOutputStream);
