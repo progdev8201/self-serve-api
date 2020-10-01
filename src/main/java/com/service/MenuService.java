@@ -103,7 +103,7 @@ public class MenuService {
 
         ownerRepository.findByUsername(ownerUsername).ifPresent(owner ->{
             owner.getRestaurantList().parallelStream().forEach(restaurant -> {
-                restaurantSelectionDTOS.add(new RestaurantSelectionDTO(restaurant.getMenu().getId(),restaurant.getName()));
+                restaurantSelectionDTOS.add(new RestaurantSelectionDTO(restaurant.getId(), restaurant.getMenu().getId(),restaurant.getName()));
             });
         });
 
