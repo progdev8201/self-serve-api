@@ -279,7 +279,7 @@ public class ProductService {
     }
 
     public byte[] returnImgAsByteArrayString(Long id) {
-        String returnValue = new String(imgFileRepository.findById(id).get().getData(), StandardCharsets.UTF_8);
+        byte[] bytes =imgFileRepository.findById(id).get().getData();
         return imgFileRepository.findById(id).get().getData();
     }
 
