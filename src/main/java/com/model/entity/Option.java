@@ -12,7 +12,7 @@ public class Option implements Serializable {
 
     private String name;
 
-    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.MERGE})
     private List<CheckItem> checkItemList;
 
     public Long getId() {
