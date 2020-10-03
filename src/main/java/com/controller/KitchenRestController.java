@@ -103,6 +103,13 @@ public class KitchenRestController {
         Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
         return ResponseEntity.ok(kitchenService.addRestaurantTable(restaurantId));
     }
+
+    @PostMapping("/modifierNomTable")
+    public ResponseEntity<RestaurantDTO> updateRestaurantName(@RequestBody Map<String,String> json) throws JsonProcessingException {
+        String restaurantName = json.get("restaurantName");
+        Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
+        return ResponseEntity.ok(kitchenService.modifierRestaurantName(restaurantName,restaurantId));
+    }
     @PostMapping("/deleteTable")
     public ResponseEntity deleteRestaurantTble(@RequestBody Map<String,String> json) throws JsonProcessingException {
         Long tableId = new ObjectMapper().readValue(json.get("restaurantTableId"),Long.class);

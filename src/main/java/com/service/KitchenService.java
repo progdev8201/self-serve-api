@@ -103,7 +103,13 @@ public class KitchenService {
         restaurant.getRestaurentTables().add(createTable(restaurant.getRestaurentTables().size()+1));
         restaurant =restaurantRepository.save(restaurant);
         return dtoUtils.generateRestaurantDTO(restaurant);
+    }
 
+    public RestaurantDTO modifierRestaurantName(String restaurantName,Long restaurantId){
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
+        restaurant.setName(restaurantName);
+        restaurant = restaurantRepository.save(restaurant);
+        return dtoUtils.generateRestaurantDTO(restaurant);
     }
     public void deleteRestaurantTable(Long restaurantId){
         restaurantRepository.deleteById(restaurantId);
