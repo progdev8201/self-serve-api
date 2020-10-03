@@ -33,7 +33,7 @@ public class OrderItem implements Serializable {
     //quand le plat doit etre pret
     private LocalDateTime delaiDePreparation ;
 
-    @OneToMany(cascade =CascadeType.PERSIST)
+    @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private List<Option> option;
 
     private int numeroTable;

@@ -23,10 +23,10 @@ public class Product implements Serializable {
     @ManyToOne(cascade = CascadeType.REMOVE)
     private Menu menu;
 
-    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.MERGE})
     private List<Option> options;
 
-    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE})
+    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.MERGE})
     private List <OrderItem> orderItems;
 
     private double prix;

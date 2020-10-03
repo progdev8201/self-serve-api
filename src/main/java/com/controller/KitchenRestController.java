@@ -69,7 +69,6 @@ public class KitchenRestController {
     }
 
 
-
     //ALLOW COOK TO MODIFY ORDER TIME OR END ORDER
     @PutMapping("/edit-orderItem")
     public void updateOrderItem(@RequestBody OrderItem orderItem) {
@@ -78,48 +77,60 @@ public class KitchenRestController {
 
     @PostMapping("/findAllTables")
     public ResponseEntity<List<RestaurentTableDTO>> findAllTables(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        Long restaurentId = new ObjectMapper().readValue(json.get("restaurentId"),Long.class);
+        Long restaurentId = new ObjectMapper().readValue(json.get("restaurentId"), Long.class);
         return ResponseEntity.ok(restaurentTableService.findAllForRestaurent(restaurentId));
     }
 
     @PostMapping("/createRestaurant")
     public ResponseEntity<RestaurantDTO> createRestaurant(@RequestBody Map<String, String> json) throws IOException, WriterException {
         ObjectMapper objectMapper = new ObjectMapper();
-        String ownerUsername =json.get("ownerUsername");
-        String restaurantName =json.get("restaurantName");
-        int nombreDeTable =objectMapper.readValue(json.get("nombreDeTable"),Integer.class);
+        String ownerUsername = json.get("ownerUsername");
+        String restaurantName = json.get("restaurantName");
+        int nombreDeTable = objectMapper.readValue(json.get("nombreDeTable"), Integer.class);
 
-        return ResponseEntity.ok(kitchenService.createRestaurant(ownerUsername,restaurantName,nombreDeTable));
+        return ResponseEntity.ok(kitchenService.createRestaurant(ownerUsername, restaurantName, nombreDeTable));
 
+    }
+
+    @PostMapping("/deleteRestaurant")
+    public ResponseEntity deleteRestaurant(@RequestBody Map<String, String> json) throws JsonProcessingException {
+        Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
+        kitchenService.deleteRestaurant(restaurantId);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+    @PostMapping("/addTable")
+    public ResponseEntity<RestaurantDTO> addRestaurantTable(@RequestBody Map<String,String> json) throws IOException, WriterException {
+        Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
+        return ResponseEntity.ok(kitchenService.addRestaurantTable(restaurantId));
     }
 
     @PostMapping("/changeOrderItemStatus")
     public ResponseEntity<OrderItemDTO> changeOrderItemStatus(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        ObjectMapper mapper=new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.registerModule(new JavaTimeModule());
         OrderItemDTO orderItemDTO = mapper.readValue(json.get("orderItemDTO"), OrderItemDTO.class);
-        return  ResponseEntity.ok(kitchenService.changeOrderItemStatus(orderItemDTO));
+        return ResponseEntity.ok(kitchenService.changeOrderItemStatus(orderItemDTO));
     }
 
     @PostMapping("/getWaiterRequest")
     public ResponseEntity<List<OrderItemDTO>> getWaiterRequests(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        ObjectMapper mapper=new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.registerModule(new JavaTimeModule());
         Long restaurentId = mapper.readValue(json.get("restaurentId"), Long.class);
-        return  ResponseEntity.ok(kitchenService.fetchWaiterRequest(restaurentId));
+        return ResponseEntity.ok(kitchenService.fetchWaiterRequest(restaurentId));
     }
 
 
     @PostMapping("/changeOrderItemTime")
     public ResponseEntity<OrderItemDTO> changeOrderItemTime(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        ObjectMapper mapper=new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.registerModule(new JavaTimeModule());
         Long orderItemId = mapper.readValue(json.get("orderItemId"), Long.class);
         int tempsAjoute = mapper.readValue(json.get("tempsAjoute"), Integer.class);
-        return   ResponseEntity.ok(kitchenService.changeOrderItem(orderItemId,tempsAjoute));
+        return ResponseEntity.ok(kitchenService.changeOrderItem(orderItemId, tempsAjoute));
     }
 
 
