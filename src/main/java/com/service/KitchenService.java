@@ -9,6 +9,7 @@ import com.mapping.RestaurantToRestaurantDTO;
 import com.model.dto.OrderItemDTO;
 import com.mapping.OrderItemToOrderItemDTO;
 import com.model.dto.RestaurantDTO;
+import com.model.dto.RestaurentTableDTO;
 import com.model.entity.*;
 import com.model.enums.ProductType;
 import com.model.enums.ProgressStatus;
@@ -67,13 +68,7 @@ public class KitchenService {
         restaurant.setRestaurentTables(new ArrayList<>());
         for (int i=0;i<nombreDeTable;i++)
         {
-            RestaurentTable restaurentTable = new RestaurentTable();
-            restaurentTable.setTableNumber(i);
-            ImgFile imgFile = new ImgFile();
-            imgFile.setFileType("qrCode");
-            imgFile.setData(generateQRCode(frontEndUrl,Integer.toString(restaurentTable.getTableNumber())));
-            restaurentTable.setImgFile(imgFile);
-            restaurant.getRestaurentTables().add(restaurentTable);
+            restaurant.getRestaurentTables().add(createTable(i));
         }
         //add menu to restaurant
     /*    Menu menu = new Menu();
@@ -96,6 +91,36 @@ public class KitchenService {
         }).findFirst().get();
         RestaurantDTO restaurantDTO = dtoUtils.generateRestaurantDTO(savedRestaurant);
         return restaurantDTO;
+    }
+
+    private RestaurentTable createTable( int tableNumber) throws WriterException, IOException {
+        RestaurentTable restaurentTable = new RestaurentTable();
+        restaurentTable.setTableNumber(tableNumber);
+        ImgFile imgFile = new ImgFile();
+        imgFile.setFileType("qrCode");
+        imgFile.setData(generateQRCode(frontEndUrl,Integer.toString(restaurentTable.getTableNumber())));
+        restaurentTable.setImgFile(imgFile);
+        return restaurentTable;
+    }
+
+    public void deleteRestaurant (Long restaurantId){
+        restaurantRepository.deleteById(restaurantId);
+    }
+    public RestaurantDTO  addRestaurantTable(Long restaurantId) throws IOException, WriterException {
+        Restaurant restaurant =restaurantRepository.findById(restaurantId).get();
+        restaurant.getRestaurentTables().add(createTable(restaurant.getRestaurentTables().size()+1));
+        restaurant =restaurantRepository.save(restaurant);
+        return dtoUtils.generateRestaurantDTO(restaurant);
+    }
+
+    public RestaurantDTO modifierRestaurantName(String restaurantName,Long restaurantId){
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
+        restaurant.setName(restaurantName);
+        restaurant = restaurantRepository.save(restaurant);
+        return dtoUtils.generateRestaurantDTO(restaurant);
+    }
+    public void deleteRestaurantTable(Long restaurantId){
+        restaurantRepository.deleteById(restaurantId);
     }
 
     private byte[] generateQRCode ( String frontEndUrl,String tableNumber) throws WriterException, IOException {

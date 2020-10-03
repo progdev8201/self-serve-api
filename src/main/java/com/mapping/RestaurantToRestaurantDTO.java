@@ -14,5 +14,6 @@ public interface RestaurantToRestaurantDTO {
 
     @Mapping(target = "bill", ignore = true)
     @Mapping(target = "restaurentTables", ignore = true)
+    @Mapping(target = "menu", ignore = true)
     RestaurantDTO convert(Restaurant restaurant);
 }

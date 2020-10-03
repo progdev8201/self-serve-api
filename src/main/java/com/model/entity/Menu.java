@@ -17,7 +17,7 @@ public class Menu implements Serializable {
     @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private List<Product> speciaux;
 
-    @OneToOne
+    @OneToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private Restaurant restaurant ;
 
     public Long getId() {

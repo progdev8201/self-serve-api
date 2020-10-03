@@ -8,11 +8,14 @@ import com.google.zxing.common.HybridBinarizer;
 import com.model.dto.*;
 import com.model.entity.OrderItem;
 import com.model.enums.OrderStatus;
+import com.model.enums.ProgressStatus;
 import com.service.ClientService;
 import org.h2.store.fs.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -63,32 +67,6 @@ class KitchenRestControllerTest {
     private String fileBasePath;
     @Value("${font-end.url}")
     private String frontEndUrl;
-
-    @Test
-    public void testFetchRestaurantTableBillFound() throws Exception {
-        MockMvc mvc = initMockMvc();
-        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
-
-        BillDTO billDTO = initBillDTO();
-        ObjectMapper objectMapper = new ObjectMapper();
-
-
-        JSONObject sendObj = new JSONObject();
-        sendObj.put("bill", objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername", "client1@mail.com");
-        sendObj.put("restaurentId", "2");
-
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/findAllTables").
-                content(sendObj.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
-                andExpect(status().isOk()).
-                andReturn();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        List<RestaurentTableDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), List.class);
-        assertEquals(5, reponse.size());
-    }
 
     @Test
     public void testBillRetirerRestaurantTableBillNull() throws Exception {
@@ -183,10 +161,12 @@ class KitchenRestControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
 
+        billDTO = mapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
 
         BillDTO responseBill = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
 
         sendObj = new JSONObject();
+        Long itemId = responseBill.getOrderItems().get(0).getId();
         sendObj.put("orderItemDTO", mapper.writeValueAsString(responseBill.getOrderItems().get(0)));
 
         mvc = initMockMvc();
@@ -206,11 +186,17 @@ class KitchenRestControllerTest {
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
-        List<LinkedHashMap<String, Object>> reponse = mapper.readValue(result.getResponse().getContentAsString(), ArrayList.class);
+        ArrayList reponse = mapper.readValue(result.getResponse().getContentAsByteArray(), ArrayList.class);
+        List<RestaurentTableDTO> restaurantDTOS = new ArrayList<>();
+        for (Object map : reponse) {
+            restaurantDTOS.add(mapper.convertValue(map, RestaurentTableDTO.class));
+        }
+        final Long billId = billDTO.getId();
+        RestaurentTableDTO restaurentTableDTO = restaurantDTOS.stream().filter(restaurentTableDTO1 -> restaurentTableDTO1.getId() ==1L).findFirst().get();
+        BillDTO theBillDTO =restaurentTableDTO.getBills().stream().filter(billDTO1 -> billId == billDTO1.getId()).findAny().get();
+        OrderItemDTO orderItem =theBillDTO.getOrderItems().stream().filter(orderItemDTO -> orderItemDTO.getOrderStatus() == ProgressStatus.READY).findFirst().get();
 
-        ArrayList billDTOS = (ArrayList) reponse.get(0).get("bills");
-        ArrayList orderItemList = (ArrayList) ((LinkedHashMap) billDTOS.get(0)).get("orderItems");
-        assertEquals(OrderStatus.READY.toString(), ((LinkedHashMap) orderItemList.get(0)).get("orderStatus"));
+        assertEquals(OrderStatus.READY.toString(), orderItem.getOrderStatus().toString());
     }
 
     @Test
@@ -234,15 +220,15 @@ class KitchenRestControllerTest {
             String pathDansProjet = fileBasePath + "qr.jpg";
             Path currentRelativePath = Paths.get("");
             String absolutePath = currentRelativePath.toAbsolutePath().toString();
-            result = mvc.perform(MockMvcRequestBuilders.get("/product//getProductImg/{imgId}",restaurentTableDTO.getImgFileDTO().getId()).
+            result = mvc.perform(MockMvcRequestBuilders.get("/product//getProductImg/{imgId}", restaurentTableDTO.getImgFileDTO().getId()).
                     content(sendObj.toString()).
                     contentType(MediaType.APPLICATION_JSON).
                     accept(MediaType.APPLICATION_JSON)).
                     andExpect(status().isOk()).
                     andReturn();
             byte[] bytes = result.getResponse().getContentAsByteArray();
-            Path path = Paths.get(absolutePath+pathDansProjet);
-            Files.write(path,bytes);
+            Path path = Paths.get(absolutePath + pathDansProjet);
+            Files.write(path, bytes);
             File imgFile = new File(absolutePath + pathDansProjet);
             BufferedImage bufferedImage = ImageIO.read(imgFile);
             LuminanceSource source = new BufferedImageLuminanceSource(bufferedImage);
@@ -250,11 +236,53 @@ class KitchenRestControllerTest {
 
             try {
                 Result value = new MultiFormatReader().decode(bitmap);
-                assertEquals(frontEndUrl +String.valueOf(restaurentTableDTO.getTableNumber()),value.getText());
+                assertEquals(frontEndUrl + String.valueOf(restaurentTableDTO.getTableNumber()), value.getText());
             } catch (NotFoundException e) {
                 System.out.println("There is no QR code in the image");
             }
         }
+    }
+
+    @Test
+    public void testModifierNom() throws Exception {
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("restaurantName", "le resto de momo");
+        sendObj.put("restaurantId", "2");
+        MockMvc mvc = initMockMvc();
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/modifierNomTable").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        RestaurantDTO restaurantDTO = mapper.readValue(result.getResponse().getContentAsString(), RestaurantDTO.class);
+        assertEquals("le resto de momo", restaurantDTO.getName());
+
+    }
+
+    @Test
+    public void testAddTable() throws Exception {
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("restaurantId", "2");
+        MockMvc mvc = initMockMvc();
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/addTable").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+
+        RestaurantDTO response = mapper.readValue(result.getResponse().getContentAsString(), RestaurantDTO.class);
+        assertEquals(6, response.getRestaurentTables().size());
+
+
     }
 
     @Test
@@ -306,6 +334,32 @@ class KitchenRestControllerTest {
         assertTrue(date.before(response.getTempsDePreparation()));
     }
 
+
+    @Test
+    public void testFetchRestaurantTableBillFound() throws Exception {
+        MockMvc mvc = initMockMvc();
+        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
+
+        BillDTO billDTO = initBillDTO();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("bill", objectMapper.writeValueAsString(billDTO));
+        sendObj.put("guestUsername", "client1@mail.com");
+        sendObj.put("restaurentId", "2");
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/findAllTables").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        List<RestaurentTableDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), List.class);
+        assertEquals(5, reponse.size());
+    }
 
     private MenuDTO createMenuDTO() {
         List<ProductDTO> productDTOS = new ArrayList<>();
