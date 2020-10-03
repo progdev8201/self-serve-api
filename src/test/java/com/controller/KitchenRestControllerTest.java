@@ -12,6 +12,7 @@ import com.service.ClientService;
 import org.h2.store.fs.FileUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -255,6 +256,25 @@ class KitchenRestControllerTest {
                 System.out.println("There is no QR code in the image");
             }
         }
+    }
+    @Test
+    public void testAddTable() throws Exception {
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("restaurantId","2");
+        MockMvc mvc = initMockMvc();
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/addTable").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+
+
+
+        RestaurantDTO response = new ObjectMapper().readValue(result.getResponse().getContentAsString(),RestaurantDTO.class);
+        assertEquals(6,response.getRestaurentTables().size());
+
+
     }
 
     @Test

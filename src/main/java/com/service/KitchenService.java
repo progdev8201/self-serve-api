@@ -105,6 +105,9 @@ public class KitchenService {
         return dtoUtils.generateRestaurantDTO(restaurant);
 
     }
+    public void deleteRestaurantTable(Long restaurantId){
+        restaurantRepository.deleteById(restaurantId);
+    }
 
     private byte[] generateQRCode ( String frontEndUrl,String tableNumber) throws WriterException, IOException {
         QRCodeWriter barcodeWriter = new QRCodeWriter();
