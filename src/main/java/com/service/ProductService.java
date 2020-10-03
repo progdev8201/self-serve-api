@@ -157,8 +157,8 @@ public class ProductService {
         List<Product> prod = productRepository.findAll();
         Product product = productRepository.findById(id).get();
         Menu menu = product.getMenu();
-        List<Product> productList =menu.getProducts().stream().filter(product1 -> product1.getId()==id).collect(Collectors.toList());
-        menu.getProducts().removeAll(productList);
+        Product productToRemove = menu.getProducts().stream().filter(product1 -> product1.getId()==id).findFirst().get();
+        menu.getProducts().remove(productToRemove);
         menu= menuRepository.save(menu);
         LOGGER.info(String.valueOf(prod.size()));
         product.getOrderItems().forEach(orderItem -> {
