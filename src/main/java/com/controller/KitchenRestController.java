@@ -88,7 +88,6 @@ public class KitchenRestController {
         String ownerUsername =json.get("ownerUsername");
         String restaurantName =json.get("restaurantName");
         int nombreDeTable =objectMapper.readValue(json.get("nombreDeTable"),Integer.class);
-
         return ResponseEntity.ok(kitchenService.createRestaurant(ownerUsername,restaurantName,nombreDeTable));
 
     }

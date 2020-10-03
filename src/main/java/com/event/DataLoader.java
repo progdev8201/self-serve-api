@@ -45,9 +45,6 @@ public class DataLoader implements CommandLineRunner {
     RestaurantRepository restaurantRepository;
 
     @Autowired
-    MenuRepository menuRepository;
-
-    @Autowired
     ProductRepository productRepository;
 
     @Autowired
@@ -156,7 +153,6 @@ public class DataLoader implements CommandLineRunner {
         menu.setProducts(productList);
         for (Product x : productList) {
             x.setMenu(menu);
-
         }
 
 

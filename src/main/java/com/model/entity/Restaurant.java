@@ -83,6 +83,4 @@ public class Restaurant implements Serializable {
         this.restaurentTables = restaurentTables;
     }
 
-
-
 }

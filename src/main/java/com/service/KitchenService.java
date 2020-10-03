@@ -58,6 +58,7 @@ public class KitchenService {
         returnValue.setProduct(dtoUtils.generateProductDTO(orderItem.getProduct()));
         return returnValue;
     }
+
     ///generate qrCode
     public RestaurantDTO createRestaurant(String ownerUsername, String restaurantName,int nombreDeTable) throws IOException, WriterException {
         Owner owner = ownerRepository.findByUsername(ownerUsername).get();
@@ -74,11 +75,18 @@ public class KitchenService {
             restaurentTable.setImgFile(imgFile);
             restaurant.getRestaurentTables().add(restaurentTable);
         }
-        restaurant = restaurantRepository.save(restaurant);
+        //add menu to restaurant
+    /*    Menu menu = new Menu();
+        menu.setRestaurant(restaurant);
+        restaurant.setMenu(menu);*/
 
-        if (Objects.isNull(owner.getRestaurantList()))
+        restaurant = restaurantRepository.save(restaurant);
+        if (Objects.isNull(owner.getRestaurantList())) {
             owner.setRestaurantList(new ArrayList<>());
+        }
         restaurant.setOwner(owner);
+
+
         owner.getRestaurantList().add(restaurant);
         owner = ownerRepository.save(owner);
         Restaurant savedRestaurant =owner.getRestaurantList().stream().filter(resto -> {

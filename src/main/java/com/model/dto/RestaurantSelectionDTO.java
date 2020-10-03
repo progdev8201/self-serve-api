@@ -7,14 +7,24 @@ public class RestaurantSelectionDTO implements Serializable {
     private Long restaurantId;
     private Long menuId;
     private String restaurantName;
+    private int tableAmount;
 
     public RestaurantSelectionDTO() {
     }
 
-    public RestaurantSelectionDTO(Long restaurantId ,Long menuId, String restaurantName) {
+    public RestaurantSelectionDTO(Long restaurantId ,Long menuId, String restaurantName,int tableAmount) {
+        this.tableAmount = tableAmount;
         this.restaurantId = restaurantId;
         this.menuId = menuId;
         this.restaurantName = restaurantName;
+    }
+
+    public int getTableAmount() {
+        return tableAmount;
+    }
+
+    public void setTableAmount(int tableAmount) {
+        this.tableAmount = tableAmount;
     }
 
     public Long getRestaurantId() {
