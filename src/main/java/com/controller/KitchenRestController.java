@@ -98,6 +98,7 @@ public class KitchenRestController {
         kitchenService.deleteRestaurant(restaurantId);
         return new ResponseEntity(HttpStatus.OK);
     }
+
     @PostMapping("/addTable")
     public ResponseEntity<RestaurantDTO> addRestaurantTable(@RequestBody Map<String,String> json) throws IOException, WriterException {
         Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);

@@ -1,30 +1,39 @@
 package com.model.dto;
 
 
+import com.mapping.RestaurentTableToRestaurenTableDTO;
+import com.model.entity.RestaurentTable;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RestaurantSelectionDTO implements Serializable {
     private Long restaurantId;
     private Long menuId;
     private String restaurantName;
-    private int tableAmount;
+    private List<RestaurentTableDTO> restaurentTablesDTO;
 
     public RestaurantSelectionDTO() {
     }
 
-    public RestaurantSelectionDTO(Long restaurantId ,Long menuId, String restaurantName,int tableAmount) {
-        this.tableAmount = tableAmount;
+    public RestaurantSelectionDTO(Long restaurantId ,Long menuId, String restaurantName,List<RestaurentTable> restaurentTables) {
         this.restaurantId = restaurantId;
         this.menuId = menuId;
         this.restaurantName = restaurantName;
+        restaurentTablesDTO = new ArrayList<>();
+
+        restaurentTables.parallelStream().forEach(restaurentTable -> {
+            restaurentTablesDTO.add(RestaurentTableToRestaurenTableDTO.instance.convert(restaurentTable));
+        });
     }
 
-    public int getTableAmount() {
-        return tableAmount;
+    public List<RestaurentTableDTO> getRestaurentTablesDTO() {
+        return restaurentTablesDTO;
     }
 
-    public void setTableAmount(int tableAmount) {
-        this.tableAmount = tableAmount;
+    public void setRestaurentTablesDTO(List<RestaurentTableDTO> restaurentTablesDTO) {
+        this.restaurentTablesDTO = restaurentTablesDTO;
     }
 
     public Long getRestaurantId() {
