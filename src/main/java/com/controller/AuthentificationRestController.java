@@ -28,6 +28,7 @@ public class AuthentificationRestController {
     public ResponseEntity<String> registerUser(@RequestBody SignUpForm signUpForm) {
         return authentificationService.registerUser(signUpForm);
     }
+
     @PostMapping("/registerStripeAccount")
     public ResponseEntity<String> registerStripeAccpunt(@RequestBody Owner owner) throws StripeException {
        return null;

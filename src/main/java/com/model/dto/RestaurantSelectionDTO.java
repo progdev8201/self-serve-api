@@ -23,7 +23,7 @@ public class RestaurantSelectionDTO implements Serializable {
         this.restaurantName = restaurantName;
         restaurentTablesDTO = new ArrayList<>();
 
-        restaurentTables.parallelStream().forEach(restaurentTable -> {
+        restaurentTables.forEach(restaurentTable -> {
             restaurentTablesDTO.add(RestaurentTableToRestaurenTableDTO.instance.convert(restaurentTable));
         });
     }
