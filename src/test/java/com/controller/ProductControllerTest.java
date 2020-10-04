@@ -345,6 +345,7 @@ class ProductControllerTest {
         ProductDTO reponse = new ObjectMapper().readValue(result.getResponse().getContentAsString(), ProductDTO.class);
         File file =new File(absolutePath+reponse.getImgUrl());
         assertTrue(file.exists());
+        file.delete();
     }
     @Test
     public void testCreateProductImageCheckIfImgReturnAsByteArray() throws Exception {
@@ -369,6 +370,7 @@ class ProductControllerTest {
         File file =new File(absolutePath+reponse.getImgUrl());
         assertNotNull(result.getResponse().getContentAsString());
         assertTrue(file.exists());
+        file.delete();
     }
     private MockMvc initMockMvc(){
         return MockMvcBuilders.standaloneSetup(productController).build();
