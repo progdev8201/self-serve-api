@@ -56,6 +56,8 @@ public class DataLoader implements CommandLineRunner {
     @Autowired
     private KitchenService kitchenService;
 
+
+
     @Autowired
     AuthentificationService authentificationService;
 
@@ -147,15 +149,6 @@ public class DataLoader implements CommandLineRunner {
         product.setName("CALL WAITER");
         productList.add(product);
 
-
-        //create menu
-        Menu menu = new Menu();
-        menu.setProducts(productList);
-        for (Product x : productList) {
-            x.setMenu(menu);
-        }
-
-
         if (roleRepository.findAll().size() == 0) {
             LOGGER.info("READY!...Populating database...");
 
@@ -191,8 +184,11 @@ public class DataLoader implements CommandLineRunner {
         restaurant = restaurantRepository.findById(restaurantDTO.getId()).get();
         restaurant.setBill(new ArrayList<>());
         restaurant.setName("le resto chico");
-        menu.setRestaurant(restaurant);
-        restaurant.setMenu(menu);
+        for (Product x : productList) {
+            x.setMenu(restaurant.getMenu());
+        }
+        restaurant.getMenu().setProducts(productList);
+
         restaurant.getBill().add(bill);
         restaurantRepository.save(restaurant);
         restaurant = restaurantRepository.findById(restaurantDTO.getId()).get();

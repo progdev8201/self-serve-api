@@ -71,9 +71,9 @@ public class KitchenService {
             restaurant.getRestaurentTables().add(createTable(i));
         }
         //add menu to restaurant
-    /*    Menu menu = new Menu();
+        Menu menu = new Menu();
         menu.setRestaurant(restaurant);
-        restaurant.setMenu(menu);*/
+        restaurant.setMenu(menu);
 
         restaurant = restaurantRepository.save(restaurant);
         if (Objects.isNull(owner.getRestaurantList())) {
