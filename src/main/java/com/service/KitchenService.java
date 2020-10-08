@@ -6,6 +6,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.mapping.RestaurantToRestaurantDTO;
+import com.model.dto.MenuDTO;
 import com.model.dto.OrderItemDTO;
 import com.mapping.OrderItemToOrderItemDTO;
 import com.model.dto.RestaurantDTO;
@@ -74,7 +75,7 @@ public class KitchenService {
         restaurant.setRestaurentTables(new ArrayList<>());
         for (int i=0;i<nombreDeTable;i++)
         {
-            restaurant.getRestaurentTables().add(createTable(i));
+            restaurant.getRestaurentTables().add(createTable(i,restaurant));
         }
         //add menu to restaurant
         Menu menu = new Menu();
@@ -99,9 +100,10 @@ public class KitchenService {
         return restaurantDTO;
     }
 
-    private RestaurentTable createTable( int tableNumber) throws WriterException, IOException {
+    private RestaurentTable createTable( int tableNumber,Restaurant restaurant) throws WriterException, IOException {
         RestaurentTable restaurentTable = new RestaurentTable();
         restaurentTable.setTableNumber(tableNumber);
+        restaurentTable.setRestaurant(restaurant);
         ImgFile imgFile = new ImgFile();
         imgFile.setFileType("qrCode");
         imgFile.setData(generateQRCode(frontEndUrl,Integer.toString(restaurentTable.getTableNumber())));
@@ -120,7 +122,7 @@ public class KitchenService {
 
     public RestaurantDTO addRestaurantTable(Long restaurantId) throws IOException, WriterException {
         Restaurant restaurant =restaurantRepository.findById(restaurantId).get();
-        restaurant.getRestaurentTables().add(createTable(restaurant.getRestaurentTables().size()+1));
+        restaurant.getRestaurentTables().add(createTable(restaurant.getRestaurentTables().size()+1,restaurant));
         restaurant =restaurantRepository.save(restaurant);
         return dtoUtils.generateRestaurantDTO(restaurant);
     }
@@ -180,6 +182,10 @@ public class KitchenService {
         orderItem.setTempsDePreparation(new Date(orderItem.getTempsDePreparation().getTime() + (tempsAjoute * 60000)));
         return dtoUtils.generateOrderItemDTO(orderItemRepository.save(orderItem));
 
+    }
+    public MenuDTO menuParRestaurantTable (Long restaurantId){
+        RestaurentTable restaurentTable =restaurentTableRepository.findById(restaurantId).get();
+        return dtoUtils.generateMenuDTO(restaurentTable.getRestaurant().getMenu());
     }
 
 }

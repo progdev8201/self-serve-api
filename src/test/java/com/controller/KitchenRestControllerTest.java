@@ -361,6 +361,21 @@ class KitchenRestControllerTest {
         assertEquals(5, reponse.size());
     }
 
+    @Test
+    public void testfindMenuParRestaurantTable() throws Exception {
+        MockMvc mvc = initMockMvc();
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("restaurantTableId","1");
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/findMenuByRestaurantId").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        MenuDTO menuDTO = new ObjectMapper().readValue(result.getResponse().getContentAsString(),MenuDTO.class);
+        assertEquals(1,menuDTO.getId());
+    }
+
     private MenuDTO createMenuDTO() {
         List<ProductDTO> productDTOS = new ArrayList<>();
         MenuDTO menuDTO = new MenuDTO();
