@@ -14,15 +14,13 @@ import com.service.StripeService;
 import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/order")
+@RequestMapping("/stripe")
 public class StripeController {
 
     @Autowired
@@ -43,5 +41,16 @@ public class StripeController {
         String restaurentStripeAccount =json.get("restaurentStripeAccount");
         return ResponseEntity.ok(stripeService.processPayment(restaurentStripeAccount, BillDTOToBill.instance.convert(billDTO)));
     }
-
+    @PostMapping("/fetchPaymentRquestPaymentIntent")
+    public ResponseEntity<StripeClientSecretDTO> processPaymentRequestPayment(@RequestBody Map<String, String> json) throws JsonProcessingException, StripeException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        BillDTO billDTO = objectMapper.readValue(json.get("billDTO"), BillDTO.class);
+        String restaurentStripeAccount =json.get("restaurentStripeAccount");
+        return ResponseEntity.ok(stripeService.processRequestPayment(restaurentStripeAccount, BillDTOToBill.instance.convert(billDTO)));
+    }
+    @GetMapping ("/.well-known/apple-developer-merchantid-domain-association")
+    public ResponseEntity<?> returnDomainFile() throws IOException {
+        return ResponseEntity.ok(stripeService.returnDomainFile());
+    }
 }

@@ -9,6 +9,8 @@ import com.model.enums.*;
 import com.repository.*;
 import com.service.AuthentificationService;
 import com.service.KitchenService;
+import com.service.StripeService;
+import com.stripe.exception.StripeException;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +63,9 @@ public class DataLoader implements CommandLineRunner {
     @Autowired
     AuthentificationService authentificationService;
 
+    @Autowired
+    private StripeService stripeService;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DataLoader.class);
 
     @Override
@@ -68,9 +73,11 @@ public class DataLoader implements CommandLineRunner {
         createAccount();
     }
 
-    private void createAccount() throws IOException, WriterException {
+    private void createAccount() throws IOException, WriterException, StripeException {
+        stripeService.initApplePay();
         //create restaurant
         Restaurant restaurant = new Restaurant();
+
         restaurantRepository.save(restaurant);
         Bill bill = new Bill();
         bill.setOrderItems(new ArrayList<>());
