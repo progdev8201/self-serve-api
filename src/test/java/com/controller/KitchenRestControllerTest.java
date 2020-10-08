@@ -236,7 +236,7 @@ class KitchenRestControllerTest {
 
             try {
                 Result value = new MultiFormatReader().decode(bitmap);
-                assertEquals(frontEndUrl + String.valueOf(restaurentTableDTO.getTableNumber()), value.getText());
+                assertEquals(frontEndUrl+"start?restaurantTableId=" + String.valueOf(restaurentTableDTO.getTableNumber()), value.getText());
             } catch (NotFoundException e) {
                 System.out.println("There is no QR code in the image");
             }

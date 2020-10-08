@@ -53,6 +53,7 @@ public class KitchenService {
     private OwnerRepository ownerRepository;
     @Autowired
     private DTOUtils dtoUtils;
+    private final String restaurantTableIdPrefix ="start?restaurantTableId=";
 
     private final String QR_CODE_FILE_TYPE="QR Code";
 
@@ -149,7 +150,7 @@ public class KitchenService {
     private byte[] generateQRCode ( String frontEndUrl,String tableNumber) throws WriterException, IOException {
         QRCodeWriter barcodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix =
-                barcodeWriter.encode(frontEndUrl+tableNumber, BarcodeFormat.QR_CODE, 200, 200);
+                barcodeWriter.encode(frontEndUrl+restaurantTableIdPrefix+tableNumber, BarcodeFormat.QR_CODE, 200, 200);
         BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage,"jpg",byteArrayOutputStream);
