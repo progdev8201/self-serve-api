@@ -114,7 +114,8 @@ public class KitchenRestController {
     @PostMapping("/deleteTable")
     public ResponseEntity deleteRestaurantTble(@RequestBody Map<String,String> json) throws JsonProcessingException {
         Long tableId = new ObjectMapper().readValue(json.get("restaurantTableId"),Long.class);
-        kitchenService.deleteRestaurantTable(tableId);
+        Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
+        kitchenService.deleteRestaurantTable(tableId,restaurantId);
         return  new ResponseEntity(HttpStatus.OK);
     }
     @PostMapping("/changeOrderItemStatus")

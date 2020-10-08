@@ -31,11 +31,13 @@ public class BillController {
         String commentaire =json.get("commentaire");
         return ResponseEntity.ok(clientService.makeOrder(productDTO,json.get("guestUsername"),billDTO.getId(),restaurentTableId,commentaire));
     }
+
     @PostMapping("/makePayment")
     public ResponseEntity<Boolean> makePayment(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long billId = new ObjectMapper().readValue(json.get("billId"),Long.class);
         return ResponseEntity.ok(clientService.makePayment(billId));
     }
+
     @PostMapping("/getBill")
     public ResponseEntity<BillDTO> getBill(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long billId = new ObjectMapper().readValue(json.get("billId"),Long.class);

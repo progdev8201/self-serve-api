@@ -76,7 +76,6 @@ public class MenuService {
         menuDTO.setProducts(dtoUtils.generateProductDTO(menu.getProducts()));
 
         return menuDTO;
-
     }
 
     private List<Product> findSpecialsInBD(List<ProductDTO> specialProducts) {
@@ -102,7 +101,7 @@ public class MenuService {
         List<RestaurantSelectionDTO> restaurantSelectionDTOS = new ArrayList<>();
 
         ownerRepository.findByUsername(ownerUsername).ifPresent(owner ->{
-            owner.getRestaurantList().parallelStream().forEach(restaurant -> {
+            owner.getRestaurantList().forEach(restaurant -> {
                 restaurantSelectionDTOS.add(new RestaurantSelectionDTO(restaurant.getId(), restaurant.getMenu().getId(),restaurant.getName(),restaurant.getRestaurentTables()));
             });
         });

@@ -16,6 +16,7 @@ import com.model.enums.ProgressStatus;
 import com.repository.OrderItemRepository;
 import com.repository.OwnerRepository;
 import com.repository.RestaurantRepository;
+import com.repository.RestaurentTableRepository;
 import com.service.DtoUtil.DTOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +40,10 @@ public class KitchenService {
     private OrderItemRepository orderItemRepository;
 
     @Autowired
+    private RestaurentTableRepository restaurentTableRepository;
+
+
+    @Autowired
     private RestaurantRepository restaurantRepository;
     @Value("${font-end.url}")
     String frontEndUrl;
@@ -60,6 +65,7 @@ public class KitchenService {
         return returnValue;
     }
 
+    //todo clean code
     ///generate qrCode
     public RestaurantDTO createRestaurant(String ownerUsername, String restaurantName,int nombreDeTable) throws IOException, WriterException {
         Owner owner = ownerRepository.findByUsername(ownerUsername).get();
@@ -104,9 +110,11 @@ public class KitchenService {
     }
 
     public void deleteRestaurant (Long restaurantId){
+        //delete parent first
         restaurantRepository.deleteById(restaurantId);
     }
-    public RestaurantDTO  addRestaurantTable(Long restaurantId) throws IOException, WriterException {
+
+    public RestaurantDTO addRestaurantTable(Long restaurantId) throws IOException, WriterException {
         Restaurant restaurant =restaurantRepository.findById(restaurantId).get();
         restaurant.getRestaurentTables().add(createTable(restaurant.getRestaurentTables().size()+1));
         restaurant =restaurantRepository.save(restaurant);
@@ -119,8 +127,17 @@ public class KitchenService {
         restaurant = restaurantRepository.save(restaurant);
         return dtoUtils.generateRestaurantDTO(restaurant);
     }
-    public void deleteRestaurantTable(Long restaurantId){
-        restaurantRepository.deleteById(restaurantId);
+    public void deleteRestaurantTable(Long restaurantTableId,Long restaurantId){
+        // find restaurant then remove table then save restaurant then delete restaurant table
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
+
+        RestaurentTable restaurentTable = restaurant.getRestaurentTables().stream().filter(table -> table.getId().equals(restaurantTableId)).findFirst().get();
+
+        restaurant.getRestaurentTables().remove(restaurentTable);
+
+        restaurantRepository.saveAndFlush(restaurant);
+
+        restaurentTableRepository.deleteById(restaurantTableId);
     }
 
     private byte[] generateQRCode ( String frontEndUrl,String tableNumber) throws WriterException, IOException {
