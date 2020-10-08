@@ -111,7 +111,11 @@ public class KitchenService {
 
     public void deleteRestaurant (Long restaurantId){
         //delete parent first
-        restaurantRepository.deleteById(restaurantId);
+        Restaurant restaurant =restaurantRepository.findById(restaurantId).get();
+        Owner owner = restaurant.getOwner();
+        List<Restaurant> restaurants= owner.getRestaurantList().stream().filter(resto -> resto.getId() != restaurantId).collect(Collectors.toList());
+        owner.setRestaurantList(restaurants);
+        ownerRepository.save(owner);
     }
 
     public RestaurantDTO addRestaurantTable(Long restaurantId) throws IOException, WriterException {
