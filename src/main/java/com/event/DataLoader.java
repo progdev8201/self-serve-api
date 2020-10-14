@@ -12,18 +12,22 @@ import com.service.KitchenService;
 import com.service.StripeService;
 import com.stripe.exception.StripeException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -57,6 +61,10 @@ public class DataLoader implements CommandLineRunner {
 
     @Autowired
     private KitchenService kitchenService;
+
+
+    @Autowired
+    ResourceLoader resourceLoader;
 
 
 
@@ -200,6 +208,12 @@ public class DataLoader implements CommandLineRunner {
         restaurantRepository.save(restaurant);
         restaurant = restaurantRepository.findById(restaurantDTO.getId()).get();
         LOGGER.info("Restaurant menuid: " + restaurant.getMenu().getId());
+        restaurant = new Restaurant();
+        RestaurentTable restaurentTable = new RestaurentTable();
+        restaurant.setRestaurentTables(new ArrayList<>());
+        restaurant.getRestaurentTables().add(restaurentTable);
+
+        restaurantRepository.save(restaurant);
         System.out.println("APPLICATION IS READY!!!");
     }
 
@@ -212,9 +226,11 @@ public class DataLoader implements CommandLineRunner {
         String pathDansProjet = fileBasePath + fileToCopy;
         Path currentRelativePath = Paths.get("");
         String absolutePath = currentRelativePath.toAbsolutePath().toString();
-        File imgFile = new File(absolutePath + pathDansProjet);
+        InputStream is =resourceLoader.getResource(
+                "classpath:img/"+fileToCopy).getInputStream();
+        //File imgFile = new File(absolutePath + pathDansProjet);
         ImgFile img = new ImgFile();
-        img.setData(FileUtils.readFileToByteArray(imgFile));
+        img.setData(IOUtils.toByteArray(is))    ;
         img.setFileType("image");
         img.setProduct(product);
         product.setImgFile(img);

@@ -39,7 +39,7 @@ public class DTOUtils {
     }
 
     public MenuDTO generateMenuDTO(Menu menu) {
-        MenuDTO returnValue = MenuToMenuDTOImpl.instance.convert(menu);
+        MenuDTO returnValue = MenuToMenuDTO.instance.convert(menu);
         returnValue.setSpeciaux(new ArrayList<>());
         for (Product special : menu.getSpeciaux()) {
             returnValue.getSpeciaux().add(ProductToProductDTO.instance.convert(special));
@@ -87,7 +87,7 @@ public class DTOUtils {
     }
 
     public RateDTO generateRateDTO(Rate rate) {
-        return RateToRateDTOImpl.instance.convert(rate);
+        return RateToRateDTO.instance.convert(rate);
     }
 
     public RestaurentTableDTO generateRestaurentTableDTO(RestaurentTable restaurentTable) {

@@ -81,7 +81,7 @@ class KitchenRestControllerTest {
         JSONObject sendObj = new JSONObject();
         sendObj.put("billDTO", objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername", "client1@mail.com");
-        sendObj.put("restaurentTableId", "1");
+        sendObj.put("restaurentTableId", "2");
         sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
@@ -108,7 +108,7 @@ class KitchenRestControllerTest {
                 andReturn();
         List<LinkedHashMap<String, Object>> reponse = mapper.readValue(result.getResponse().getContentAsString(), ArrayList.class);
 
-        ArrayList billDTOS = (ArrayList) reponse.get(0).get("bills");
+        ArrayList billDTOS = (ArrayList) reponse.get(1).get("bills");
         // bills
         // List<BillDTO> billDTOS =reponse.get("bills");
         assertEquals(1, billDTOS.size());
@@ -126,7 +126,7 @@ class KitchenRestControllerTest {
                 andReturn();
         reponse = mapper.readValue(result.getResponse().getContentAsString(), ArrayList.class);
 
-        billDTOS = (ArrayList) reponse.get(0).get("bills");
+        billDTOS = (ArrayList) reponse.get(1).get("bills");
         // bills
         // List<BillDTO> billDTOS =reponse.get("bills");
         assertEquals(0, billDTOS.size());
@@ -347,7 +347,7 @@ class KitchenRestControllerTest {
         JSONObject sendObj = new JSONObject();
         sendObj.put("bill", objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername", "client1@mail.com");
-        sendObj.put("restaurentId", "2");
+        sendObj.put("restaurentId", "3");
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/findAllTables").
                 content(sendObj.toString()).
@@ -358,7 +358,7 @@ class KitchenRestControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         List<RestaurentTableDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), List.class);
-        assertEquals(5, reponse.size());
+        assertEquals(1, reponse.size());
     }
 
     @Test
