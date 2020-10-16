@@ -1,3 +1,4 @@
+
 spring:
   h2:
     console:
@@ -37,4 +38,5 @@ font-end:
 
 stripe:
   apiKey: "sk_test_51HLwKgC5UoZOX4GRUFItjFyJNULwHrPtVdQneYTfdNWN8Jvaix5wabpNZk8JwjkSG36Mg2st9yV1VrhnfhUfhAOQ00NasvN6m1"
-
+server:
+  port: 8081
