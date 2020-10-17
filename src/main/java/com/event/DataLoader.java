@@ -67,7 +67,6 @@ public class DataLoader implements CommandLineRunner {
     ResourceLoader resourceLoader;
 
 
-
     @Autowired
     AuthentificationService authentificationService;
 
@@ -225,11 +224,11 @@ public class DataLoader implements CommandLineRunner {
         String pathDansProjet = fileBasePath + fileToCopy;
         Path currentRelativePath = Paths.get("");
         String absolutePath = currentRelativePath.toAbsolutePath().toString();
-        InputStream is =resourceLoader.getResource(
-                "classpath:img/"+fileToCopy).getInputStream();
+        InputStream is = resourceLoader.getResource(
+                "classpath:img/" + fileToCopy).getInputStream();
         //File imgFile = new File(absolutePath + pathDansProjet);
         ImgFile img = new ImgFile();
-        img.setData(IOUtils.toByteArray(is))    ;
+        img.setData(IOUtils.toByteArray(is));
         img.setFileType("image");
         img.setProduct(product);
         product.setImgFile(img);
