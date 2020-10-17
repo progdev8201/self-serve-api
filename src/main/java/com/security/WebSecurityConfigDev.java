@@ -81,6 +81,7 @@ public class WebSecurityConfigDev extends WebSecurityConfigurerAdapter implement
     protected void configure(HttpSecurity http) throws Exception {
         RequestMatcher csrfRequestMatcher = new RequestMatcher() {
 
+            
             private RegexRequestMatcher requestMatcher =
                     new RegexRequestMatcher("/gs-guide-websocket/", null);
 
