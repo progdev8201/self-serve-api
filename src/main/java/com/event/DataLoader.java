@@ -181,7 +181,6 @@ public class DataLoader implements CommandLineRunner {
             roleRepository.flush();
             LOGGER.info("RoleRepository populated");
 
-            
             // create client and guest
             LOGGER.info("Creating default client and guest");
             SignUpForm client = new SignUpForm("client1@mail.com", "123456", "5147887884", "client");
