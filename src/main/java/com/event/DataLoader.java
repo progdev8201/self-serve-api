@@ -193,7 +193,6 @@ public class DataLoader implements CommandLineRunner {
             authentificationService.registerUser(guest);
             authentificationService.registerUser(owner);
 
-
         }
         RestaurantDTO restaurantDTO = kitchenService.createRestaurant("owner@mail.com", "le monde chico", 5);
         restaurant = restaurantRepository.findById(restaurantDTO.getId()).get();
