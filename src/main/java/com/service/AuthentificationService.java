@@ -42,8 +42,6 @@ public class AuthentificationService {
     JwtProvider jwtProvider;
 
 
-
-
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthentificationService.class);
 
     private static final Map<String, RoleName> nameIndex = new HashMap<>(RoleName.values().length);
@@ -77,7 +75,7 @@ public class AuthentificationService {
         }
 
         // Creating user's account
-        Guest user = new Guest(signUpForm.getUsername(), encoder.encode(signUpForm.getPassword()),new TreeSet<>());
+        Guest user = new Guest(signUpForm.getUsername(), encoder.encode(signUpForm.getPassword()), new TreeSet<>());
 
         // TRANSFERING ACCOUNT ROLES STRING TO ENUM THEN MAKE SURE ITS IN DATABASE THEN ADD TO USER
         Set<String> requestRolesArr = Collections.singleton(signUpForm.getRole());
@@ -88,8 +86,9 @@ public class AuthentificationService {
 
 
         //create entity based on roles
-        if (createEntityBasedOnRoles(user, userRoles,signUpForm))return ResponseEntity.ok().body("User registered successfully!");
-        else return new ResponseEntity<String> ("Fail -> couldn't create User",HttpStatus.BAD_REQUEST);
+        if (createEntityBasedOnRoles(user, userRoles, signUpForm))
+            return ResponseEntity.ok().body("User registered successfully!");
+        else return new ResponseEntity<String>("Fail -> couldn't create User", HttpStatus.BAD_REQUEST);
     }
 
 
@@ -117,14 +116,14 @@ public class AuthentificationService {
         return null;
     }
 
-    private boolean createEntityBasedOnRoles(Guest user, Set<Role> userRoles,SignUpForm signUpForm) {
+    private boolean createEntityBasedOnRoles(Guest user, Set<Role> userRoles, SignUpForm signUpForm) {
         user.setRoles(userRoles);
         Iterator<Role> rolesItr = userRoles.iterator();
         while (rolesItr.hasNext()) {
 
             switch (rolesItr.next().getName()) {
                 case ROLE_CLIENT:
-                    guestRepository.save(new Client(user,signUpForm.getTelephone()));
+                    guestRepository.save(new Client(user, signUpForm.getTelephone()));
                     // send email
                     LOGGER.info("I created a new client");
                     return true;

@@ -88,7 +88,7 @@ public class MenuService {
     }
 
     private MenuDTO returnMenu(Menu menu) {
-        MenuDTO returnValue = MenuToMenuDTOImpl.instance.convert(menuRepository.save(menu));
+        MenuDTO returnValue = MenuToMenuDTO.instance.convert(menuRepository.save(menu));
         returnValue.setSpeciaux(new ArrayList<>());
         for (Product special : menu.getSpeciaux()) {
             returnValue.getSpeciaux().add(ProductToProductDTO.instance.convert(special));
