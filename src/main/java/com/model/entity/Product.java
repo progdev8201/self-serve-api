@@ -50,6 +50,24 @@ public class Product implements Serializable {
     @Column(length = 60)
     private ProductMenuType productMenuType;
 
+    public Product(long id, String name, String description, Menu menu, List<Option> options, List<OrderItem> orderItems, double prix, int tempsDePreparation, String imgUrl, ImgFile imgFile, List<Rate> rates, ProductType productType, ProductMenuType productMenuType) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.menu = menu;
+        this.options = options;
+        this.orderItems = orderItems;
+        this.prix = prix;
+        this.tempsDePreparation = tempsDePreparation;
+        this.imgUrl = imgUrl;
+        this.imgFile = imgFile;
+        this.rates = rates;
+        this.productType = productType;
+        this.productMenuType = productMenuType;
+    }
+
+    public Product() {
+    }
 
     public List<OrderItem> getOrderItems() {
         return orderItems;

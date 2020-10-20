@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-
+// TODO: all test should include assert arrange act as comments so its easier to understand code
 @ExtendWith(MockitoExtension.class)
 class RatingServiceTest {
 

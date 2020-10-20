@@ -22,7 +22,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+// TODO: all test should include assert arrange act as comments so its easier to understand code
 @SpringBootTest
 @ActiveProfiles("dev")
 class BillControllerTests {

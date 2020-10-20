@@ -81,6 +81,7 @@ public class DTOUtils {
         productDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(product.getImgFile()));
         productDTO.setProductType(product.getProductType());
         productDTO.setOptions(new ArrayList<>());
+
         for (Option option : product.getOptions()) {
             OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
             optionDTO.setCheckItemList(new ArrayList<>());
