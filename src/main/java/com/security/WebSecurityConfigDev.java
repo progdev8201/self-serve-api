@@ -67,7 +67,7 @@ public class WebSecurityConfigDev extends WebSecurityConfigurerAdapter implement
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.addAllowedOrigin("https://0c1771b800bd.ngrok.io");
+        configuration.addAllowedOrigin("http://3.18.101.168");
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.addAllowedHeader("content-type");
         configuration.addAllowedHeader("Access-Control-Allow-Origin");
