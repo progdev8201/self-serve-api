@@ -76,7 +76,7 @@ public class KitchenService {
         restaurant.setRestaurentTables(new ArrayList<>());
         for (int i=0;i<nombreDeTable;i++)
         {
-            restaurant.getRestaurentTables().add(createTable(i,restaurant));
+            restaurant.getRestaurentTables().add(createTable(i+1,restaurant));
         }
         //add menu to restaurant
         Menu menu = new Menu();
