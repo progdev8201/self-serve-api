@@ -36,7 +36,9 @@ public class ProductController {
     @Autowired
     ProductService productService;
 
-    //TODO put dto instead of entity
+
+    //GET MAPPING
+
     @GetMapping("/{id}")
     public Product find(@PathVariable Long id) {
         return productService.find(id);
@@ -47,23 +49,9 @@ public class ProductController {
         return productService.findAllProductFromMenu(id);
     }
 
-    @PostMapping("/{menuId}")
-    public ProductDTO create(@RequestBody ProductDTO productDTO, @PathVariable Long menuId) {
-        return productService.create(productDTO, menuId);
-    }
-
     @GetMapping("/findWaiterRequestProducts/{id}")
     public List<ProductDTO> findAllWaiterRequestProductFromMenu(@PathVariable Long id) {
         return productService.findAllWaiterRequestProductFromMenu(id);
-    }
-    @PutMapping
-    public void update(@RequestBody ProductDTO productDTO) {
-        productService.update(productDTO);
-    }
-
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        productService.delete(id);
     }
 
     @GetMapping("/findMenuSpecial")
@@ -77,6 +65,19 @@ public class ProductController {
         MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menuDTO"), MenuDTO.class);
         return ResponseEntity.ok(productService.findMenuChoixDuChef(menuDTO));
     }
+
+    @GetMapping("/getProductImg/{imgId}")
+    public ResponseEntity<?> getImg(@PathVariable Long imgId) throws IOException {
+        return ResponseEntity.ok(productService.returnImgAsByteArrayString(imgId));
+    }
+
+    //POST MAPPING
+
+    @PostMapping("/{menuId}")
+    public ProductDTO create(@RequestBody ProductDTO productDTO, @PathVariable Long menuId) {
+        return productService.create(productDTO, menuId);
+    }
+
 
     @PostMapping("/setMenuSpecial")
     public ResponseEntity<ProductDTO> setProductSpecial(@RequestBody Map<String, String> json) throws JsonProcessingException {
@@ -97,17 +98,22 @@ public class ProductController {
         return ResponseEntity.ok(productService.setProductChefChoice(productDTO));
     }
 
-    @RequestMapping(path = "/saveProductImg", method = RequestMethod.POST)
-    @ResponseBody
-    public ResponseEntity<?> saveProductImg(@RequestParam("file") MultipartFile styleImg,
-                                            @RequestPart("productDTO") ProductDTO productDTO) throws IOException {
-        return ResponseEntity.ok(productService.uploadFile(styleImg, productDTO));
+    @PostMapping("/image/{productId}")
+    public ResponseEntity<?> saveProductImg(@RequestParam("file") MultipartFile file,@PathVariable long productId) throws IOException {
+        return ResponseEntity.ok(productService.uploadFile(file, productId));
     }
 
-    @RequestMapping(path = "/getProductImg/{imgId}", method = RequestMethod.GET)
-    public ResponseEntity<?> getImg(@PathVariable(value = "imgId") Long id) throws IOException {
-        return ResponseEntity.ok(productService.returnImgAsByteArrayString(id));
+    //PUT MAPPING
+
+    @PutMapping
+    public void update(@RequestBody ProductDTO productDTO) {
+        productService.update(productDTO);
     }
 
+    // DELETE MAPPING
 
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        productService.delete(id);
+    }
 }

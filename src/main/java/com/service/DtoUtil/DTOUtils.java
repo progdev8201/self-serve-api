@@ -11,6 +11,9 @@ import java.util.Objects;
 
 @Service
 public class DTOUtils {
+
+    //BILL DTO UTILS
+
     public BillDTO generateBillDTOWithOrderItems(Bill bill) {
         BillDTO returnValue = BillToBillDTO.instance.convert(bill);
         List<OrderItemDTO> returnBillOrderItems = new ArrayList<>();
@@ -38,6 +41,8 @@ public class DTOUtils {
         return returnValue;
     }
 
+    //MENU DTO UTILS
+
     public MenuDTO generateMenuDTO(Menu menu) {
         MenuDTO returnValue = MenuToMenuDTO.instance.convert(menu);
         returnValue.setSpeciaux(new ArrayList<>());
@@ -47,6 +52,8 @@ public class DTOUtils {
         }
         return returnValue;
     }
+
+    //PRODUCT DTO UTILS
 
     public List<ProductDTO> generateProductDTO(List<Product> products) {
         List<ProductDTO> productDTOS = new ArrayList<>();
@@ -74,6 +81,7 @@ public class DTOUtils {
         productDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(product.getImgFile()));
         productDTO.setProductType(product.getProductType());
         productDTO.setOptions(new ArrayList<>());
+
         for (Option option : product.getOptions()) {
             OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
             optionDTO.setCheckItemList(new ArrayList<>());
@@ -86,9 +94,13 @@ public class DTOUtils {
         return productDTO;
     }
 
+    //RATE DTO UTILS
+
     public RateDTO generateRateDTO(Rate rate) {
         return RateToRateDTO.instance.convert(rate);
     }
+
+    //RESTAURANT TABLE UTILS
 
     public RestaurentTableDTO generateRestaurentTableDTO(RestaurentTable restaurentTable) {
 
@@ -105,9 +117,13 @@ public class DTOUtils {
         return restaurentTableDTO;
     }
 
+    // ORDER ITEM DTO UTILS
+
     public OrderItemDTO generateOrderItemDTO(OrderItem orderItem) {
         return OrderItemToOrderItemDTO.instance.convert(orderItem);
     }
+
+    // RESTAURANT DTO UTILS
 
     public RestaurantDTO generateRestaurantDTO(Restaurant restaurant) {
         RestaurantDTO restaurantDTO = RestaurantToRestaurantDTO.instance.convert(restaurant);

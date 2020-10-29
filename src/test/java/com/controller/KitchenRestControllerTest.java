@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+// TODO: all test should include assert arrange act as comments so its easier to understand code
 @SpringBootTest
 @ActiveProfiles("dev")
 class KitchenRestControllerTest {
@@ -264,16 +264,12 @@ class KitchenRestControllerTest {
 
     @Test
     public void testAddTable() throws Exception {
-        JSONObject sendObj = new JSONObject();
-        sendObj.put("restaurantId", "2");
         MockMvc mvc = initMockMvc();
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/addTable").
-                content(sendObj.toString()).
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/addTable/"+ 2L + "/" + 5).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
-
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
@@ -281,8 +277,6 @@ class KitchenRestControllerTest {
 
         RestaurantDTO response = mapper.readValue(result.getResponse().getContentAsString(), RestaurantDTO.class);
         assertEquals(6, response.getRestaurentTables().size());
-
-
     }
 
     @Test

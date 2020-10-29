@@ -11,7 +11,6 @@ import com.model.dto.RestaurantDTO;
 import com.model.dto.RestaurentTableDTO;
 import com.model.entity.OrderItem;
 import com.model.entity.Request;
-import com.model.enums.OrderStatus;
 import com.model.enums.ProgressStatus;
 import com.model.enums.RequestType;
 import com.repository.OrderItemRepository;
@@ -44,6 +43,7 @@ public class KitchenRestController {
     @Autowired
     private KitchenService kitchenService;
 
+    //GET
 
     //ALLOW SERVER AND COOK TO LIST REQUEST
     @GetMapping("/request-all")
@@ -71,11 +71,14 @@ public class KitchenRestController {
 
 
     //ALLOW COOK TO MODIFY ORDER TIME OR END ORDER
+
+    //PUT
     @PutMapping("/edit-orderItem")
     public void updateOrderItem(@RequestBody OrderItem orderItem) {
         orderItemRepository.save(orderItem);
     }
 
+    //POST
     @PostMapping("/findAllTables")
     public ResponseEntity<List<RestaurentTableDTO>> findAllTables(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long restaurentId = new ObjectMapper().readValue(json.get("restaurentId"), Long.class);
@@ -90,35 +93,35 @@ public class KitchenRestController {
         int nombreDeTable = objectMapper.readValue(json.get("nombreDeTable"), Integer.class);
 
         return ResponseEntity.ok(kitchenService.createRestaurant(ownerUsername, restaurantName, nombreDeTable));
-
     }
 
     @PostMapping("/deleteRestaurant")
     public ResponseEntity deleteRestaurant(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
+        Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"), Long.class);
         kitchenService.deleteRestaurant(restaurantId);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PostMapping("/addTable")
-    public ResponseEntity<RestaurantDTO> addRestaurantTable(@RequestBody Map<String,String> json) throws IOException, WriterException {
-        Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
-        return ResponseEntity.ok(kitchenService.addRestaurantTable(restaurantId));
+    @PostMapping("/addTable/{restaurantId}/{tableAmount}")
+    public ResponseEntity<RestaurantDTO> addRestaurantTable(@PathVariable long restaurantId,@PathVariable int tableAmount) throws IOException, WriterException {
+        return ResponseEntity.ok(kitchenService.addRestaurantTable(restaurantId,tableAmount));
     }
 
     @PostMapping("/modifierNomTable")
-    public ResponseEntity<RestaurantDTO> updateRestaurantName(@RequestBody Map<String,String> json) throws JsonProcessingException {
+    public ResponseEntity<RestaurantDTO> updateRestaurantName(@RequestBody Map<String, String> json) throws JsonProcessingException {
         String restaurantName = json.get("restaurantName");
-        Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
-        return ResponseEntity.ok(kitchenService.modifierRestaurantName(restaurantName,restaurantId));
+        Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"), Long.class);
+        return ResponseEntity.ok(kitchenService.modifierRestaurantName(restaurantName, restaurantId));
     }
+
     @PostMapping("/deleteTable")
-    public ResponseEntity deleteRestaurantTble(@RequestBody Map<String,String> json) throws JsonProcessingException {
-        Long tableId = new ObjectMapper().readValue(json.get("restaurantTableId"),Long.class);
-        Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
-        kitchenService.deleteRestaurantTable(tableId,restaurantId);
-        return  new ResponseEntity(HttpStatus.OK);
+    public ResponseEntity deleteRestaurantTble(@RequestBody Map<String, String> json) throws JsonProcessingException {
+        Long tableId = new ObjectMapper().readValue(json.get("restaurantTableId"), Long.class);
+        Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"), Long.class);
+        kitchenService.deleteRestaurantTable(tableId, restaurantId);
+        return new ResponseEntity(HttpStatus.OK);
     }
+
     @PostMapping("/changeOrderItemStatus")
     public ResponseEntity<OrderItemDTO> changeOrderItemStatus(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
@@ -149,9 +152,9 @@ public class KitchenRestController {
     }
 
     @PostMapping("/findMenuByRestaurantId")
-    public ResponseEntity<MenuDTO> findMenuByRestaurantId(@RequestBody Map<String,String> json) throws JsonProcessingException {
+    public ResponseEntity<MenuDTO> findMenuByRestaurantId(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        Long restaurantIdDTO = mapper.readValue(json.get("restaurantTableId"),Long.class);
+        Long restaurantIdDTO = mapper.readValue(json.get("restaurantTableId"), Long.class);
         return ResponseEntity.ok(kitchenService.menuParRestaurantTable(restaurantIdDTO));
     }
 

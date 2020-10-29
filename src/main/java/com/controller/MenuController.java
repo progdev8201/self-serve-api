@@ -43,5 +43,4 @@ public class MenuController {
     public ResponseEntity<List<RestaurantSelectionDTO>> findAllRestaurantName(@PathVariable final String ownerId){
         return ResponseEntity.ok(menuService.findAllRestaurantName(ownerId));
     }
-
 }

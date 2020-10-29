@@ -5,12 +5,10 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.mapping.RestaurantToRestaurantDTO;
+import com.mapping.OrderItemToOrderItemDTO;
 import com.model.dto.MenuDTO;
 import com.model.dto.OrderItemDTO;
-import com.mapping.OrderItemToOrderItemDTO;
 import com.model.dto.RestaurantDTO;
-import com.model.dto.RestaurentTableDTO;
 import com.model.entity.*;
 import com.model.enums.ProductType;
 import com.model.enums.ProgressStatus;
@@ -53,9 +51,9 @@ public class KitchenService {
     private OwnerRepository ownerRepository;
     @Autowired
     private DTOUtils dtoUtils;
-    private final String restaurantTableIdPrefix ="start?restaurantTableId=";
+    private final String restaurantTableIdPrefix = "start?restaurantTableId=";
 
-    private final String QR_CODE_FILE_TYPE="QR Code";
+    private final String QR_CODE_FILE_TYPE = "QR Code";
 
     public OrderItemDTO changeOrderItemStatus(OrderItemDTO orderItemDTO) {
         OrderItem orderItem = orderItemRepository.findById(orderItemDTO.getId()).get();
@@ -69,15 +67,15 @@ public class KitchenService {
 
     //todo clean code
     ///generate qrCode
-    public RestaurantDTO createRestaurant(String ownerUsername, String restaurantName,int nombreDeTable) throws IOException, WriterException {
+    public RestaurantDTO createRestaurant(String ownerUsername, String restaurantName, int nombreDeTable) throws IOException, WriterException {
         Owner owner = ownerRepository.findByUsername(ownerUsername).get();
         Restaurant restaurant = new Restaurant();
         restaurant.setName(restaurantName);
         restaurant.setRestaurentTables(new ArrayList<>());
-        for (int i=0;i<nombreDeTable;i++)
-        {
-            restaurant.getRestaurentTables().add(createTable(i+1,restaurant));
-        }
+
+        for (int i = 0; i < nombreDeTable; i++)
+            restaurant.getRestaurentTables().add(createTable(i, restaurant));
+
         //add menu to restaurant
         Menu menu = new Menu();
         menu.setRestaurant(restaurant);
@@ -92,7 +90,7 @@ public class KitchenService {
 
         owner.getRestaurantList().add(restaurant);
         owner = ownerRepository.save(owner);
-        Restaurant savedRestaurant =owner.getRestaurantList().stream().filter(resto -> {
+        Restaurant savedRestaurant = owner.getRestaurantList().stream().filter(resto -> {
             if (resto.getName().contentEquals(restaurantName))
                 return true;
             return false;
@@ -101,40 +99,41 @@ public class KitchenService {
         return restaurantDTO;
     }
 
-    private RestaurentTable createTable( int tableNumber,Restaurant restaurant) throws WriterException, IOException {
+    private RestaurentTable createTable(int tableNumber, Restaurant restaurant) throws WriterException, IOException {
         RestaurentTable restaurentTable = new RestaurentTable();
         restaurentTable.setTableNumber(tableNumber);
         restaurentTable.setRestaurant(restaurant);
         ImgFile imgFile = new ImgFile();
         imgFile.setFileType("qrCode");
-        imgFile.setData(generateQRCode(frontEndUrl,Integer.toString(restaurentTable.getTableNumber())));
+        imgFile.setData(generateQRCode(frontEndUrl, Integer.toString(restaurentTable.getTableNumber())));
         restaurentTable.setImgFile(imgFile);
         return restaurentTable;
     }
 
-    public void deleteRestaurant (Long restaurantId){
+    public void deleteRestaurant(Long restaurantId) {
         //delete parent first
-        Restaurant restaurant =restaurantRepository.findById(restaurantId).get();
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
         Owner owner = restaurant.getOwner();
-        List<Restaurant> restaurants= owner.getRestaurantList().stream().filter(resto -> resto.getId() != restaurantId).collect(Collectors.toList());
+        List<Restaurant> restaurants = owner.getRestaurantList().stream().filter(resto -> resto.getId() != restaurantId).collect(Collectors.toList());
         owner.setRestaurantList(restaurants);
         ownerRepository.save(owner);
     }
 
-    public RestaurantDTO addRestaurantTable(Long restaurantId) throws IOException, WriterException {
-        Restaurant restaurant =restaurantRepository.findById(restaurantId).get();
-        restaurant.getRestaurentTables().add(createTable(restaurant.getRestaurentTables().size()+1,restaurant));
-        restaurant =restaurantRepository.save(restaurant);
+    public RestaurantDTO addRestaurantTable(Long restaurantId,int tableNumber) throws IOException, WriterException {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
+        restaurant.getRestaurentTables().add(createTable(tableNumber, restaurant));
+        restaurant = restaurantRepository.save(restaurant);
         return dtoUtils.generateRestaurantDTO(restaurant);
     }
 
-    public RestaurantDTO modifierRestaurantName(String restaurantName,Long restaurantId){
+    public RestaurantDTO modifierRestaurantName(String restaurantName, Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
         restaurant.setName(restaurantName);
         restaurant = restaurantRepository.save(restaurant);
         return dtoUtils.generateRestaurantDTO(restaurant);
     }
-    public void deleteRestaurantTable(Long restaurantTableId,Long restaurantId){
+
+    public void deleteRestaurantTable(Long restaurantTableId, Long restaurantId) {
         // find restaurant then remove table then save restaurant then delete restaurant table
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
 
@@ -147,13 +146,13 @@ public class KitchenService {
         restaurentTableRepository.deleteById(restaurantTableId);
     }
 
-    private byte[] generateQRCode ( String frontEndUrl,String tableNumber) throws WriterException, IOException {
+    private byte[] generateQRCode(String frontEndUrl, String tableNumber) throws WriterException, IOException {
         QRCodeWriter barcodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix =
-                barcodeWriter.encode(frontEndUrl+restaurantTableIdPrefix+tableNumber, BarcodeFormat.QR_CODE, 200, 200);
+                barcodeWriter.encode(frontEndUrl + restaurantTableIdPrefix + tableNumber, BarcodeFormat.QR_CODE, 200, 200);
         BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage,"jpg",byteArrayOutputStream);
+        ImageIO.write(bufferedImage, "jpg", byteArrayOutputStream);
         byteArrayOutputStream.flush();
         return byteArrayOutputStream.toByteArray();
     }
@@ -184,8 +183,9 @@ public class KitchenService {
         return dtoUtils.generateOrderItemDTO(orderItemRepository.save(orderItem));
 
     }
-    public MenuDTO menuParRestaurantTable (Long restaurantId){
-        RestaurentTable restaurentTable =restaurentTableRepository.findById(restaurantId).get();
+
+    public MenuDTO menuParRestaurantTable(Long restaurantId) {
+        RestaurentTable restaurentTable = restaurentTableRepository.findById(restaurantId).get();
         return dtoUtils.generateMenuDTO(restaurentTable.getRestaurant().getMenu());
     }
 
