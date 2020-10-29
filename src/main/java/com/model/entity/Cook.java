@@ -9,11 +9,11 @@ import java.io.Serializable;
 @Entity
 @PrimaryKeyJoinColumn(referencedColumnName = "id")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Employee extends Guest implements Serializable {
-    public Employee(Guest user) {
+public class Cook extends Guest implements Serializable {
+    public Cook(Guest user) {
         super(user.getUsername(), user.getPassword(), user.getRoles());
     }
 
-    public Employee() {
+    public Cook() {
     }
 }
