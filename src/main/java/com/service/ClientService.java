@@ -21,18 +21,18 @@ import java.util.stream.Stream;
 @Service
 @Transactional
 public class ClientService {
-    BillRepository billRepository;
-    GuestRepository guestRepository;
-    MenuRepository menuRepository;
-    OrderItemRepository orderItemRepository;
-    ProductRepository productRepository;
-    RestaurantRepository restaurantRepository;
+    private BillRepository billRepository;
+    private GuestRepository guestRepository;
+    private MenuRepository menuRepository;
+    private OrderItemRepository orderItemRepository;
+    private ProductRepository productRepository;
+    private RestaurantRepository restaurantRepository;
 
-    RestaurentTableService restaurentTableService;
+    private RestaurentTableService restaurentTableService;
 
-    RestaurentTableRepository restaurentTableRepository;
+    private RestaurentTableRepository restaurentTableRepository;
 
-    DTOUtils dtoUtils;
+    private DTOUtils dtoUtils;
 
     @Autowired
     public ClientService(BillRepository billRepository, GuestRepository guestRepository, MenuRepository menuRepository, OrderItemRepository orderItemRepository, ProductRepository productRepository, RestaurantRepository restaurantRepository, RestaurentTableService restaurentTableService, RestaurentTableRepository restaurentTableRepository, DTOUtils dtoUtils) {
@@ -77,14 +77,14 @@ public class ClientService {
         restaurant = restaurantRepository.save(restaurant);
         //TODO notify kitchen
         //set valeur retour
-        BillDTO returnValue = dtoUtils.generateBillDTOWithOrderItems(restaurant.getBill().stream().filter(x -> x.getId().equals(bill.getId())).findFirst().get());
+        BillDTO returnValue = dtoUtils.mapBillToBillDTOWithOrderItems(restaurant.getBill().stream().filter(x -> x.getId().equals(bill.getId())).findFirst().get());
 
         return returnValue;
     }
 
     public BillDTO fetchBill(Long billId) {
         Bill bill = billRepository.findById(billId).get();
-        return dtoUtils.generateBillDTOWithOrderItems(bill);
+        return dtoUtils.mapBillToBillDTOWithOrderItems(bill);
     }
 
 
@@ -101,24 +101,26 @@ public class ClientService {
         orderItem.setDelaiDePreparation(LocalDateTime.now().minusMinutes(product.getTempsDePreparation()));
         orderItem.setCommentaires(commentaire);
         orderItem.setOption(new ArrayList<>());
+
         for (OptionDTO optionDTO : productToAdd.getOptions()) {
             Option option = OptionDTOToOption.instance.convert(optionDTO);
             option.setCheckItemList(new ArrayList<>());
+
             for (CheckItemDTO checkItemDTO : optionDTO.getCheckItemList()) {
                 CheckItem checkItem = CheckItemDTOCheckItem.instance.convert(checkItemDTO);
                 option.getCheckItemList().add(checkItem);
             }
+
             orderItem.getOption().add(option);
         }
+
         orderItems.add(orderItem);
         orderItem = orderItemRepository.save(orderItem);
         product.setOrderItems(initEmptyList(product.getOrderItems()));
         product.getOrderItems().add(orderItem);
         productRepository.save(product);
 
-
         bill.setPrixTotal(bill.getPrixTotal() + orderItem.getPrix());
-
 
         return orderItems;
     }

@@ -1,9 +1,7 @@
 package com.service;
 
 import com.mapping.*;
-import com.model.dto.CheckItemDTO;
 import com.model.dto.MenuDTO;
-import com.model.dto.OptionDTO;
 import com.model.dto.ProductDTO;
 import com.model.entity.*;
 import com.model.enums.ProductMenuType;
@@ -65,7 +63,7 @@ public class ProductService {
         List<ProductDTO> productDTOS = new ArrayList<>();
         menuRepository.findById(id).get().getProducts().stream().forEach(product -> {
             if ((product.getProductType() == ProductType.WAITERREQUEST) || (product.getProductType() == ProductType.WAITERCALL)) {
-                productDTOS.add(dtoUtils.generateProductDTO(product));
+                productDTOS.add(dtoUtils.mapProductToProductDTO(product));
             }
         });
 
@@ -180,7 +178,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return dtoUtils.generateProductDTO(productList);
+        return dtoUtils.generateProductDTOList(productList);
 
     }
 
@@ -192,7 +190,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return dtoUtils.generateProductDTO(productList);
+        return dtoUtils.generateProductDTOList(productList);
 
     }
 
@@ -204,7 +202,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return dtoUtils.generateProductDTO(productList);
+        return dtoUtils.generateProductDTOList(productList);
 
     }
 
@@ -216,7 +214,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return dtoUtils.generateProductDTO(productList);
+        return dtoUtils.generateProductDTOList(productList);
 
     }
 
@@ -228,14 +226,14 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return dtoUtils.generateProductDTO(productList);
+        return dtoUtils.generateProductDTOList(productList);
 
     }
 
     public ProductDTO setProductSpecial(ProductDTO productDTO) {
         Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(ProductType.SPECIAL);
-        ProductDTO retour = dtoUtils.generateProductDTO(productRepository.save(product));
+        ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
         retour.setProductType(product.getProductType());
         return retour;
     }
@@ -244,7 +242,7 @@ public class ProductService {
         Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(null);
         product = productRepository.save(product);
-        ProductDTO retour = dtoUtils.generateProductDTO(productRepository.save(product));
+        ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
         retour.setProductType(product.getProductType());
         return retour;
     }
@@ -253,7 +251,7 @@ public class ProductService {
 
         Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(ProductType.CHEFCHOICE);
-        ProductDTO retour = dtoUtils.generateProductDTO(productRepository.save(product));
+        ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
 
         retour.setProductType(product.getProductType());
         return retour;
@@ -270,7 +268,7 @@ public class ProductService {
         product.setImgFile(imgFileRepository.save(img));
         product = productRepository.save(product);
 
-        return dtoUtils.generateProductDTO(product);
+        return dtoUtils.mapProductToProductDTO(product);
     }
 
     public byte[] returnImgAsByteArrayString(Long id) {

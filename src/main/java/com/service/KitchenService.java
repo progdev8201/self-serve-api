@@ -61,7 +61,7 @@ public class KitchenService {
         orderItem = orderItemRepository.save(orderItem);
 
         OrderItemDTO returnValue = OrderItemToOrderItemDTO.instance.convert(orderItem);
-        returnValue.setProduct(dtoUtils.generateProductDTO(orderItem.getProduct()));
+        returnValue.setProduct(dtoUtils.mapProductToProductDTO(orderItem.getProduct()));
         return returnValue;
     }
 
@@ -90,12 +90,14 @@ public class KitchenService {
 
         owner.getRestaurantList().add(restaurant);
         owner = ownerRepository.save(owner);
+
         Restaurant savedRestaurant = owner.getRestaurantList().stream().filter(resto -> {
             if (resto.getName().contentEquals(restaurantName))
                 return true;
             return false;
         }).findFirst().get();
-        RestaurantDTO restaurantDTO = dtoUtils.generateRestaurantDTO(savedRestaurant);
+
+        RestaurantDTO restaurantDTO = dtoUtils.mapRestaurantToRestaurantDTO(savedRestaurant);
         return restaurantDTO;
     }
 
@@ -119,18 +121,18 @@ public class KitchenService {
         ownerRepository.save(owner);
     }
 
-    public RestaurantDTO addRestaurantTable(Long restaurantId,int tableNumber) throws IOException, WriterException {
+    public RestaurantDTO addRestaurantTable(Long restaurantId, int tableNumber) throws IOException, WriterException {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
         restaurant.getRestaurentTables().add(createTable(tableNumber, restaurant));
         restaurant = restaurantRepository.save(restaurant);
-        return dtoUtils.generateRestaurantDTO(restaurant);
+        return dtoUtils.mapRestaurantToRestaurantDTO(restaurant);
     }
 
     public RestaurantDTO modifierRestaurantName(String restaurantName, Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
         restaurant.setName(restaurantName);
         restaurant = restaurantRepository.save(restaurant);
-        return dtoUtils.generateRestaurantDTO(restaurant);
+        return dtoUtils.mapRestaurantToRestaurantDTO(restaurant);
     }
 
     public void deleteRestaurantTable(Long restaurantTableId, Long restaurantId) {
@@ -171,7 +173,7 @@ public class KitchenService {
         });
 
         orderItemList.forEach(orderItem -> {
-            returnValue.add(dtoUtils.generateOrderItemDTO(orderItem));
+            returnValue.add(dtoUtils.mapOrderItemToOrderItemDTO(orderItem));
         });
 
         return returnValue;
@@ -180,7 +182,7 @@ public class KitchenService {
     public OrderItemDTO changeOrderItem(Long orderItemId, int tempsAjoute) {
         OrderItem orderItem = orderItemRepository.findById(orderItemId).get();
         orderItem.setTempsDePreparation(new Date(orderItem.getTempsDePreparation().getTime() + (tempsAjoute * 60000)));
-        return dtoUtils.generateOrderItemDTO(orderItemRepository.save(orderItem));
+        return dtoUtils.mapOrderItemToOrderItemDTO(orderItemRepository.save(orderItem));
 
     }
 
