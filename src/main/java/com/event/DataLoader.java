@@ -73,6 +73,11 @@ public class DataLoader implements CommandLineRunner {
     @Autowired
     private StripeService stripeService;
 
+    @Autowired
+    private StripeSubscriptionProductRepository stripeSubscriptionProductRepository;
+
+    @Autowired
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DataLoader.class);
 
     @Override
@@ -162,6 +167,22 @@ public class DataLoader implements CommandLineRunner {
         product = createProduct(null, ProductType.WAITERCALL, "sugar.png");
         product.setName("CALL WAITER");
         productList.add(product);
+
+
+        StripeSubscriptionProducts stripeSubscriptionProducts = new StripeSubscriptionProducts();
+        stripeSubscriptionProducts.setProductName("Dine in plan premium");
+        stripeSubscriptionProducts.setProductPrice(200.00);
+        stripeSubscriptionProducts.setProductDescription("Unlimited orders");
+        stripeSubscriptionProducts.setPriceId("price_1HiTbuC5UoZOX4GRhbClArla");
+        stripeSubscriptionProductRepository.save(stripeSubscriptionProducts);
+
+        StripeSubscriptionProducts stripeSubscriptionProducts2 = new StripeSubscriptionProducts();
+        stripeSubscriptionProducts2.setProductName("Dine in plan basic");
+        stripeSubscriptionProducts2.setProductPrice(125.00);
+
+        stripeSubscriptionProducts2.setPriceId("price_1HiTYKC5UoZOX4GRDOIONoDR");
+        stripeSubscriptionProducts2.setProductDescription("up to 500 orders");
+        stripeSubscriptionProductRepository.save(stripeSubscriptionProducts2);
 
         if (roleRepository.findAll().size() == 0) {
             LOGGER.info("READY!...Populating database...");
