@@ -19,8 +19,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // TODO: all test should include assert arrange act as comments so its easier to understand code
 @SpringBootTest
@@ -66,6 +65,21 @@ class BillControllerTests {
         assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
         assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
+    }
+    @Test
+    public void initVoid() throws Exception {
+        MockMvc mvc = initMockMvc();
+
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/initBill").
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        BillDTO response = mapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
+        assertNotNull(response.getId());
     }
     @Test
     public void fetchBillByIdGetRightBill() throws Exception {

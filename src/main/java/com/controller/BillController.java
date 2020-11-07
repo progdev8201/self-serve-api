@@ -32,6 +32,11 @@ public class BillController {
         return ResponseEntity.ok(clientService.makeOrder(productDTO,json.get("guestUsername"),billDTO.getId(),restaurentTableId,commentaire));
     }
 
+    @PostMapping("/initBill")
+    public ResponseEntity<BillDTO> initBill(){
+        return ResponseEntity.ok(clientService.initBill());
+    }
+
     @PostMapping("/makePayment")
     public ResponseEntity<Boolean> makePayment(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long billId = new ObjectMapper().readValue(json.get("billId"),Long.class);
