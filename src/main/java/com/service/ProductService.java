@@ -230,6 +230,7 @@ public class ProductService {
 
     }
 
+    // todo ici dans la methode product dto on set deja le product type alors pk le reset
     public ProductDTO setProductSpecial(ProductDTO productDTO) {
         Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(ProductType.SPECIAL);
@@ -238,6 +239,8 @@ public class ProductService {
         return retour;
     }
 
+    // todo mm chose qu'au dessus on set le product type deux
+    // todo on save deux fois le produit ce qui n'est pas optimal
     public ProductDTO removeProductType(ProductDTO productDTO) {
         Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(null);

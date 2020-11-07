@@ -28,7 +28,6 @@ public class Bill implements Serializable {
     private double prixTotal;
 
     @Enumerated(EnumType.STRING)
-    //@NaturalId
     @Column(length = 60)
     private BillStatus billStatus;
 
@@ -66,8 +65,6 @@ public class Bill implements Serializable {
     public void setDate(LocalDateTime date) {
         this.date = date;
     }
-
-
 
     public Restaurant getRestaurant() {
         return restaurant;
