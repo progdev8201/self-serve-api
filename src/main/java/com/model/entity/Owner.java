@@ -16,6 +16,8 @@ public class Owner extends Guest  implements Serializable {
 
     private String stripeAccountId;
 
+    private Boolean isStripeEnable;
+
     private String stripeCustomerId;
 
     @OneToOne(cascade =CascadeType.PERSIST)
@@ -35,6 +37,14 @@ public class Owner extends Guest  implements Serializable {
 
     public void setSubscriptionEntity(SubscriptionEntity subscriptionEntity) {
         this.subscriptionEntity = subscriptionEntity;
+    }
+
+    public Boolean getStripeEnable() {
+        return isStripeEnable;
+    }
+
+    public void setStripeEnable(Boolean stripeEnable) {
+        isStripeEnable = stripeEnable;
     }
 
     public String getStripeCustomerId() {

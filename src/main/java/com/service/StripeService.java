@@ -34,6 +34,9 @@ public class StripeService {
     @Value("${stripe.apiKey}")
     private String stripeAPIKey;
 
+    @Value("${front-end.url}")
+    String frontEndUrl;
+
     @Autowired
     private OwnerRepository ownerRepository;
 
@@ -43,54 +46,49 @@ public class StripeService {
     @Autowired
     private StripeSubscriptionProductRepository stripeSubscriptionProductRepository;
 
-    public String createStripeAccount(Owner thisowner) throws StripeException {
+    public StripeCreateAccountUrlDTO createStripeAccount(String ownerUsername) throws StripeException {
         Stripe.apiKey = stripeAPIKey;
 
-        Owner owner = ownerRepository.findById(thisowner.getId()).get();
+        Owner owner = ownerRepository.findByUsername(ownerUsername).get();
 
 
         AccountCreateParams params =
                 AccountCreateParams.builder()
                         .setEmail(owner.getUsername())
                         .setBusinessType(AccountCreateParams.BusinessType.INDIVIDUAL)
-                        .setBusinessProfile(AccountCreateParams.BusinessProfile.builder().
-                                setProductDescription("produitDescription").
-                                setName(owner.getRestaurantList().get(0).getName()).
-                                setSupportEmail(owner.getUsername()).build())
+                        .setBusinessProfile(AccountCreateParams.BusinessProfile.builder()
+                                .setProductDescription("produitDescription")
+                                .setName(owner.getRestaurantList().get(0).getName())
+                                .setSupportEmail(owner.getUsername()).build())
                         .addRequestedCapability(AccountCreateParams.RequestedCapability.CARD_PAYMENTS)
                         .addRequestedCapability(AccountCreateParams.RequestedCapability.TRANSFERS)
-                        .setCompany(AccountCreateParams.Company.builder().
-                                setName(owner.getRestaurantList().get(0).getName()).
-                                setPhone("5143652481").
-                                build())
+                        .setCompany(AccountCreateParams.Company.builder()
+                                .setName(owner.getRestaurantList().get(0).getName())
+                                .build())
                         .setType(AccountCreateParams.Type.EXPRESS)
                         .build();
-
-/*
-        AccountCreateParams params =
-                AccountCreateParams.builder()
-                        .setEmail(owner.getUsername())
-                        .setBusinessType(AccountCreateParams.BusinessType.INDIVIDUAL)
-                        .setType(AccountCreateParams.Type.EXPRESS)
-                        .addRequestedCapability(AccountCreateParams.RequestedCapability.CARD_PAYMENTS)
-                        .addRequestedCapability(AccountCreateParams.RequestedCapability.TRANSFERS)
-                        .build();
-
-*/
-        Account account = Account.create(params);
+        Account account = null;
+        if (Objects.isNull(owner.getStripeAccountId())) {
+            account = Account.create(params);
+            owner.setStripeAccountId(account.getId());
+            owner.setStripeEnable(false);
+            ownerRepository.save(owner);
+        }
+        else{
+            account = Account.retrieve(owner.getStripeAccountId());
+        }
 
         AccountLinkCreateParams accountLinkparams =
                 AccountLinkCreateParams.builder()
                         .setAccount(account.getId())
-                        .setRefreshUrl("https://example.com/reauth")
-                        .setReturnUrl("https://example.com/return")
+                        .setRefreshUrl(frontEndUrl + "/adminProductManagment")
+                        .setReturnUrl(frontEndUrl + "/adminProductManagment?accountId=" + account.getId())
                         .setType(AccountLinkCreateParams.Type.ACCOUNT_ONBOARDING)
                         .build();
-        owner.setStripeAccountId(account.getId());
-        ownerRepository.save(owner);
         AccountLink accountLink = AccountLink.create(accountLinkparams);
-
-        return accountLink.getUrl();
+        StripeCreateAccountUrlDTO stripeCreateAccountUrlDTO = new StripeCreateAccountUrlDTO();
+        stripeCreateAccountUrlDTO.setValue(accountLink.getUrl());
+        return stripeCreateAccountUrlDTO;
     }
 
     public void initApplePay() throws StripeException {
@@ -102,6 +100,12 @@ public class StripeService {
 
         ApplePayDomain domain = ApplePayDomain.create(params);
 
+    }
+
+    public void saveStripeAccountId( String username) {
+        Owner owner = ownerRepository.findByUsername(username).get();
+        owner.setStripeEnable(true);
+        ownerRepository.save(owner);
     }
 
     public StripeClientSecretDTO processPayment(String restaurentStripeAccount, Bill bill) throws StripeException {
@@ -221,7 +225,7 @@ public class StripeService {
                 .build();
 
         Subscription subscription = Subscription.create(subCreateParams);
-        SubscriptionEntity subscriptionEntity = populateSubscriptionEntity(subscription,new SubscriptionEntity());
+        SubscriptionEntity subscriptionEntity = populateSubscriptionEntity(subscription, new SubscriptionEntity());
         subscriptionEntity.setStripeSubscriptionProducts(stripeSubscriptionProducts);
         subscriptionEntity.setOwner(owner);
         owner.setSubscriptionEntity(subscriptionEntity);
@@ -231,7 +235,7 @@ public class StripeService {
 
     public SubscriptionEntityDTO cancelSubscription(String ownerEmail) throws StripeException {
         Owner owner = ownerRepository.findByUsername(ownerEmail).get();
-        SubscriptionEntity subscriptionEntity =owner.getSubscriptionEntity();
+        SubscriptionEntity subscriptionEntity = owner.getSubscriptionEntity();
         Subscription subscription = Subscription.retrieve(subscriptionEntity.getSubscriptionId());
         Subscription deletedSubscription = subscription.cancel();
         owner.setSubscriptionEntity(null);
@@ -244,17 +248,17 @@ public class StripeService {
 
     public SubscriptionEntityDTO retreiveSubscription(RetreiveSubscriptionRequestDTO retreiveSubscriptionRequestDTO) throws StripeException {
         Owner owner = ownerRepository.findByUsername(retreiveSubscriptionRequestDTO.getOwnerEmail()).get();
-        if(Objects.isNull(owner.getSubscriptionEntity())){
+        if (Objects.isNull(owner.getSubscriptionEntity())) {
             return new SubscriptionEntityDTO();
         }
-        SubscriptionEntity subscriptionEntity =owner.getSubscriptionEntity();
+        SubscriptionEntity subscriptionEntity = owner.getSubscriptionEntity();
         Subscription subscription = Subscription.retrieve(subscriptionEntity.getSubscriptionId());
-        subscriptionEntity = populateSubscriptionEntity(subscription,subscriptionEntity);
+        subscriptionEntity = populateSubscriptionEntity(subscription, subscriptionEntity);
         subscriptionEntityRepository.save(subscriptionEntity);
         return SubscriptionEntityToSubscriptionEntityDTO.instance.convert(subscriptionEntity);
     }
 
-    private SubscriptionEntity populateSubscriptionEntity(Subscription subscription,SubscriptionEntity subscriptionEntity) throws StripeException {
+    private SubscriptionEntity populateSubscriptionEntity(Subscription subscription, SubscriptionEntity subscriptionEntity) throws StripeException {
         subscriptionEntity.setSubscriptionId(subscription.getId());
         subscriptionEntity.setCreated(subscription.getCreated());
         subscriptionEntity.setObject(subscription.getObject());

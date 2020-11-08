@@ -44,7 +44,7 @@ public class KitchenService {
 
     @Autowired
     private RestaurantRepository restaurantRepository;
-    @Value("${font-end.url}")
+    @Value("${front-end.url}")
     String frontEndUrl;
 
     @Autowired

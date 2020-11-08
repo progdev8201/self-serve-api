@@ -65,7 +65,7 @@ class KitchenRestControllerTest {
 
     @Value("${config.styles.images.path}")
     private String fileBasePath;
-    @Value("${font-end.url}")
+    @Value("${front-end.url}")
     private String frontEndUrl;
 
     @Test

@@ -12,6 +12,7 @@ import com.service.StripeService;
 import com.stripe.exception.StripeException;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,10 +29,19 @@ public class StripeController {
 
 
     @PostMapping("/createStripeAcccount")
-    public ResponseEntity<String> createStripeAccounr(@RequestBody Map<String, String> json) throws JsonProcessingException, StripeException {
-        OwnerDTO ownerDTO = new ObjectMapper().readValue(json.get("ownerDto"), OwnerDTO.class);
-        return ResponseEntity.ok(stripeService.createStripeAccount(OwnerDTOToOwner.instance.convert(ownerDTO)));
+    public ResponseEntity<StripeCreateAccountUrlDTO> createStripeAccount(@RequestBody Map<String, String> json) throws JsonProcessingException, StripeException {
+        return ResponseEntity.ok(stripeService.createStripeAccount(json.get("username")));
     }
+
+    @PostMapping("/saveAccountId")
+    public ResponseEntity<?> saveOwnerAccountId(@RequestBody Map<String, String> json){
+        String username= json.get("username");
+        stripeService.saveStripeAccountId(username);
+        return ResponseEntity.ok().build();
+
+    }
+
+
 
     @PostMapping("/fetchPaymentIntent")
     public ResponseEntity<StripeClientSecretDTO> processPayment(@RequestBody Map<String, String> json) throws JsonProcessingException, StripeException {
