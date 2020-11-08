@@ -2,7 +2,6 @@ package com.service;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
-import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
@@ -19,13 +18,11 @@ import javax.imageio.ImageIO;
 import javax.validation.constraints.NotNull;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.*;
-import java.util.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Validated
 @Service
@@ -37,17 +34,6 @@ public class QrCodeService {
     private final int WIDTH = 400;
     private final int HEIGHT = 400;
     private final float DELTA_PERCENTAGE_LIMIT = 0.7f;
-
-    //todo delete this
-    public static void main(String[] args) throws IOException, WriterException {
-        QrCodeService code = new QrCodeService();
-        code.downloadQrCode(4);
-    }
-
-    //todo implement this method
-    public ResponseEntity<List<Resource>> downloadAllQrCode(List<Integer> tableIds){
-        return null;
-    }
 
     public ResponseEntity<Resource> downloadQrCode(@NotNull int tableId) {
         // Create new configuration that specifies the error correction
@@ -69,17 +55,9 @@ public class QrCodeService {
             // Load logo image
             BufferedImage overly = ImageIO.read(new File(LOGO));
 
-            System.out.println("my qr width: " + qrImage.getWidth() + "\nand height: " + qrImage.getHeight());
-
-            System.out.println("my overly width: " + overly.getWidth() + "\nand height: " + overly.getHeight());
-
             // Calculate the delta height and width between QR code and logo
             int deltaHeight = qrImage.getHeight() - overly.getHeight();
             int deltaWidth = qrImage.getWidth() - overly.getWidth();
-
-            System.out.println("my delta height: " + deltaHeight + "\nmy delta width: " + deltaWidth);
-
-            System.out.println("my height %: " + qrImage.getHeight() * DELTA_PERCENTAGE_LIMIT + "\nmy width %: " + qrImage.getWidth() * DELTA_PERCENTAGE_LIMIT);
 
             if (deltaHeight < qrImage.getHeight() * DELTA_PERCENTAGE_LIMIT || deltaWidth < qrImage.getWidth() * DELTA_PERCENTAGE_LIMIT)
                 throw new Exception("Logo too big Exception");
