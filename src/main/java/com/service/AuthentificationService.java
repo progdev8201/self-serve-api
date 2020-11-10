@@ -1,12 +1,15 @@
 package com.service;
 
 
+import com.mapping.OwnerToOwnerDTO;
 import com.model.dto.JwtResponse;
 import com.model.dto.LoginForm;
+import com.model.dto.OwnerDTO;
 import com.model.dto.SignUpForm;
 import com.model.entity.*;
 import com.model.enums.RoleName;
 import com.repository.GuestRepository;
+import com.repository.OwnerRepository;
 import com.repository.RoleRepository;
 import com.security.jwt.JwtProvider;
 import org.slf4j.Logger;
@@ -31,6 +34,9 @@ public class AuthentificationService {
 
     @Autowired
     GuestRepository guestRepository;
+
+    @Autowired
+    OwnerRepository ownerRepository;
 
     @Autowired
     RoleRepository roleRepository;
@@ -66,6 +72,11 @@ public class AuthentificationService {
         String jwt = jwtProvider.generateJwtToken(authentication);
 
         return ResponseEntity.ok(new JwtResponse(jwt));
+    }
+
+    public ResponseEntity<OwnerDTO> fetchOwner(OwnerDTO ownerDTO) {
+        Owner owner = ownerRepository.findByUsername(ownerDTO.getUsername()).get();
+        return ResponseEntity.ok(OwnerToOwnerDTO.instance.convert(owner));
     }
 
     public ResponseEntity<String> registerUser(SignUpForm signUpForm) {

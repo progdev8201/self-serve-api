@@ -2,6 +2,7 @@ package com.controller;
 
 import com.model.dto.JwtResponse;
 import com.model.dto.LoginForm;
+import com.model.dto.OwnerDTO;
 import com.model.dto.SignUpForm;
 import com.model.entity.Owner;
 import com.service.AuthentificationService;
@@ -29,9 +30,8 @@ public class AuthentificationRestController {
         return authentificationService.registerUser(signUpForm);
     }
 
-    @PostMapping("/registerStripeAccount")
-    public ResponseEntity<String> registerStripeAccpunt(@RequestBody Owner owner) throws StripeException {
-       return null;
-        // return ResponseEntity.ok(authentificationService.createSùtripeAccount(owner));
+    @PostMapping("/fetchOwner")
+    public ResponseEntity<OwnerDTO> registerStripeAccpunt(@RequestBody OwnerDTO ownerDTO) throws StripeException {
+       return authentificationService.fetchOwner(ownerDTO);
     }
 }

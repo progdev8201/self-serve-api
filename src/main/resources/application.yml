@@ -32,7 +32,7 @@ config:
     images:
       path: "\\src\\main\\resources\\img\\"
 
-font-end:
+front-end:
   url : "http://localhost:3000/"
 
 
