@@ -2,10 +2,7 @@ package com.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +16,43 @@ public class Owner extends Guest  implements Serializable {
 
     private String stripeAccountId;
 
+    private Boolean isStripeEnable;
+
+    private String stripeCustomerId;
+
+    @OneToOne(cascade =CascadeType.PERSIST)
+    private SubscriptionEntity subscriptionEntity;
+
     public Owner(Guest user) {
         super(user.getUsername(), user.getPassword(), user.getRoles());
         this.restaurantList = new ArrayList<>();
     }
 
     public Owner() {
+    }
+
+    public SubscriptionEntity getSubscriptionEntity() {
+        return subscriptionEntity;
+    }
+
+    public void setSubscriptionEntity(SubscriptionEntity subscriptionEntity) {
+        this.subscriptionEntity = subscriptionEntity;
+    }
+
+    public Boolean getStripeEnable() {
+        return isStripeEnable;
+    }
+
+    public void setStripeEnable(Boolean stripeEnable) {
+        isStripeEnable = stripeEnable;
+    }
+
+    public String getStripeCustomerId() {
+        return stripeCustomerId;
+    }
+
+    public void setStripeCustomerId(String stripeCustomerId) {
+        this.stripeCustomerId = stripeCustomerId;
     }
 
     public List<Restaurant> getRestaurantList() {

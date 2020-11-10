@@ -46,6 +46,11 @@ public class ClientService {
         this.restaurentTableRepository = restaurentTableRepository;
         this.dtoUtils = dtoUtils;
     }
+    public BillDTO initBill(){
+        Bill bill = new Bill();
+        billRepository.save(bill);
+        return BillToBillDTO.instance.convert(bill);
+    }
 
     public BillDTO makeOrder(ProductDTO productToAdd, String guestUsername, Long billId, Long restaurentTableId, String commentaire) {
         Bill bill = findBill(billId);
