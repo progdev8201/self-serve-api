@@ -27,6 +27,9 @@ public class Restaurant implements Serializable {
     @OneToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private Menu menu;
 
+    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.REMOVE, CascadeType.MERGE})
+    private ImgFile imgFile;
+
     public Long getId() {
         return id;
     }
@@ -69,6 +72,14 @@ public class Restaurant implements Serializable {
 
     public Menu getMenu() {
         return menu;
+    }
+
+    public ImgFile getImgFile() {
+        return imgFile;
+    }
+
+    public void setImgFile(ImgFile imgFile) {
+        this.imgFile = imgFile;
     }
 
     public void setMenu(Menu menu) {

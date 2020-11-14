@@ -127,6 +127,7 @@ public class DTOUtils {
 
     public RestaurantDTO generateRestaurantDTO(Restaurant restaurant) {
         RestaurantDTO restaurantDTO = RestaurantToRestaurantDTO.instance.convert(restaurant);
+        restaurantDTO.setImgFile(ImgFileToImgFileDTO.instance.convert(restaurant.getImgFile()));
         restaurantDTO.setRestaurentTables(new ArrayList<>());
         restaurant.getRestaurentTables().forEach(restaurentTable -> {
             restaurantDTO.getRestaurentTables().add(generateRestaurentTableDTO(restaurentTable));

@@ -366,7 +366,9 @@ class KitchenRestControllerTest {
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
-        MenuDTO menuDTO = new ObjectMapper().readValue(result.getResponse().getContentAsString(),MenuDTO.class);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        MenuDTO menuDTO = mapper.readValue(result.getResponse().getContentAsString(),MenuDTO.class);
         assertEquals(1,menuDTO.getId());
     }
 

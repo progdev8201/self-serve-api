@@ -12,15 +12,14 @@ import com.model.dto.RestaurantDTO;
 import com.model.entity.*;
 import com.model.enums.ProductType;
 import com.model.enums.ProgressStatus;
-import com.repository.OrderItemRepository;
-import com.repository.OwnerRepository;
-import com.repository.RestaurantRepository;
-import com.repository.RestaurentTableRepository;
+import com.repository.*;
 import com.service.DtoUtil.DTOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -46,6 +45,9 @@ public class KitchenService {
     private RestaurantRepository restaurantRepository;
     @Value("${front-end.url}")
     String frontEndUrl;
+
+    @Autowired
+    ImgFileRepository imgFileRepository;
 
     @Autowired
     private OwnerRepository ownerRepository;
@@ -98,7 +100,19 @@ public class KitchenService {
         RestaurantDTO restaurantDTO = dtoUtils.generateRestaurantDTO(savedRestaurant);
         return restaurantDTO;
     }
+    public RestaurantDTO uploadLogo(MultipartFile file, long restaurantId) throws IOException {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
 
+        ImgFile img = new ImgFile();
+        img.setFileType(file.getContentType());
+        img.setFileName(StringUtils.cleanPath(file.getOriginalFilename()));
+        img.setData(file.getBytes());
+
+        restaurant.setImgFile(imgFileRepository.save(img));
+        restaurant = restaurantRepository.save(restaurant);
+
+        return dtoUtils.generateRestaurantDTO(restaurant);
+    }
     private RestaurentTable createTable(int tableNumber, Restaurant restaurant) throws WriterException, IOException {
         RestaurentTable restaurentTable = new RestaurentTable();
         restaurentTable.setTableNumber(tableNumber);
@@ -186,7 +200,9 @@ public class KitchenService {
 
     public MenuDTO menuParRestaurantTable(Long restaurantId) {
         RestaurentTable restaurentTable = restaurentTableRepository.findById(restaurantId).get();
-        return dtoUtils.generateMenuDTO(restaurentTable.getRestaurant().getMenu());
+        MenuDTO menuDTO =dtoUtils.generateMenuDTO(restaurentTable.getRestaurant().getMenu());
+        menuDTO.setRestaurant(dtoUtils.generateRestaurantDTO(restaurentTable.getRestaurant()));
+        return menuDTO;
     }
 
 }

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -93,6 +94,11 @@ public class KitchenRestController {
         int nombreDeTable = objectMapper.readValue(json.get("nombreDeTable"), Integer.class);
 
         return ResponseEntity.ok(kitchenService.createRestaurant(ownerUsername, restaurantName, nombreDeTable));
+    }
+
+    @PostMapping("/image/{restaurantId}")
+    public ResponseEntity<?> saveProductImg(@RequestParam("file") MultipartFile file, @PathVariable long restaurantId) throws IOException {
+        return ResponseEntity.ok(kitchenService.uploadLogo(file, restaurantId));
     }
 
     @PostMapping("/deleteRestaurant")

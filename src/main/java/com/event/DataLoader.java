@@ -217,6 +217,7 @@ public class DataLoader implements CommandLineRunner {
         restaurant = restaurantRepository.findById(restaurantDTO.getId()).get();
         restaurant.setBill(new ArrayList<>());
         restaurant.setName("le resto chico");
+        restaurant.setImgFile(getImgFile("download.jpg"));
         for (Product x : productList) {
             x.setMenu(restaurant.getMenu());
         }
@@ -241,14 +242,7 @@ public class DataLoader implements CommandLineRunner {
         product.setPrix(29.99);
         product.setTempsDePreparation(30);
 
-        String pathDansProjet = fileBasePath + fileToCopy;
-        Path currentRelativePath = Paths.get("");
-        String absolutePath = currentRelativePath.toAbsolutePath().toString();
-        InputStream is = resourceLoader.getResource(
-                "classpath:img/" + fileToCopy).getInputStream();
-        //File imgFile = new File(absolutePath + pathDansProjet);
-        ImgFile img = new ImgFile();
-        img.setData(IOUtils.toByteArray(is));
+        ImgFile img = getImgFile(fileToCopy);
         img.setFileType("image");
         img.setProduct(product);
         product.setImgFile(img);
@@ -272,6 +266,17 @@ public class DataLoader implements CommandLineRunner {
         product.setOptions(new ArrayList<>());
         product.getOptions().add(option);
         return product;
+    }
+
+    private ImgFile getImgFile(String fileToCopy) throws IOException {
+        String pathDansProjet = fileBasePath + fileToCopy;
+        Path currentRelativePath = Paths.get("");
+        String absolutePath = currentRelativePath.toAbsolutePath().toString();
+        InputStream is = resourceLoader.getResource(
+                "classpath:img/" + fileToCopy).getInputStream();
+        ImgFile img = new ImgFile();
+        img.setData(IOUtils.toByteArray(is));
+        return img;
     }
 
     public OrderItem createOrderItem(ProgressStatus progressStatus, ProductType productType, Product product) {
