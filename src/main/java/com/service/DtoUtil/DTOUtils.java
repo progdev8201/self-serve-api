@@ -3,6 +3,7 @@ package com.service.DtoUtil;
 import com.mapping.*;
 import com.model.dto.*;
 import com.model.entity.*;
+import com.repository.ImgFileRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class DTOUtils {
                 .stream()
                 .map(option -> mapOptionToOptionDTOForBill(option))
                 .collect(Collectors.toList()));
-        
+
         return orderItemDTO;
     }
 
@@ -76,16 +77,19 @@ public class DTOUtils {
 
     //PRODUCT DTO UTILS
 
-    public List<ProductDTO> generateProductDTOList(List<Product> products) {
-        //create empty list
-        List<ProductDTO> productDTOS = products.stream()
+    public static List<ProductDTO> mapProductListToProductDTOList(List<Product> products) {
+        return products.stream()
                 .map(product -> mapProductToProductDTO(product))
                 .collect(Collectors.toList());
-
-        return productDTOS;
     }
 
-    public ProductDTO mapProductToProductDTO(Product product) {
+    public static List<Product> mapProductListDTOToProductList(List<ProductDTO> productDTOS, ImgFileRepository imgFileRepository) {
+        return productDTOS.stream()
+                .map(productDTO -> mapProductDTOToProduct(productDTO, imgFileRepository))
+                .collect(Collectors.toList());
+    }
+
+    public static ProductDTO mapProductToProductDTO(Product product) {
         ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
         productDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(product.getImgFile()));
         productDTO.setProductType(product.getProductType());
@@ -99,16 +103,41 @@ public class DTOUtils {
         return productDTO;
     }
 
-    private OptionDTO mapOptionToOptionDTO(Option option) {
+    public static Product mapProductDTOToProduct(ProductDTO productDTO, ImgFileRepository imgFileRepository) {
+        Product product = ProductDTOToProduct.instance.convert(productDTO);
+        if (productDTO.getImgFileDTO() != null) product.setImgFile(imgFileRepository.findById(productDTO.getImgFileDTO().getId()).get());
+        product.setProductType(productDTO.getProductType());
+
+        //map product options
+        product.setOptions(productDTO.getOptions()
+                .stream()
+                .map(optionDTO -> mapOptionDTOToOption(optionDTO))
+                .collect(Collectors.toList()));
+
+        return product;
+    }
+
+    private static OptionDTO mapOptionToOptionDTO(Option option) {
         OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
 
         //map check item list to check item dto
         optionDTO.setCheckItemList(option.getCheckItemList()
                 .stream()
-                .map(checkItem -> CheckItemToCheckItemDTO.instance.convert(checkItem))
+                .map(CheckItemToCheckItemDTO.instance::convert)
                 .collect(Collectors.toList()));
 
         return optionDTO;
+    }
+
+    private static Option mapOptionDTOToOption(OptionDTO optionDTO) {
+        Option option = OptionDTOToOption.instance.convert(optionDTO);
+
+        option.setCheckItemList(optionDTO.getCheckItemList()
+                .stream()
+                .map(CheckItemDTOCheckItem.instance::convert)
+                .collect(Collectors.toList()));
+
+        return option;
     }
 
     //RATE DTO UTILS

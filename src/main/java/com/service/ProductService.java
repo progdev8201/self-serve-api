@@ -73,37 +73,11 @@ public class ProductService {
     //todo fix create and update method way too much repetition and code to interact with a simple entity  (clean code)
 
     public ProductDTO create(ProductDTO productDTO, Long menuId) {
-        List<Option> options = new ArrayList<>();
-        List<CheckItem> checkItems = new ArrayList<>();
 
         // convert product dto to a product
-        Product product = ProductDTOToProduct.instance.convert(productDTO);
+        Product product = DTOUtils.mapProductDTOToProduct(productDTO,imgFileRepository);
 
-        if (productDTO.getOptions() != null) {
-
-            //add all product dto options to product
-            productDTO.getOptions().stream().forEach(optionDTO -> {
-
-                //empty array
-                checkItems.clear();
-
-                //map check item list dto to check item list
-                optionDTO.getCheckItemList().stream().forEach(checkItemDTO -> {
-                    checkItems.add(CheckItemDTOCheckItem.instance.convert(checkItemDTO));
-                });
-
-                Option option = OptionDTOToOption.instance.convert(optionDTO);
-                option.setCheckItemList(checkItems);
-
-                options.add(option);
-            });
-
-        }
-
-        product.setOptions(options);
-
-        product = productRepository.save(product);
-        Product finalProduct = product;
+        Product finalProduct = productRepository.save(product);
 
         menuRepository.findById(menuId).ifPresent(menu -> {
             finalProduct.setMenu(menu);
@@ -111,42 +85,11 @@ public class ProductService {
             menu = menuRepository.save(menu);
         });
 
-        //map product to
-
-        return ProductToProductDTO.instance.convert(product);
+        return DTOUtils.mapProductToProductDTO(product);
     }
 
     public void update(ProductDTO productDTO) {
-        List<Option> options = new ArrayList<>();
-        List<CheckItem> checkItems = new ArrayList<>();
-
-        // convert product dto to a product
-        Product product = ProductDTOToProduct.instance.convert(productDTO);
-
-        if (productDTO.getOptions() != null) {
-
-            //add all product dto options to product
-            productDTO.getOptions().stream().forEach(optionDTO -> {
-
-                //empty array
-                checkItems.clear();
-
-                //map check item list dto to check item list
-                optionDTO.getCheckItemList().stream().forEach(checkItemDTO -> {
-                    checkItems.add(CheckItemDTOCheckItem.instance.convert(checkItemDTO));
-                });
-
-                Option option = OptionDTOToOption.instance.convert(optionDTO);
-                option.setCheckItemList(checkItems);
-
-                options.add(option);
-            });
-
-        }
-
-        product.setOptions(options);
-
-        System.out.println(productRepository.save(product));
+        productRepository.save(DTOUtils.mapProductDTOToProduct(productDTO,imgFileRepository));
     }
 
     public void delete(Long id) {
@@ -178,7 +121,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return dtoUtils.generateProductDTOList(productList);
+        return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
@@ -190,7 +133,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return dtoUtils.generateProductDTOList(productList);
+        return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
@@ -202,7 +145,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return dtoUtils.generateProductDTOList(productList);
+        return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
@@ -214,7 +157,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return dtoUtils.generateProductDTOList(productList);
+        return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
@@ -226,7 +169,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return dtoUtils.generateProductDTOList(productList);
+        return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 

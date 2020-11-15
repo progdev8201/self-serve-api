@@ -73,7 +73,7 @@ public class MenuService {
         menuDTO.setDejeuner(productService.findMenuDejeunerProduct(menuDTO));
         menuDTO.setSouper(productService.findMenuSouper(menuDTO));
         menuDTO.setDiner(productService.findMenuDinerProduct(menuDTO));
-        menuDTO.setProducts(dtoUtils.generateProductDTOList(menu.getProducts()));
+        menuDTO.setProducts(dtoUtils.mapProductListToProductDTOList(menu.getProducts()));
 
         return menuDTO;
     }
