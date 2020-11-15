@@ -96,7 +96,7 @@ public class KitchenRestController {
         return ResponseEntity.ok(kitchenService.createRestaurant(ownerUsername, restaurantName, nombreDeTable));
     }
 
-    @PostMapping("/image/{restaurantId}")
+    @PostMapping("/logo/{restaurantId}")
     public ResponseEntity<?> saveProductImg(@RequestParam("file") MultipartFile file, @PathVariable long restaurantId) throws IOException {
         return ResponseEntity.ok(kitchenService.uploadLogo(file, restaurantId));
     }
