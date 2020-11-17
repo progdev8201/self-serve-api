@@ -204,19 +204,24 @@ public class DataLoader implements CommandLineRunner {
 
             // create client and guest
             LOGGER.info("Creating default client and guest");
-            SignUpForm client = new SignUpForm("client1@mail.com", "123456", "5147887884", "client");
+            SignUpForm client = new SignUpForm("client@mail.com", "123456", "5147887884", "client");
             SignUpForm guest = new SignUpForm("guest@mail.com", "123456", "5147887884", "guest");
+            SignUpForm waiter = new SignUpForm("waiter@mail.com", "123456", "5147887884", "waiter");
+            SignUpForm cook = new SignUpForm("cook@mail.com", "123456", "5147887884", "cook");
             SignUpForm owner = new SignUpForm("owner@mail.com", "123456", "5147887884", "owner");
 
             authentificationService.registerUser(client);
             authentificationService.registerUser(guest);
             authentificationService.registerUser(owner);
-
+            authentificationService.registerUser(cook);
+            authentificationService.registerUser(waiter);
         }
+
         RestaurantDTO restaurantDTO = kitchenService.createRestaurant("owner@mail.com", "le monde chico", 5);
         restaurant = restaurantRepository.findById(restaurantDTO.getId()).get();
         restaurant.setBill(new ArrayList<>());
         restaurant.setName("le resto chico");
+
         for (Product x : productList) {
             x.setMenu(restaurant.getMenu());
         }

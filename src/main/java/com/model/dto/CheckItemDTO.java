@@ -2,7 +2,9 @@ package com.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CheckItemDTO {
+import java.io.Serializable;
+
+public class CheckItemDTO implements Serializable {
     private Long id;
 
     private String name;
@@ -11,6 +13,10 @@ public class CheckItemDTO {
 
     @JsonProperty("isActive")
     private boolean isActive;
+
+    public CheckItemDTO(){
+
+    }
 
     public boolean isActive() {
         return isActive;

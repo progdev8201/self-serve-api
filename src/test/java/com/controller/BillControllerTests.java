@@ -235,7 +235,7 @@ class BillControllerTests {
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("billDTO", objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername", "client1@mail.com");
+        sendObj.put("guestUsername", "client@mail.com");
         sendObj.put("restaurentTableId", "1");
         sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
         sendObj.put("commentaire", "po de bacon po de bacon po de bacon");
@@ -257,7 +257,7 @@ class BillControllerTests {
         assertEquals(29.99, reponse.getPrixTotal());
         assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
-        assertEquals("client1@mail.com", reponse.getOrderCustomer().getUsername());
+        assertEquals("client@mail.com", reponse.getOrderCustomer().getUsername());
     }
 
     @Test

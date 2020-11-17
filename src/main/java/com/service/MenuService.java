@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -43,6 +42,7 @@ public class MenuService {
     public MenuDTO createSpecial(MenuDTO menuDTO, List<ProductDTO> specialProducts) {
         List<Product> products = findSpecialsInBD(specialProducts);
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
+
         if (Objects.isNull(menu.getSpeciaux())) {
             menu.setSpeciaux(products);
         } else {
@@ -73,7 +73,7 @@ public class MenuService {
         menuDTO.setDejeuner(productService.findMenuDejeunerProduct(menuDTO));
         menuDTO.setSouper(productService.findMenuSouper(menuDTO));
         menuDTO.setDiner(productService.findMenuDinerProduct(menuDTO));
-        menuDTO.setProducts(dtoUtils.generateProductDTO(menu.getProducts()));
+        menuDTO.setProducts(dtoUtils.mapProductListToProductDTOList(menu.getProducts()));
 
         return menuDTO;
     }
