@@ -11,5 +11,6 @@ public interface OrderItemDTOToOrderItem {
     OrderItemDTOToOrderItem instance = Mappers.getMapper(OrderItemDTOToOrderItem.class);
 
     @Mapping(target = "product", ignore = true)
+    @Mapping(target = "checkItems", ignore = true)
     OrderItem convert(OrderItemDTO orderItem);
 }

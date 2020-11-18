@@ -27,6 +27,10 @@ public class OrderItem implements Serializable {
     @Column(length = 60)
     private ProductType productType;
 
+    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.MERGE})
+    private List <CheckItem> checkItems;
+
+
     private String commentaires;
 
     private double prix;
@@ -79,6 +83,14 @@ public class OrderItem implements Serializable {
 
     public void setProductType(ProductType productType) {
         this.productType = productType;
+    }
+
+    public List<CheckItem> getCheckItems() {
+        return checkItems;
+    }
+
+    public void setCheckItems(List<CheckItem> checkItems) {
+        this.checkItems = checkItems;
     }
 
     public String getCommentaires() {

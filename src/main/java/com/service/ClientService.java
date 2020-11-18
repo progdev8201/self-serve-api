@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,7 +34,8 @@ public class ClientService {
 
     private RestaurentTableRepository restaurentTableRepository;
 
-    private DTOUtils dtoUtils;
+    DTOUtils dtoUtils;
+    private static final int DOUBLE_SCALE_PLACES = 2;
 
     @Autowired
     public ClientService(BillRepository billRepository, GuestRepository guestRepository, MenuRepository menuRepository, OrderItemRepository orderItemRepository, ProductRepository productRepository, RestaurantRepository restaurantRepository, RestaurentTableService restaurentTableService, RestaurentTableRepository restaurentTableRepository, DTOUtils dtoUtils) {
@@ -46,7 +49,8 @@ public class ClientService {
         this.restaurentTableRepository = restaurentTableRepository;
         this.dtoUtils = dtoUtils;
     }
-    public BillDTO initBill(){
+
+    public BillDTO initBill() {
         Bill bill = new Bill();
         billRepository.save(bill);
         return BillToBillDTO.instance.convert(bill);
@@ -106,19 +110,9 @@ public class ClientService {
         orderItem.setDelaiDePreparation(LocalDateTime.now().minusMinutes(product.getTempsDePreparation()));
         orderItem.setCommentaires(commentaire);
         orderItem.setOption(new ArrayList<>());
-
-        for (OptionDTO optionDTO : productToAdd.getOptions()) {
-            Option option = OptionDTOToOption.instance.convert(optionDTO);
-            option.setCheckItemList(new ArrayList<>());
-
-            for (CheckItemDTO checkItemDTO : optionDTO.getCheckItemList()) {
-                CheckItem checkItem = CheckItemDTOCheckItem.instance.convert(checkItemDTO);
-                option.getCheckItemList().add(checkItem);
-            }
-
-            orderItem.getOption().add(option);
-        }
-
+        orderItem.setCheckItems(setUpCheckItems(productToAdd.getCheckItems()));
+        addCheckItemPrice(orderItem,orderItem.getCheckItems());
+        setOrderItemOptions(productToAdd, orderItem);
         orderItems.add(orderItem);
         orderItem = orderItemRepository.save(orderItem);
         product.setOrderItems(initEmptyList(product.getOrderItems()));
@@ -128,6 +122,32 @@ public class ClientService {
         bill.setPrixTotal(bill.getPrixTotal() + orderItem.getPrix());
 
         return orderItems;
+    }
+
+    private void setOrderItemOptions(ProductDTO productToAdd, OrderItem orderItem) {
+        for (OptionDTO optionDTO : productToAdd.getOptions()) {
+            Option option = OptionDTOToOption.instance.convert(optionDTO);
+            option.setCheckItemList(setUpCheckItems(optionDTO.getCheckItemList()));
+            addCheckItemPrice(orderItem, option.getCheckItemList());
+            orderItem.getOption().add(option);
+        }
+    }
+
+    private List<CheckItem> setUpCheckItems(List<CheckItemDTO> checkItemDTOS) {
+        List<CheckItem> checkItemList = new ArrayList<>();
+        checkItemDTOS.forEach(checkItemDTO -> {
+            CheckItem checkItem = CheckItemDTOCheckItem.instance.convert(checkItemDTO);
+            checkItemList.add(checkItem);
+        });
+        return checkItemList;
+    }
+
+    private void addCheckItemPrice(OrderItem orderItem, List<CheckItem> checkItems) {
+        checkItems.forEach(checkItem -> {
+            if (checkItem.isActive()) {
+                orderItem.setPrix(roundDouble(orderItem.getPrix() + checkItem.getPrix()));
+            }
+        });
     }
 
     private Boolean isBillInStream(Stream stream, Long billId) {
@@ -164,6 +184,13 @@ public class ClientService {
             }
         }
         return false;
+    }
+
+    private static double roundDouble(double prix) {
+
+        BigDecimal bigDecimal = new BigDecimal(Double.toString(prix));
+        bigDecimal = bigDecimal.setScale(DOUBLE_SCALE_PLACES, RoundingMode.HALF_UP);
+        return bigDecimal.doubleValue();
     }
 
 }

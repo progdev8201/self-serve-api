@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // TODO: all test should include assert arrange act as comments so its easier to understand code
 @SpringBootTest
-@ActiveProfiles("dev")
+
 class ProductControllerTest {
     @Autowired
     ProductController productController;

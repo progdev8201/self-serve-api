@@ -13,5 +13,6 @@ public interface ProductDTOToProduct {
     @Mapping(target = "menu", ignore = true)
     @Mapping(target = "options", ignore = true)
     @Mapping(target = "rates", ignore = true)
+    @Mapping(target = "checkItems", ignore = true)
     Product convert(ProductDTO productDTO);
 }

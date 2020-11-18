@@ -11,6 +11,8 @@ public class CheckItemDTO implements Serializable {
 
     private OptionDTO option;
 
+    private double prix;
+
     @JsonProperty("isActive")
     private boolean isActive;
 
@@ -42,6 +44,14 @@ public class CheckItemDTO implements Serializable {
         this.name = name;
     }
 
+    public double getPrix() {
+        return prix;
+    }
+
+    public void setPrix(double prix) {
+        this.prix = prix;
+    }
+
     public OptionDTO getOption() {
         return option;
     }
@@ -49,6 +59,8 @@ public class CheckItemDTO implements Serializable {
     public void setOption(OptionDTO option) {
         this.option = option;
     }
+
+
 
     @Override
     public String toString() {
