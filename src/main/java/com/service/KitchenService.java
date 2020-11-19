@@ -112,7 +112,7 @@ public class KitchenService {
         restaurant.setImgFile(imgFileRepository.save(img));
         restaurant = restaurantRepository.save(restaurant);
 
-        return dtoUtils.generateRestaurantDTO(restaurant);
+        return dtoUtils.mapRestaurantToRestaurantDTO(restaurant);
     }
     private RestaurentTable createTable(int tableNumber, Restaurant restaurant) throws WriterException, IOException {
         RestaurentTable restaurentTable = new RestaurentTable();
@@ -207,7 +207,7 @@ public class KitchenService {
     public MenuDTO menuParRestaurantTable(Long restaurantId) {
         RestaurentTable restaurentTable = restaurentTableRepository.findById(restaurantId).get();
         MenuDTO menuDTO =dtoUtils.generateMenuDTO(restaurentTable.getRestaurant().getMenu());
-        menuDTO.setRestaurant(dtoUtils.generateRestaurantDTO(restaurentTable.getRestaurant()));
+        menuDTO.setRestaurant(dtoUtils.mapRestaurantToRestaurantDTO(restaurentTable.getRestaurant()));
         return menuDTO;
     }
 
