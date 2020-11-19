@@ -1,10 +1,5 @@
 package com.service;
 
-import com.mapping.BillToBillDTO;
-import com.mapping.OrderItemToOrderItemDTO;
-import com.mapping.RestaurentTableToRestaurenTableDTO;
-import com.model.dto.BillDTO;
-import com.model.dto.OrderItemDTO;
 import com.model.dto.RestaurentTableDTO;
 import com.model.entity.Bill;
 import com.model.entity.Restaurant;
@@ -41,7 +36,7 @@ public class RestaurentTableService {
         Restaurant restaurant = restaurantRepository.findById(restaurentId).get();
         List<RestaurentTableDTO> restaurentTableDTOS = new ArrayList<>();
         restaurant.getRestaurentTables().forEach(restaurentTable -> {
-            restaurentTableDTOS.add(dtoUtils.generateRestaurentTableDTO(restaurentTable));
+            restaurentTableDTOS.add(dtoUtils.mapRestaurantTableToRestaurantTableDTO(restaurentTable));
         });
         return restaurentTableDTOS;
     }

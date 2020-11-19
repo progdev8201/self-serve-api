@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // TODO: all test should include assert arrange act as comments so its easier to understand code
 @SpringBootTest
-@ActiveProfiles("dev")
+
 class KitchenRestControllerTest {
 
     @Autowired
@@ -80,7 +80,7 @@ class KitchenRestControllerTest {
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("billDTO", objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername", "client1@mail.com");
+        sendObj.put("guestUsername", "client@mail.com");
         sendObj.put("restaurentTableId", "2");
         sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
 
@@ -144,7 +144,7 @@ class KitchenRestControllerTest {
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("billDTO", objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername", "client1@mail.com");
+        sendObj.put("guestUsername", "client@mail.com");
         sendObj.put("restaurentTableId", "1");
         sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
 
@@ -386,14 +386,20 @@ class KitchenRestControllerTest {
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setRestaurant(restaurantDTO);
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(1);
+        productDTO.setId(4);
         productDTO.setMenu(menuDTO);
         productDTO.setOptions(new ArrayList<>());
         OptionDTO optionDTO = new OptionDTO();
         optionDTO.setName("cuisson");
         optionDTO.setCheckItemList(new ArrayList<>());
         CheckItemDTO checkItemDTO = new CheckItemDTO();
+        checkItemDTO.setName("medium");
         checkItemDTO.setActive(true);
+        productDTO.setCheckItems(new ArrayList<>());
+        CheckItemDTO productCheckItem = new CheckItemDTO();
+        productCheckItem.setName("fromage");
+        productCheckItem.setPrix(2.50);
+        productDTO.getCheckItems().add(productCheckItem);
         optionDTO.getCheckItemList().add(checkItemDTO);
         productDTO.getOptions().add(optionDTO);
         OrderItemDTO orderItemDTO1 = new OrderItemDTO();

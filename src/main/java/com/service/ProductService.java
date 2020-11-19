@@ -1,9 +1,7 @@
 package com.service;
 
 import com.mapping.*;
-import com.model.dto.CheckItemDTO;
 import com.model.dto.MenuDTO;
-import com.model.dto.OptionDTO;
 import com.model.dto.ProductDTO;
 import com.model.entity.*;
 import com.model.enums.ProductMenuType;
@@ -65,7 +63,7 @@ public class ProductService {
         List<ProductDTO> productDTOS = new ArrayList<>();
         menuRepository.findById(id).get().getProducts().stream().forEach(product -> {
             if ((product.getProductType() == ProductType.WAITERREQUEST) || (product.getProductType() == ProductType.WAITERCALL)) {
-                productDTOS.add(dtoUtils.generateProductDTO(product));
+                productDTOS.add(dtoUtils.mapProductToProductDTO(product));
             }
         });
 
@@ -75,37 +73,11 @@ public class ProductService {
     //todo fix create and update method way too much repetition and code to interact with a simple entity  (clean code)
 
     public ProductDTO create(ProductDTO productDTO, Long menuId) {
-        List<Option> options = new ArrayList<>();
-        List<CheckItem> checkItems = new ArrayList<>();
 
         // convert product dto to a product
-        Product product = ProductDTOToProduct.instance.convert(productDTO);
+        Product product = DTOUtils.mapProductDTOToProduct(productDTO,imgFileRepository);
 
-        if (productDTO.getOptions() != null) {
-
-            //add all product dto options to product
-            productDTO.getOptions().stream().forEach(optionDTO -> {
-
-                //empty array
-                checkItems.clear();
-
-                //map check item list dto to check item list
-                optionDTO.getCheckItemList().stream().forEach(checkItemDTO -> {
-                    checkItems.add(CheckItemDTOCheckItem.instance.convert(checkItemDTO));
-                });
-
-                Option option = OptionDTOToOption.instance.convert(optionDTO);
-                option.setCheckItemList(checkItems);
-
-                options.add(option);
-            });
-
-        }
-
-        product.setOptions(options);
-
-        product = productRepository.save(product);
-        Product finalProduct = product;
+        Product finalProduct = productRepository.save(product);
 
         menuRepository.findById(menuId).ifPresent(menu -> {
             finalProduct.setMenu(menu);
@@ -113,42 +85,11 @@ public class ProductService {
             menu = menuRepository.save(menu);
         });
 
-        //map product to
-
-        return ProductToProductDTO.instance.convert(product);
+        return DTOUtils.mapProductToProductDTO(product);
     }
 
     public void update(ProductDTO productDTO) {
-        List<Option> options = new ArrayList<>();
-        List<CheckItem> checkItems = new ArrayList<>();
-
-        // convert product dto to a product
-        Product product = ProductDTOToProduct.instance.convert(productDTO);
-
-        if (productDTO.getOptions() != null) {
-
-            //add all product dto options to product
-            productDTO.getOptions().stream().forEach(optionDTO -> {
-
-                //empty array
-                checkItems.clear();
-
-                //map check item list dto to check item list
-                optionDTO.getCheckItemList().stream().forEach(checkItemDTO -> {
-                    checkItems.add(CheckItemDTOCheckItem.instance.convert(checkItemDTO));
-                });
-
-                Option option = OptionDTOToOption.instance.convert(optionDTO);
-                option.setCheckItemList(checkItems);
-
-                options.add(option);
-            });
-
-        }
-
-        product.setOptions(options);
-
-        System.out.println(productRepository.save(product));
+        productRepository.save(DTOUtils.mapProductDTOToProduct(productDTO,imgFileRepository));
     }
 
     public void delete(Long id) {
@@ -180,7 +121,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return dtoUtils.generateProductDTO(productList);
+        return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
@@ -192,7 +133,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return dtoUtils.generateProductDTO(productList);
+        return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
@@ -204,7 +145,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return dtoUtils.generateProductDTO(productList);
+        return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
@@ -216,7 +157,7 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return dtoUtils.generateProductDTO(productList);
+        return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
@@ -228,23 +169,26 @@ public class ProductService {
             }
             return false;
         }).collect(Collectors.toList());
-        return dtoUtils.generateProductDTO(productList);
+        return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
+    // todo ici dans la methode product dto on set deja le product type alors pk le reset
     public ProductDTO setProductSpecial(ProductDTO productDTO) {
         Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(ProductType.SPECIAL);
-        ProductDTO retour = dtoUtils.generateProductDTO(productRepository.save(product));
+        ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
         retour.setProductType(product.getProductType());
         return retour;
     }
 
+    // todo mm chose qu'au dessus on set le product type deux
+    // todo on save deux fois le produit ce qui n'est pas optimal
     public ProductDTO removeProductType(ProductDTO productDTO) {
         Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(null);
         product = productRepository.save(product);
-        ProductDTO retour = dtoUtils.generateProductDTO(productRepository.save(product));
+        ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
         retour.setProductType(product.getProductType());
         return retour;
     }
@@ -253,7 +197,7 @@ public class ProductService {
 
         Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(ProductType.CHEFCHOICE);
-        ProductDTO retour = dtoUtils.generateProductDTO(productRepository.save(product));
+        ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
 
         retour.setProductType(product.getProductType());
         return retour;
@@ -270,7 +214,7 @@ public class ProductService {
         product.setImgFile(imgFileRepository.save(img));
         product = productRepository.save(product);
 
-        return dtoUtils.generateProductDTO(product);
+        return dtoUtils.mapProductToProductDTO(product);
     }
 
     public byte[] returnImgAsByteArrayString(Long id) {

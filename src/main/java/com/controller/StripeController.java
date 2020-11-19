@@ -4,15 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mapping.BillDTOToBill;
-import com.mapping.OwnerDTOToOwner;
 import com.model.dto.*;
-import com.model.entity.Owner;
-import com.service.ClientService;
 import com.service.StripeService;
 import com.stripe.exception.StripeException;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +36,11 @@ public class StripeController {
         return ResponseEntity.ok().build();
 
     }
-
+    @PostMapping("/getAccountId")
+    public ResponseEntity<StripeAccountIdDTO> getStripeAccountId(@RequestBody Map<String,String> json) throws JsonProcessingException {
+        Long menuId = new ObjectMapper().readValue(json.get("menuId"),Long.class);
+        return ResponseEntity.ok(stripeService.getAccountId(menuId));
+    }
 
 
     @PostMapping("/fetchPaymentIntent")

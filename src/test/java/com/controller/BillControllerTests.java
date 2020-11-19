@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // TODO: all test should include assert arrange act as comments so its easier to understand code
 @SpringBootTest
-@ActiveProfiles("dev")
+
 class BillControllerTests {
     @Autowired
     BillController billController;
@@ -62,6 +62,74 @@ class BillControllerTests {
         assertEquals(1,reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
         assertEquals(29.99, reponse.getPrixTotal());
+        assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
+        assertEquals(1, reponse.getOrderItems().size());
+        assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
+    }
+    @Test
+    public void testCreateMakeOrderWithOrderItemCheckItemPlus() throws Exception {
+        MockMvc mvc = initMockMvc();
+
+        BillDTO billDTO = initBillDTOCheckItemPlusPrice();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("billDTO", objectMapper.writeValueAsString(billDTO));
+        sendObj.put("guestUsername", "guest@mail.com");
+        sendObj.put("restaurentTableId", "1");
+        sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
+        sendObj.put("commentaire", "po de bacon po de bacon po de bacon");
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
+
+        assertEquals(1,reponse.getOrderItems().get(0).getOption().size());
+        assertEquals("po de bacon po de bacon po de bacon",reponse.getOrderItems().get(0).getCommentaires());
+        assertEquals(1,reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
+        assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
+        assertEquals(34.99, reponse.getPrixTotal());
+        assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
+        assertEquals(1, reponse.getOrderItems().size());
+        assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
+    }
+    @Test
+    public void testCreateMakeOrderWithCheckItemAddOn() throws Exception {
+        MockMvc mvc = initMockMvc();
+
+        BillDTO billDTO = initBillDTOProductCheckItemActive();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("billDTO", objectMapper.writeValueAsString(billDTO));
+        sendObj.put("guestUsername", "guest@mail.com");
+        sendObj.put("restaurentTableId", "1");
+        sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
+        sendObj.put("commentaire", "po de bacon po de bacon po de bacon");
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
+
+        assertEquals(1,reponse.getOrderItems().get(0).getOption().size());
+        assertEquals("po de bacon po de bacon po de bacon",reponse.getOrderItems().get(0).getCommentaires());
+        assertEquals(1,reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
+        assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
+        assertEquals(32.49, reponse.getPrixTotal());
         assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
         assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
@@ -235,7 +303,7 @@ class BillControllerTests {
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("billDTO", objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername", "client1@mail.com");
+        sendObj.put("guestUsername", "client@mail.com");
         sendObj.put("restaurentTableId", "1");
         sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
         sendObj.put("commentaire", "po de bacon po de bacon po de bacon");
@@ -257,7 +325,7 @@ class BillControllerTests {
         assertEquals(29.99, reponse.getPrixTotal());
         assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
-        assertEquals("client1@mail.com", reponse.getOrderCustomer().getUsername());
+        assertEquals("client@mail.com", reponse.getOrderCustomer().getUsername());
     }
 
     @Test
@@ -316,16 +384,40 @@ class BillControllerTests {
         CheckItemDTO checkItemDTO = new CheckItemDTO();
         checkItemDTO.setName("medium");
         checkItemDTO.setActive(true);
+        productDTO.setCheckItems(new ArrayList<>());
+        CheckItemDTO productCheckItem = new CheckItemDTO();
+        productCheckItem.setName("fromage");
+        productCheckItem.setPrix(2.50);
+        productDTO.getCheckItems().add(productCheckItem);
         optionDTO.getCheckItemList().add(checkItemDTO);
         productDTO.getOptions().add(optionDTO);
         OrderItemDTO orderItemDTO1 = new OrderItemDTO();
         orderItemDTO1.setProduct(productDTO);
         orderItemDTO1.setPrix(29.99);
+        orderItemDTO1.setOption(new ArrayList<>());
+        orderItemDTO1.getOption().add(optionDTO);
         List<OrderItemDTO> orderItemDTOList = new ArrayList<>();
         orderItemDTOList.add(orderItemDTO1);
         BillDTO billDTO = new BillDTO();
         billDTO.setRestaurant(restaurantDTO);
         billDTO.setOrderItems(orderItemDTOList);
+        return billDTO;
+    }
+    private BillDTO initBillDTOCheckItemPlusPrice() {
+        BillDTO billDTO = initBillDTO();
+        CheckItemDTO checkItemDTO = new CheckItemDTO();
+        checkItemDTO.setName("medium");
+        checkItemDTO.setPrix(5.00);
+        checkItemDTO.setActive(true);
+        billDTO.getOrderItems().get(0).getOption().get(0).setCheckItemList(new ArrayList<>());
+        billDTO.getOrderItems().get(0).getOption().get(0).getCheckItemList().add(checkItemDTO);
+
+        return billDTO;
+    }
+
+    private BillDTO initBillDTOProductCheckItemActive() {
+        BillDTO billDTO = initBillDTO();
+        billDTO.getOrderItems().get(0).getProduct().getCheckItems().get(0).setActive(true);
         return billDTO;
     }
 

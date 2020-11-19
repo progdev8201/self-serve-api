@@ -3,42 +3,64 @@ package com.service.DtoUtil;
 import com.mapping.*;
 import com.model.dto.*;
 import com.model.entity.*;
+import com.repository.ImgFileRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class DTOUtils {
 
     //BILL DTO UTILS
 
-    public BillDTO generateBillDTOWithOrderItems(Bill bill) {
-        BillDTO returnValue = BillToBillDTO.instance.convert(bill);
-        List<OrderItemDTO> returnBillOrderItems = new ArrayList<>();
-        for (OrderItem orderItem : bill.getOrderItems()) {
-            OrderItemDTO orderItemDTO = OrderItemToOrderItemDTO.instance.convert(orderItem);
-            ProductDTO productDTO = ProductToProductDTO.instance.convert(orderItem.getProduct());
-            ImgFileDTO imgFileDTO = ImgFileToImgFileDTO.instance.convert(orderItem.getProduct().getImgFile());
-            productDTO.setImgFileDTO(imgFileDTO);
-            orderItemDTO.setProduct(productDTO);
-            orderItemDTO.setOption(new ArrayList<>());
-            for (Option option : orderItem.getOption()) {
-                OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
-                optionDTO.setCheckItemList(new ArrayList<>());
-                for (CheckItem checkItem : option.getCheckItemList()) {
+    public BillDTO mapBillToBillDTOWithOrderItems(Bill bill) {
+        //map bill to bill dto
+        BillDTO billDTO = BillToBillDTO.instance.convert(bill);
+
+        billDTO.setOrderCustomer(GuestToGuestDTO.instance.convert(bill.getOrderCustomer()));
+
+        billDTO.setOrderItems(bill.getOrderItems()
+                .stream()
+                .map(orderItem -> mapOrderItemToOrderItemDTOForBill(orderItem))
+                .collect(Collectors.toList()));
+
+        return billDTO;
+    }
+
+    private OrderItemDTO mapOrderItemToOrderItemDTOForBill(OrderItem orderItem) {
+        OrderItemDTO orderItemDTO = OrderItemToOrderItemDTO.instance.convert(orderItem);
+
+        ProductDTO productDTO = ProductToProductDTO.instance.convert(orderItem.getProduct());
+        ImgFileDTO imgFileDTO = ImgFileToImgFileDTO.instance.convert(orderItem.getProduct().getImgFile());
+        productDTO.setImgFileDTO(imgFileDTO);
+
+        orderItemDTO.setProduct(productDTO);
+
+        orderItemDTO.setOption(orderItem.getOption()
+                .stream()
+                .map(option -> mapOptionToOptionDTOForBill(option))
+                .collect(Collectors.toList()));
+
+        return orderItemDTO;
+    }
+
+    private OptionDTO mapOptionToOptionDTOForBill(Option option) {
+        OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
+
+        //map option to option dto
+        optionDTO.setCheckItemList(option.getCheckItemList()
+                .stream()
+                .map(checkItem -> {
                     CheckItemDTO checkItemDTO = CheckItemToCheckItemDTO.instance.convert(checkItem);
                     checkItemDTO.setActive(checkItem.isActive());
-                    optionDTO.getCheckItemList().add(checkItemDTO);
-                }
-                orderItemDTO.getOption().add(optionDTO);
-            }
-            returnBillOrderItems.add(orderItemDTO);
-        }
-        returnValue.setOrderCustomer(GuestToGuestDTO.instance.convert(bill.getOrderCustomer()));
-        returnValue.setOrderItems(returnBillOrderItems);
-        return returnValue;
+                    return checkItemDTO;
+                })
+                .collect(Collectors.toList()));
+
+        return optionDTO;
     }
 
     //MENU DTO UTILS
@@ -55,43 +77,67 @@ public class DTOUtils {
 
     //PRODUCT DTO UTILS
 
-    public List<ProductDTO> generateProductDTO(List<Product> products) {
-        List<ProductDTO> productDTOS = new ArrayList<>();
-        for (Product product : products) {
-            ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
-            productDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(product.getImgFile()));
-            productDTO.setProductType(product.getProductType());
-            productDTO.setOptions(new ArrayList<>());
-            for (Option option : product.getOptions()) {
-                OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
-                optionDTO.setCheckItemList(new ArrayList<>());
-                for (CheckItem checkItem : option.getCheckItemList()) {
-                    CheckItemDTO checkItemDTO = CheckItemToCheckItemDTO.instance.convert(checkItem);
-                    optionDTO.getCheckItemList().add(checkItemDTO);
-                }
-                productDTO.getOptions().add(optionDTO);
-            }
-            productDTOS.add(productDTO);
-        }
-        return productDTOS;
+    public static List<ProductDTO> mapProductListToProductDTOList(List<Product> products) {
+        return products.stream()
+                .map(product -> mapProductToProductDTO(product))
+                .collect(Collectors.toList());
     }
 
-    public ProductDTO generateProductDTO(Product product) {
+    public static List<Product> mapProductListDTOToProductList(List<ProductDTO> productDTOS, ImgFileRepository imgFileRepository) {
+        return productDTOS.stream()
+                .map(productDTO -> mapProductDTOToProduct(productDTO, imgFileRepository))
+                .collect(Collectors.toList());
+    }
+
+    public static ProductDTO mapProductToProductDTO(Product product) {
         ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
         productDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(product.getImgFile()));
         productDTO.setProductType(product.getProductType());
-        productDTO.setOptions(new ArrayList<>());
 
-        for (Option option : product.getOptions()) {
-            OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
-            optionDTO.setCheckItemList(new ArrayList<>());
-            for (CheckItem checkItem : option.getCheckItemList()) {
-                CheckItemDTO checkItemDTO = CheckItemToCheckItemDTO.instance.convert(checkItem);
-                optionDTO.getCheckItemList().add(checkItemDTO);
-            }
-            productDTO.getOptions().add(optionDTO);
-        }
+        //map product options
+        productDTO.setOptions(product.getOptions()
+                .stream()
+                .map(option -> mapOptionToOptionDTO(option))
+                .collect(Collectors.toList()));
+
         return productDTO;
+    }
+
+    public static Product mapProductDTOToProduct(ProductDTO productDTO, ImgFileRepository imgFileRepository) {
+        Product product = ProductDTOToProduct.instance.convert(productDTO);
+        if (productDTO.getImgFileDTO() != null) product.setImgFile(imgFileRepository.findById(productDTO.getImgFileDTO().getId()).get());
+        product.setProductType(productDTO.getProductType());
+
+        //map product options
+        product.setOptions(productDTO.getOptions()
+                .stream()
+                .map(optionDTO -> mapOptionDTOToOption(optionDTO))
+                .collect(Collectors.toList()));
+
+        return product;
+    }
+
+    private static OptionDTO mapOptionToOptionDTO(Option option) {
+        OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
+
+        //map check item list to check item dto
+        optionDTO.setCheckItemList(option.getCheckItemList()
+                .stream()
+                .map(CheckItemToCheckItemDTO.instance::convert)
+                .collect(Collectors.toList()));
+
+        return optionDTO;
+    }
+
+    private static Option mapOptionDTOToOption(OptionDTO optionDTO) {
+        Option option = OptionDTOToOption.instance.convert(optionDTO);
+
+        option.setCheckItemList(optionDTO.getCheckItemList()
+                .stream()
+                .map(CheckItemDTOCheckItem.instance::convert)
+                .collect(Collectors.toList()));
+
+        return option;
     }
 
     //RATE DTO UTILS
@@ -102,14 +148,14 @@ public class DTOUtils {
 
     //RESTAURANT TABLE UTILS
 
-    public RestaurentTableDTO generateRestaurentTableDTO(RestaurentTable restaurentTable) {
+    public RestaurentTableDTO mapRestaurantTableToRestaurantTableDTO(RestaurentTable restaurentTable) {
 
         RestaurentTableDTO restaurentTableDTO = RestaurentTableToRestaurenTableDTO.instance.convert(restaurentTable);
         restaurentTableDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(restaurentTable.getImgFile()));
         List<BillDTO> billDTOS = new ArrayList<>();
         if (Objects.nonNull(restaurentTable.getBills())) {
             restaurentTable.getBills().forEach(bill -> {
-                BillDTO billDTO = generateBillDTOWithOrderItems(bill);
+                BillDTO billDTO = mapBillToBillDTOWithOrderItems(bill);
                 billDTOS.add(billDTO);
             });
         }
@@ -119,18 +165,20 @@ public class DTOUtils {
 
     // ORDER ITEM DTO UTILS
 
-    public OrderItemDTO generateOrderItemDTO(OrderItem orderItem) {
+    public OrderItemDTO mapOrderItemToOrderItemDTO(OrderItem orderItem) {
         return OrderItemToOrderItemDTO.instance.convert(orderItem);
     }
 
     // RESTAURANT DTO UTILS
 
-    public RestaurantDTO generateRestaurantDTO(Restaurant restaurant) {
+    public RestaurantDTO mapRestaurantToRestaurantDTO(Restaurant restaurant) {
         RestaurantDTO restaurantDTO = RestaurantToRestaurantDTO.instance.convert(restaurant);
-        restaurantDTO.setRestaurentTables(new ArrayList<>());
-        restaurant.getRestaurentTables().forEach(restaurentTable -> {
-            restaurantDTO.getRestaurentTables().add(generateRestaurentTableDTO(restaurentTable));
-        });
+
+        restaurantDTO.setRestaurentTables(restaurant.getRestaurentTables()
+                .stream()
+                .map(restaurentTable -> mapRestaurantTableToRestaurantTableDTO(restaurentTable))
+                .collect(Collectors.toList()));
+
         return restaurantDTO;
     }
 

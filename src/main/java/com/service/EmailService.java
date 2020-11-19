@@ -9,12 +9,15 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.logging.Logger;
 
 @Service
 public class EmailService {
 
     @Autowired
     private JavaMailSender javaMailSender;
+
+    private final Logger LOGGER = Logger.getLogger(EmailService.class.getName());
 
     @Value("${spring.mail.username}")
     private String fabMoeEmail;
@@ -31,7 +34,7 @@ public class EmailService {
             helper.setTo(fabMoeEmail);
             helper.setSubject(subject);
             javaMailSender.send(mimeMessage);
-            System.out.println("EMAIL WAS SENT SUCCESSFULLY!");
+            LOGGER.info("EMAIL WAS SENT SUCCESSFULLY!");
         } catch (MessagingException e) {
             e.printStackTrace();
             return false;

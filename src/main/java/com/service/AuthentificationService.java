@@ -141,16 +141,22 @@ public class AuthentificationService {
 
                 case ROLE_OWNER:
                     guestRepository.save(new Owner(user));
-                    LOGGER.info("I create a new owner");
+                    LOGGER.info("I created a new owner");
                     return true;
 
-                case ROLE_EMPLOYEE:
-                    guestRepository.save(new Employee(user));
-                    LOGGER.info("I create a new employee");
+                case ROLE_COOK:
+                    guestRepository.save(new Cook(user));
+                    LOGGER.info("I created a new cook");
                     return true;
+
+                case ROLE_WAITER:
+                    guestRepository.save(new Waiter(user));
+                    LOGGER.info("I created a new waiter");
+                    return true;
+
                 case ROLE_GUEST:
                     guestRepository.save(user);
-                    LOGGER.info("I create a new Guest");
+                    LOGGER.info("I created a new Guest");
                     return true;
 
                 default:
