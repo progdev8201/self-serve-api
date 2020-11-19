@@ -5,6 +5,10 @@ import com.mapping.OrderItemToOrderItemDTO;
 import com.mapping.RestaurentTableToRestaurenTableDTO;
 import com.model.dto.*;
 import com.model.entity.*;
+import com.model.dto.RestaurentTableDTO;
+import com.model.entity.Bill;
+import com.model.entity.Restaurant;
+import com.model.entity.RestaurentTable;
 import com.repository.BillRepository;
 import com.repository.RestaurantRepository;
 import com.repository.RestaurentTableRepository;
@@ -40,7 +44,7 @@ public class RestaurentTableService {
         Restaurant restaurant = restaurantRepository.findById(restaurentId).get();
         List<RestaurentTableDTO> restaurentTableDTOS = new ArrayList<>();
         restaurant.getRestaurentTables().forEach(restaurentTable -> {
-            restaurentTableDTOS.add(dtoUtils.generateRestaurentTableDTO(restaurentTable));
+            restaurentTableDTOS.add(dtoUtils.mapRestaurantTableToRestaurantTableDTO(restaurentTable));
         });
         return restaurentTableDTOS;
     }

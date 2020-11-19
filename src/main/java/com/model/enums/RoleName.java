@@ -4,6 +4,7 @@ public enum RoleName {
     ROLE_CLIENT,
     ROLE_GUEST,
     ROLE_OWNER,
-    ROLE_EMPLOYEE
+    ROLE_COOK,
+    ROLE_WAITER
 }
 

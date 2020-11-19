@@ -20,6 +20,10 @@ public class Product implements Serializable {
 
     private String description;
 
+    private double prix;
+    ///en minutes
+    private int tempsDePreparation;
+
     @ManyToOne(cascade = CascadeType.REMOVE)
     private Menu menu;
 
@@ -29,9 +33,9 @@ public class Product implements Serializable {
     @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.MERGE})
     private List <OrderItem> orderItems;
 
-    private double prix;
-    ///en minutes
-    private int tempsDePreparation;
+    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.MERGE})
+    private List <CheckItem> checkItems;
+
 
     private String imgUrl;
 
@@ -49,6 +53,14 @@ public class Product implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(length = 60)
     private ProductMenuType productMenuType;
+
+    public List<CheckItem> getCheckItems() {
+        return checkItems;
+    }
+
+    public void setCheckItems(List<CheckItem> checkItems) {
+        this.checkItems = checkItems;
+    }
 
     public Product(long id, String name, String description, Menu menu, List<Option> options, List<OrderItem> orderItems, double prix, int tempsDePreparation, String imgUrl, ImgFile imgFile, List<Rate> rates, ProductType productType, ProductMenuType productMenuType) {
         this.id = id;

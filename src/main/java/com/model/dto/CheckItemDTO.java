@@ -2,15 +2,23 @@ package com.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class CheckItemDTO {
+import java.io.Serializable;
+
+public class CheckItemDTO implements Serializable {
     private Long id;
 
     private String name;
 
     private OptionDTO option;
 
+    private double prix;
+
     @JsonProperty("isActive")
     private boolean isActive;
+
+    public CheckItemDTO(){
+
+    }
 
     public boolean isActive() {
         return isActive;
@@ -36,6 +44,14 @@ public class CheckItemDTO {
         this.name = name;
     }
 
+    public double getPrix() {
+        return prix;
+    }
+
+    public void setPrix(double prix) {
+        this.prix = prix;
+    }
+
     public OptionDTO getOption() {
         return option;
     }
@@ -43,6 +59,8 @@ public class CheckItemDTO {
     public void setOption(OptionDTO option) {
         this.option = option;
     }
+
+
 
     @Override
     public String toString() {

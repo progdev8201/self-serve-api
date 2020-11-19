@@ -3,10 +3,8 @@ package com.service;
 import com.mapping.StripeSubscriptionProductToStripeSubscriptionProductDTO;
 import com.mapping.SubscriptionEntityToSubscriptionEntityDTO;
 import com.model.dto.*;
-import com.model.entity.Bill;
-import com.model.entity.Owner;
-import com.model.entity.StripeSubscriptionProducts;
-import com.model.entity.SubscriptionEntity;
+import com.model.entity.*;
+import com.repository.MenuRepository;
 import com.repository.OwnerRepository;
 import com.repository.StripeSubscriptionProductRepository;
 import com.repository.SubscriptionEntityRepository;
@@ -39,6 +37,9 @@ public class StripeService {
 
     @Autowired
     private OwnerRepository ownerRepository;
+
+    @Autowired
+    private MenuRepository menuRepository;
 
     @Autowired
     private SubscriptionEntityRepository subscriptionEntityRepository;
@@ -108,6 +109,16 @@ public class StripeService {
         ownerRepository.save(owner);
     }
 
+    public StripeAccountIdDTO getAccountId(Long menuId){
+        Menu menu = menuRepository.findById(menuId).get();
+        Owner owner = menu.getRestaurant().getOwner();
+        if(owner.getStripeEnable()){
+            StripeAccountIdDTO stripeAccountIdDTO = new StripeAccountIdDTO();
+            stripeAccountIdDTO.setValue(owner.getStripeAccountId());
+            return stripeAccountIdDTO;
+        }
+        return null;
+    }
     public StripeClientSecretDTO processPayment(String restaurentStripeAccount, Bill bill) throws StripeException {
         Stripe.apiKey = stripeAPIKey;
 

@@ -15,9 +15,19 @@ public class  CheckItem implements Serializable {
 
     private boolean isActive;
 
+    private double prix;
+
 
     @ManyToOne
     private Option option;
+
+    public double getPrix() {
+        return prix;
+    }
+
+    public void setPrix(double prix) {
+        this.prix = prix;
+    }
 
     public Long getId() {
         return id;
