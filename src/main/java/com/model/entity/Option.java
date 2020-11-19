@@ -5,9 +5,10 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
+@Table(name="orderOption")
 public class Option implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String name;
