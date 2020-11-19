@@ -3,8 +3,8 @@ package com.service;
 import com.mapping.BillToBillDTO;
 import com.mapping.OrderItemToOrderItemDTO;
 import com.mapping.RestaurentTableToRestaurenTableDTO;
-import com.model.dto.BillDTO;
-import com.model.dto.OrderItemDTO;
+import com.model.dto.*;
+import com.model.entity.*;
 import com.model.dto.RestaurentTableDTO;
 import com.model.entity.Bill;
 import com.model.entity.Restaurant;
@@ -16,7 +16,10 @@ import com.service.DtoUtil.DTOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +44,7 @@ public class RestaurentTableService {
         Restaurant restaurant = restaurantRepository.findById(restaurentId).get();
         List<RestaurentTableDTO> restaurentTableDTOS = new ArrayList<>();
         restaurant.getRestaurentTables().forEach(restaurentTable -> {
-            restaurentTableDTOS.add(dtoUtils.generateRestaurentTableDTO(restaurentTable));
+            restaurentTableDTOS.add(dtoUtils.mapRestaurantTableToRestaurantTableDTO(restaurentTable));
         });
         return restaurentTableDTOS;
     }
@@ -51,6 +54,7 @@ public class RestaurentTableService {
         if(restaurentTable.getBills().remove(bill)){
             restaurentTable =restaurentTableRepository.save(restaurentTable);
         }
-
     }
+
+
 }

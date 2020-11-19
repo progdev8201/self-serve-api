@@ -1,5 +1,7 @@
 package com.model.dto;
 
+import com.model.entity.ImgFile;
+
 import java.util.List;
 
 public class RestaurantDTO {
@@ -17,6 +19,15 @@ public class RestaurantDTO {
 
     private List<RestaurentTableDTO> restaurentTables;
 
+    private ImgFileDTO imgFile;
+
+    public ImgFileDTO getImgFile() {
+        return imgFile;
+    }
+
+    public void setImgFile(ImgFileDTO imgFile) {
+        this.imgFile = imgFile;
+    }
 
     public Long getId() {
         return id;

@@ -204,19 +204,25 @@ public class DataLoader implements CommandLineRunner {
 
             // create client and guest
             LOGGER.info("Creating default client and guest");
-            SignUpForm client = new SignUpForm("client1@mail.com", "123456", "5147887884", "client");
+            SignUpForm client = new SignUpForm("client@mail.com", "123456", "5147887884", "client");
             SignUpForm guest = new SignUpForm("guest@mail.com", "123456", "5147887884", "guest");
+            SignUpForm waiter = new SignUpForm("waiter@mail.com", "123456", "5147887884", "waiter");
+            SignUpForm cook = new SignUpForm("cook@mail.com", "123456", "5147887884", "cook");
             SignUpForm owner = new SignUpForm("owner@mail.com", "123456", "5147887884", "owner");
 
             authentificationService.registerUser(client);
             authentificationService.registerUser(guest);
             authentificationService.registerUser(owner);
-
+            authentificationService.registerUser(cook);
+            authentificationService.registerUser(waiter);
         }
+
         RestaurantDTO restaurantDTO = kitchenService.createRestaurant("owner@mail.com", "le monde chico", 5);
         restaurant = restaurantRepository.findById(restaurantDTO.getId()).get();
         restaurant.setBill(new ArrayList<>());
         restaurant.setName("le resto chico");
+        restaurant.setImgFile(getImgFile("download.jpg"));
+
         for (Product x : productList) {
             x.setMenu(restaurant.getMenu());
         }
@@ -241,14 +247,7 @@ public class DataLoader implements CommandLineRunner {
         product.setPrix(29.99);
         product.setTempsDePreparation(30);
 
-        String pathDansProjet = fileBasePath + fileToCopy;
-        Path currentRelativePath = Paths.get("");
-        String absolutePath = currentRelativePath.toAbsolutePath().toString();
-        InputStream is = resourceLoader.getResource(
-                "classpath:img/" + fileToCopy).getInputStream();
-        //File imgFile = new File(absolutePath + pathDansProjet);
-        ImgFile img = new ImgFile();
-        img.setData(IOUtils.toByteArray(is));
+        ImgFile img = getImgFile(fileToCopy);
         img.setFileType("image");
         img.setProduct(product);
         product.setImgFile(img);
@@ -257,21 +256,44 @@ public class DataLoader implements CommandLineRunner {
         // product.setImgUrl(serverPort+absolutePath+1);
         product.setDescription("cest bon cest bon cest bon");
         product.setOrderItems(new ArrayList<>());
+        product.setCheckItems(new ArrayList<>());
+        CheckItem productCheckItem= new CheckItem();
+        productCheckItem.setName("fromage bleu");
+        productCheckItem.setPrix(5);
+        product.getCheckItems().add(productCheckItem);
+        CheckItem productCheckItem2= new CheckItem();
+        productCheckItem.setName("Miel");
+        productCheckItem.setPrix(10);
+        product.getCheckItems().add(productCheckItem2);
         Option option = new Option();
         option.setName("Cuisson");
         option.setCheckItemList(new ArrayList<>());
         CheckItem checkItem = new CheckItem();
         checkItem.setName("moyen");
+        checkItem.setPrix(5.00);
         option.getCheckItemList().add(checkItem);
         CheckItem checkItem2 = new CheckItem();
         checkItem2.setName("faible");
+        checkItem2.setPrix(5.00);
         option.getCheckItemList().add(checkItem2);
         CheckItem checkItem3 = new CheckItem();
         checkItem3.setName("fort");
+        checkItem3.setPrix(5.00);
         option.getCheckItemList().add(checkItem3);
         product.setOptions(new ArrayList<>());
         product.getOptions().add(option);
         return product;
+    }
+
+    private ImgFile getImgFile(String fileToCopy) throws IOException {
+        String pathDansProjet = fileBasePath + fileToCopy;
+        Path currentRelativePath = Paths.get("");
+        String absolutePath = currentRelativePath.toAbsolutePath().toString();
+        InputStream is = resourceLoader.getResource(
+                "classpath:img/" + fileToCopy).getInputStream();
+        ImgFile img = new ImgFile();
+        img.setData(IOUtils.toByteArray(is));
+        return img;
     }
 
     public OrderItem createOrderItem(ProgressStatus progressStatus, ProductType productType, Product product) {

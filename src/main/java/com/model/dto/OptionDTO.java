@@ -1,11 +1,5 @@
 package com.model.dto;
 
-import com.model.entity.CheckItem;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import java.util.List;
 
 public class OptionDTO {
