@@ -209,12 +209,15 @@ public class DataLoader implements CommandLineRunner {
             SignUpForm waiter = new SignUpForm("waiter@mail.com", "123456", "5147887884", "waiter");
             SignUpForm cook = new SignUpForm("cook@mail.com", "123456", "5147887884", "cook");
             SignUpForm owner = new SignUpForm("owner@mail.com", "123456", "5147887884", "owner");
+            SignUpForm admin = new SignUpForm("admin", "123456", "5147887884", "admin");
+
 
             authentificationService.registerUser(client);
             authentificationService.registerUser(guest);
             authentificationService.registerUser(owner);
             authentificationService.registerUser(cook);
             authentificationService.registerUser(waiter);
+            authentificationService.registerUser(admin);
         }
 
         RestaurantDTO restaurantDTO = kitchenService.createRestaurant("owner@mail.com", "le monde chico", 5);
