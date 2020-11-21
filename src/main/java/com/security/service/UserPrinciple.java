@@ -1,6 +1,7 @@
 package com.security.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.model.entity.Admin;
 import com.model.entity.Guest;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,7 +29,7 @@ public class UserPrinciple implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static UserPrinciple build(Guest user) {
+    public static UserPrinciple build(Admin user) {
 		/*List<GrantedAuthority> authorities = user.getRoles().stream()
 				.map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());*/
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
