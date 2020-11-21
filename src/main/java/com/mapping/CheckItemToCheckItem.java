@@ -10,6 +10,5 @@ import org.mapstruct.factory.Mappers;
 public interface CheckItemToCheckItem {
     CheckItemToCheckItem instance = Mappers.getMapper(CheckItemToCheckItem.class);
 
-    @Mapping(target = "id", ignore = true)
     CheckItem convert(CheckItem checkItem);
 }

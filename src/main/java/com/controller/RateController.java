@@ -33,8 +33,4 @@ public class RateController {
         Long productId = new ObjectMapper().readValue(json.get("productDTOID"),Long.class);
         return ResponseEntity.ok(ratingService.createRate(rate,productId));
     }
-
-
-
-
 }
