@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @PrimaryKeyJoinColumn(referencedColumnName = "id")
@@ -23,8 +24,8 @@ public class Owner extends Guest  implements Serializable {
     @OneToOne(cascade =CascadeType.PERSIST)
     private SubscriptionEntity subscriptionEntity;
 
-    public Owner(Guest user) {
-        super(user.getUsername(), user.getPassword(), user.getRoles());
+    public Owner(String username, String password, Set<Role> roles) {
+        super(username, password, roles);
         this.restaurantList = new ArrayList<>();
     }
 

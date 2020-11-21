@@ -8,7 +8,7 @@ import com.model.dto.OwnerDTO;
 import com.model.dto.SignUpForm;
 import com.model.entity.*;
 import com.model.enums.RoleName;
-import com.repository.GuestRepository;
+import com.repository.AdminRepository;
 import com.repository.OwnerRepository;
 import com.repository.RoleRepository;
 import com.security.jwt.JwtProvider;
@@ -33,7 +33,7 @@ public class AuthentificationService {
 
 
     @Autowired
-    GuestRepository guestRepository;
+    AdminRepository adminRepository;
 
     @Autowired
     OwnerRepository ownerRepository;
@@ -81,7 +81,7 @@ public class AuthentificationService {
 
     public ResponseEntity<String> registerUser(SignUpForm signUpForm) {
         //make sure email doesnt already exist
-        if (guestRepository.existsByUsername(signUpForm.getUsername())) {
+        if (adminRepository.existsByUsername(signUpForm.getUsername())) {
             return new ResponseEntity<String>("Fail -> Email is already in use!", HttpStatus.BAD_REQUEST);
         }
 
@@ -134,28 +134,32 @@ public class AuthentificationService {
 
             switch (rolesItr.next().getName()) {
                 case ROLE_CLIENT:
-                    guestRepository.save(new Client(user, signUpForm.getTelephone()));
+                    adminRepository.save(new Client(user.getUsername(), user.getPassword(), signUpForm.getTelephone(),user.getRoles()));
                     // send email
                     LOGGER.info("I created a new client");
                     return true;
 
                 case ROLE_OWNER:
-                    guestRepository.save(new Owner(user));
+                    adminRepository.save(new Owner(user.getUsername(),user.getPassword(),user.getRoles()));
                     LOGGER.info("I created a new owner");
                     return true;
 
                 case ROLE_COOK:
-                    guestRepository.save(new Cook(user));
+                    adminRepository.save(new Cook(user.getUsername(),user.getPassword(),user.getRoles()));
                     LOGGER.info("I created a new cook");
                     return true;
 
                 case ROLE_WAITER:
-                    guestRepository.save(new Waiter(user));
+                    adminRepository.save(new Waiter(user.getUsername(),user.getPassword(),user.getRoles()));
                     LOGGER.info("I created a new waiter");
+                    return true;
+                case ROLE_ADMIN:
+                    adminRepository.save(new Admin(user.getUsername(),user.getPassword(),user.getRoles()));
+                    LOGGER.info("I created a new Admin");
                     return true;
 
                 case ROLE_GUEST:
-                    guestRepository.save(user);
+                    adminRepository.save(user);
                     LOGGER.info("I created a new Guest");
                     return true;
 
