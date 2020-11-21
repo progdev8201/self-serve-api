@@ -1,11 +1,8 @@
 package com.model.dto;
 
-import com.model.entity.CheckItem;
 import com.model.enums.ProductMenuType;
 import com.model.enums.ProductType;
 
-import javax.persistence.CascadeType;
-import javax.persistence.OneToMany;
 import java.util.List;
 
 public class ProductDTO {
@@ -22,15 +19,7 @@ public class ProductDTO {
 
     private double prix;
 
-    private List <CheckItemDTO> checkItems;
-
-    public List<CheckItemDTO> getCheckItems() {
-        return checkItems;
-    }
-
-    public void setCheckItems(List<CheckItemDTO> checkItems) {
-        this.checkItems = checkItems;
-    }
+    private List<CheckItemDTO> checkItems;
 
     ///en minutes
     private int tempsDePreparation;
@@ -45,6 +34,14 @@ public class ProductDTO {
 
     private ImgFileDTO imgFileDTO;
 
+
+    public List<CheckItemDTO> getCheckItems() {
+        return checkItems;
+    }
+
+    public void setCheckItems(List<CheckItemDTO> checkItems) {
+        this.checkItems = checkItems;
+    }
 
     public ImgFileDTO getImgFileDTO() {
         return imgFileDTO;

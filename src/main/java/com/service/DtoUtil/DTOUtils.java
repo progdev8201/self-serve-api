@@ -94,6 +94,12 @@ public class DTOUtils {
         productDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(product.getImgFile()));
         productDTO.setProductType(product.getProductType());
 
+        //map product checkItems
+        productDTO.setCheckItems(product.getCheckItems()
+                .stream()
+                .map(CheckItemToCheckItemDTO.instance::convert)
+                .collect(Collectors.toList()));
+
         //map product options
         productDTO.setOptions(product.getOptions()
                 .stream()
@@ -105,8 +111,17 @@ public class DTOUtils {
 
     public static Product mapProductDTOToProduct(ProductDTO productDTO, ImgFileRepository imgFileRepository) {
         Product product = ProductDTOToProduct.instance.convert(productDTO);
-        if (productDTO.getImgFileDTO() != null) product.setImgFile(imgFileRepository.findById(productDTO.getImgFileDTO().getId()).get());
+
+        if (productDTO.getImgFileDTO() != null)
+            product.setImgFile(imgFileRepository.findById(productDTO.getImgFileDTO().getId()).get());
+
         product.setProductType(productDTO.getProductType());
+
+        //map product checkItems
+        product.setCheckItems(productDTO.getCheckItems()
+                .stream()
+                .map(CheckItemDTOCheckItemImpl.instance::convert)
+                .collect(Collectors.toList()));
 
         //map product options
         product.setOptions(productDTO.getOptions()
