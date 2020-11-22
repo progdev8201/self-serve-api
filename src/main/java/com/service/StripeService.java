@@ -91,7 +91,7 @@ public class StripeService {
         stripeCreateAccountUrlDTO.setValue(accountLink.getUrl());
         return stripeCreateAccountUrlDTO;
     }
-
+    //TODO pk on dois faire ca?
     public void initApplePay() throws StripeException {
         Stripe.apiKey = stripeAPIKey;
         ApplePayDomainCreateParams params =
