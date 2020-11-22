@@ -96,7 +96,7 @@ public class StripeService {
         Stripe.apiKey = stripeAPIKey;
         ApplePayDomainCreateParams params =
                 ApplePayDomainCreateParams.builder()
-                        .setDomainName("aae756e7fbd7.ngrok.io")
+                        .setDomainName(frontEndUrl)
                         .build();
 
         ApplePayDomain domain = ApplePayDomain.create(params);
