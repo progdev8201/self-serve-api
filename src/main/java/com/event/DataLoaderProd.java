@@ -5,7 +5,6 @@ import com.model.dto.SignUpForm;
 import com.model.entity.*;
 import com.model.enums.RoleName;
 import com.repository.*;
-import com.service.AuthentificationService;
 import com.service.StripeService;
 import com.stripe.exception.StripeException;
 import org.slf4j.Logger;
@@ -37,9 +36,6 @@ public class DataLoaderProd implements CommandLineRunner {
     @Autowired
     RoleRepository roleRepository;
 
-
-    @Autowired
-    AuthentificationService authentificationService;
 
     @Autowired
     private StripeService stripeService;
@@ -76,7 +72,7 @@ public class DataLoaderProd implements CommandLineRunner {
             stripeSubscriptionProducts2.setProductDescription("up to 500 orders");
             stripeSubscriptionProductRepository.save(stripeSubscriptionProducts2);
         }
-        if (roleRepository.findAll().size() == 0) {
+        if (roleRepository.findAll().size() == RoleName.values().length ) {
             LOGGER.info("READY!...Populating database...");
 
             LOGGER.info("Populating RoleRepository");
@@ -93,23 +89,6 @@ public class DataLoaderProd implements CommandLineRunner {
             roleRepository.saveAll(roleSet);
             roleRepository.flush();
             LOGGER.info("RoleRepository populated");
-
-            // create client and guest
-            LOGGER.info("Creating default client and guest");
-            SignUpForm client = new SignUpForm("client@mail.com", "123456", "5147887884", "client");
-            SignUpForm guest = new SignUpForm("guest@mail.com", "123456", "5147887884", "guest");
-            SignUpForm waiter = new SignUpForm("waiter@mail.com", "123456", "5147887884", "waiter");
-            SignUpForm cook = new SignUpForm("cook@mail.com", "123456", "5147887884", "cook");
-            SignUpForm owner = new SignUpForm("owner@mail.com", "123456", "5147887884", "owner");
-            SignUpForm admin = new SignUpForm("admin", "123456", "5147887884", "admin");
-
-
-            authentificationService.registerUser(client);
-            authentificationService.registerUser(guest);
-            authentificationService.registerUser(owner);
-            authentificationService.registerUser(cook);
-            authentificationService.registerUser(waiter);
-            authentificationService.registerUser(admin);
         }
     }
 }

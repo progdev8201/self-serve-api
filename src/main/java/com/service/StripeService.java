@@ -82,8 +82,8 @@ public class StripeService {
         AccountLinkCreateParams accountLinkparams =
                 AccountLinkCreateParams.builder()
                         .setAccount(account.getId())
-                        .setRefreshUrl(frontEndUrl + "/adminProductManagment")
-                        .setReturnUrl(frontEndUrl + "/adminProductManagment?accountId=" + account.getId())
+                        .setRefreshUrl(frontEndUrl + "/isStripeEnabled")
+                        .setReturnUrl(frontEndUrl + "/isStripeEnabled?accountId=" + account.getId())
                         .setType(AccountLinkCreateParams.Type.ACCOUNT_ONBOARDING)
                         .build();
         AccountLink accountLink = AccountLink.create(accountLinkparams);
