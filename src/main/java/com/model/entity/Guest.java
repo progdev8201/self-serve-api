@@ -18,8 +18,8 @@ public class Guest extends Admin  implements Serializable {
     private List<Bill> bills;
 
 
-    public Guest(String username, String password, Set<Role> roles) {
-        super(username, password, roles);
+    public Guest(String username, String password,String role) {
+        super(username, password, role);
     }
 
     public Guest() {
@@ -36,14 +36,6 @@ public class Guest extends Admin  implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
     }
 
     public void setUsername(String username) {

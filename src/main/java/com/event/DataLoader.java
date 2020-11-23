@@ -54,7 +54,7 @@ public class DataLoader implements CommandLineRunner {
     ProductRepository productRepository;
 
     @Autowired
-    RoleRepository roleRepository;
+    private AdminRepository adminRepository;
 
     @Autowired
     OwnerRepository ownerRepository;
@@ -165,23 +165,8 @@ public class DataLoader implements CommandLineRunner {
         productList.add(product);
 
 
-        if (roleRepository.findAll().size() == 0) {
+        if (adminRepository.findAll().size() == 0) {
             LOGGER.info("READY!...Populating database...");
-
-            LOGGER.info("Populating RoleRepository");
-
-            // This set is used as argument to roleRepository because converting a HashMap
-            // to a Set is not straight forward
-            Set<Role> roleSet = new HashSet<>();
-
-            Arrays.stream(RoleName.values()).forEach((RoleName roleName) -> {
-                LOGGER.info("Adding role: " + roleName + " to RoleRepository");
-                roleSet.add(new Role(roleName));
-            });
-
-            roleRepository.saveAll(roleSet);
-            roleRepository.flush();
-            LOGGER.info("RoleRepository populated");
 
             // create client and guest
             LOGGER.info("Creating default client and guest");

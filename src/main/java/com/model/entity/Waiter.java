@@ -11,8 +11,8 @@ import java.util.Set;
 @PrimaryKeyJoinColumn(referencedColumnName = "id")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Waiter extends Guest implements Serializable {
-    public Waiter(String username, String password, Set<Role> roles) {
-        super(username, password, roles);
+    public Waiter(String username, String password, String role) {
+        super(username, password, role);
     }
 
     public Waiter() {
