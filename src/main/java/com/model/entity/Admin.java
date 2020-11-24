@@ -17,15 +17,12 @@ public class Admin implements Serializable {
 
     protected String password;
 
+    protected String role;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
-    @JoinTable
-    protected Set<Role> roles = new HashSet<>();
-
-    public Admin(String username, String password, Set<Role> roles) {
+    public Admin(String username, String password, String role) {
         this.username = username;
         this.password = password;
-        this.roles = roles;
+        this.role = role;
     }
 
     public Admin() {
@@ -51,16 +48,25 @@ public class Admin implements Serializable {
         this.password = password;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+    public String getRole() {
+        return role;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public void setUsername(String username) {
         this.username = username;
     }
 
+    @Override
+    public String toString() {
+        return "Admin{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                '}';
+    }
 }

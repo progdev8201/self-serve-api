@@ -24,8 +24,8 @@ public class Owner extends Guest  implements Serializable {
     @OneToOne(cascade =CascadeType.PERSIST)
     private SubscriptionEntity subscriptionEntity;
 
-    public Owner(String username, String password, Set<Role> roles) {
-        super(username, password, roles);
+    public Owner(String username, String password, String role) {
+        super(username, password, role);
         this.restaurantList = new ArrayList<>();
     }
 

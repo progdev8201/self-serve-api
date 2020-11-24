@@ -1,73 +1,55 @@
 package com.security.jwt;
 
-import com.security.service.UserPrinciple;
-import io.jsonwebtoken.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.model.entity.Admin;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.security.SecureRandom;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+@Data
 @Component
-public class JwtProvider {
+public final class JwtProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtProvider.class);
+    private final Algorithm algorithm;
 
-    @Value("mySuperSecret")
-    private String jwtSecret;
+    private final JWTVerifier verifier;
 
-    @Value("86400")
-    private int jwtExpiration;
+    private final long duration;
 
-    public String generateJwtToken(Authentication authentication) {
 
-        UserPrinciple userPrincipal = (UserPrinciple) authentication.getPrincipal();
-
-        Map<String, Object> claimsMap = new HashMap<>();
-        try {
-            claimsMap.put("role", userPrincipal.getAuthorities().toArray()[0].toString());
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        return Jwts.builder()
-                .setSubject((userPrincipal.getUsername()))
-                .addClaims(claimsMap)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpiration * 1000))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
-                .compact();
+    public JwtProvider(@Value("${security.jwt.duration}") long durationHours) {
+        algorithm = Algorithm.HMAC256(SecureRandom.getSeed(16));
+        verifier = JWT.require(algorithm).build();
+        duration = TimeUnit.HOURS.toMillis(durationHours);
     }
 
-    public boolean validateJwtToken(String authToken) {
-        try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
-            return true;
-        } catch (SignatureException e) {
-            logger.error("Invalid JWT signature -> Message: {} ", e);
-        } catch (MalformedJwtException e) {
-            logger.error("Invalid JWT token -> Message: {}", e);
-        } catch (ExpiredJwtException e) {
-            logger.error("Expired JWT token -> Message: {}", e);
-        } catch (UnsupportedJwtException e) {
-            logger.error("Unsupported JWT token -> Message: {}", e);
-        } catch (IllegalArgumentException e) {
-            logger.error("JWT claims string is empty -> Message: {}", e);
-        }
+    public String generate(final Admin user) {
+        final long time = System.currentTimeMillis();
 
-        return false;
+        return JWT.create()
+                .withSubject(user.getId().toString())
+                .withClaim("role", user.getRole())
+                .withIssuedAt(new Date(time))
+                .withExpiresAt(new Date(time + duration))
+                .sign(algorithm);
     }
 
-    public String getUserNameFromJwtToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJws(token)
-                .getBody().getSubject();
+    public DecodedJWT verify(String token) throws JWTVerificationException {
+        if (token == null)
+            throw new JWTVerificationException("Token cannot be null");
+
+        if (token.startsWith("Bearer "))
+            token = token.replace("Bearer ","");
+
+        return verifier.verify(token.trim());
     }
 
 }

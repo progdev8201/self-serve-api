@@ -1,6 +1,5 @@
 package com.service;
 
-
 import com.mapping.OwnerToOwnerDTO;
 import com.model.dto.JwtResponse;
 import com.model.dto.LoginForm;
@@ -10,36 +9,27 @@ import com.model.entity.*;
 import com.model.enums.RoleName;
 import com.repository.AdminRepository;
 import com.repository.OwnerRepository;
-import com.repository.RoleRepository;
 import com.security.jwt.JwtProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class AuthentificationService {
-    @Autowired
-    AuthenticationManager authenticationManager;
-
 
     @Autowired
     AdminRepository adminRepository;
 
     @Autowired
     OwnerRepository ownerRepository;
-
-    @Autowired
-    RoleRepository roleRepository;
 
     @Autowired
     PasswordEncoder encoder;
@@ -65,13 +55,17 @@ public class AuthentificationService {
     }
 
     public ResponseEntity<JwtResponse> authenticateUser(LoginForm loginForm) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginForm.getUsername(), loginForm.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        final Optional<Admin> user = adminRepository.findByUsername(loginForm.getUsername());
 
-        String jwt = jwtProvider.generateJwtToken(authentication);
+        if (user.isPresent() && encoder.matches(loginForm.getPassword(), user.get().getPassword())) {
 
-        return ResponseEntity.ok(new JwtResponse(jwt));
+            final String token = jwtProvider.generate(user.get());
+
+            return ResponseEntity.ok(new JwtResponse(token));
+        }
+
+        return null;
     }
 
     public ResponseEntity<OwnerDTO> fetchOwner(OwnerDTO ownerDTO) {
@@ -85,19 +79,7 @@ public class AuthentificationService {
             return new ResponseEntity<String>("Fail -> Email is already in use!", HttpStatus.BAD_REQUEST);
         }
 
-        // Creating user's account
-        Guest user = new Guest(signUpForm.getUsername(), encoder.encode(signUpForm.getPassword()), new TreeSet<>());
-
-        // TRANSFERING ACCOUNT ROLES STRING TO ENUM THEN MAKE SURE ITS IN DATABASE THEN ADD TO USER
-        Set<String> requestRolesArr = Collections.singleton(signUpForm.getRole());
-        Set<Role> userRoles = new HashSet<Role>();
-
-        ResponseEntity<String> roleStr = validateRoleThenAddToUser(requestRolesArr, userRoles);
-        if (roleStr != null) return roleStr;
-
-
-        //create entity based on roles
-        if (createEntityBasedOnRoles(user, userRoles, signUpForm))
+        if (createEntityBasedOnRoles(signUpForm))
             return ResponseEntity.ok().body("User registered successfully!");
         else return new ResponseEntity<String>("Fail -> couldn't create User", HttpStatus.BAD_REQUEST);
     }
@@ -105,69 +87,48 @@ public class AuthentificationService {
 
     //PRIVATE METHODS
 
-    private ResponseEntity<String> validateRoleThenAddToUser(Set<String> requestRolesArr, Set<Role> userRoles) {
-        if (requestRolesArr != null) {
-            for (String roleStr : requestRolesArr) {
-                Optional<RoleName> roleName = lookupRoleNameByName(roleStr);
+    private boolean createEntityBasedOnRoles(SignUpForm user) {
+        Optional<RoleName> roleName = lookupRoleNameByName(user.getRole());
 
-                //if role is present in the database add it to user
-                if (roleName.isPresent()) {
-                    Optional<Role> role = roleRepository.findByName(roleName.get());
-
-                    if (role.isPresent())
-                        userRoles.add(role.get());
-                    else
-                        return new ResponseEntity<String>("Fail -> '" + roleStr + "' is not within the role repository", HttpStatus.BAD_REQUEST);
-
-                } else
-                    return new ResponseEntity<String>("Fail -> '" + roleStr + "' is not within the possible roles (RoleName enum)", HttpStatus.BAD_REQUEST);
-            }
-        } else
-            return new ResponseEntity<String>("Fail -> Key 'roles' is not present (null) make sure the key exist", HttpStatus.BAD_REQUEST);
-        return null;
-    }
-
-    private boolean createEntityBasedOnRoles(Guest user, Set<Role> userRoles, SignUpForm signUpForm) {
-        user.setRoles(userRoles);
-        Iterator<Role> rolesItr = userRoles.iterator();
-        while (rolesItr.hasNext()) {
-
-            switch (rolesItr.next().getName()) {
-                case ROLE_CLIENT:
-                    adminRepository.save(new Client(user.getUsername(), user.getPassword(), signUpForm.getTelephone(),user.getRoles()));
-                    // send email
-                    LOGGER.info("I created a new client");
-                    return true;
-
-                case ROLE_OWNER:
-                    adminRepository.save(new Owner(user.getUsername(),user.getPassword(),user.getRoles()));
-                    LOGGER.info("I created a new owner");
-                    return true;
-
-                case ROLE_COOK:
-                    adminRepository.save(new Cook(user.getUsername(),user.getPassword(),user.getRoles()));
-                    LOGGER.info("I created a new cook");
-                    return true;
-
-                case ROLE_WAITER:
-                    adminRepository.save(new Waiter(user.getUsername(),user.getPassword(),user.getRoles()));
-                    LOGGER.info("I created a new waiter");
-                    return true;
-                case ROLE_ADMIN:
-                    adminRepository.save(new Admin(user.getUsername(),user.getPassword(),user.getRoles()));
-                    LOGGER.info("I created a new Admin");
-                    return true;
-
-                case ROLE_GUEST:
-                    adminRepository.save(user);
-                    LOGGER.info("I created a new Guest");
-                    return true;
-
-                default:
-                    continue;
-            }
-
+        if (!roleName.isPresent()) {
+            return false;
         }
+
+        switch (roleName.get()) {
+            case ROLE_CLIENT:
+                adminRepository.save(new Client(user.getUsername(), encoder.encode(user.getPassword()), user.getTelephone(), RoleName.ROLE_CLIENT.toString()));
+                // send email
+                LOGGER.info("I created a new client");
+                return true;
+
+            case ROLE_OWNER:
+                adminRepository.save(new Owner(user.getUsername(), encoder.encode(user.getPassword()), RoleName.ROLE_OWNER.toString()));
+                LOGGER.info("I created a new owner");
+                return true;
+
+            case ROLE_COOK:
+                adminRepository.save(new Cook(user.getUsername(), encoder.encode(user.getPassword()), RoleName.ROLE_COOK.toString()));
+                LOGGER.info("I created a new cook");
+                return true;
+
+            case ROLE_WAITER:
+                adminRepository.save(new Waiter(user.getUsername(), encoder.encode(user.getPassword()), RoleName.ROLE_WAITER.toString()));
+                LOGGER.info("I created a new waiter");
+                return true;
+            case ROLE_ADMIN:
+                adminRepository.save(new Admin(user.getUsername(), encoder.encode(user.getPassword()), RoleName.ROLE_ADMIN.toString()));
+                LOGGER.info("I created a new Admin");
+                return true;
+
+            case ROLE_GUEST:
+                adminRepository.save(new Guest(user.getUsername(), encoder.encode(user.getPassword()), RoleName.ROLE_GUEST.toString()));
+                LOGGER.info("I created a new Guest");
+                return true;
+
+            default:
+                break;
+        }
+
         return false;
     }
 
