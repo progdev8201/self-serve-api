@@ -67,10 +67,25 @@ public class ClientService {
         Restaurant restaurant = restaurentTable.getRestaurant();
         Bill bill = initBill(billId, orderItemList, guest, restaurant);
 
+        AddBillToTable(billId, restaurentTable, bill);
+        addBillToRestaurant(billId, restaurant, bill);
+        setOrderItemsBill(orderItemList, bill);
+        restaurant = restaurantRepository.save(restaurant);
+        //TODO notify kitchen
+        //set valeur retour
+        BillDTO returnValue = dtoUtils.mapBillToBillDTOWithOrderItems(findBillInRestaurantList(restaurant, bill));
+
+        return returnValue;
+    }
+
+    private void AddBillToTable(Long billId, RestaurentTable restaurentTable, Bill bill) {
         if (!isBillInStream(restaurentTable.getBills().stream(), billId)) {
             restaurentTable.getBills().add(bill);
             bill.setRestaurentTable(restaurentTable);
         }
+    }
+
+    private void addBillToRestaurant(Long billId, Restaurant restaurant, Bill bill) {
         restaurant.setBill(initEmptyList(restaurant.getBill()));
         if (!isBillInStream(restaurant.getBill().stream(), billId)) {
             if (Objects.isNull(restaurant.getBill())) {
@@ -78,15 +93,12 @@ public class ClientService {
             }
             restaurant.getBill().add(bill);
         }
+    }
+
+    private void setOrderItemsBill(List<OrderItem> orderItemList, Bill bill) {
         orderItemList.forEach(orderItem -> {
             orderItem.setBill(bill);
         });
-        restaurant = restaurantRepository.save(restaurant);
-        //TODO notify kitchen
-        //set valeur retour
-        BillDTO returnValue = dtoUtils.mapBillToBillDTOWithOrderItems(findBillInRestaurantList(restaurant, bill));
-
-        return returnValue;
     }
 
     private Bill findBillInRestaurantList(Restaurant restaurant, Bill bill) {
