@@ -79,10 +79,6 @@ public class AuthentificationService {
             return new ResponseEntity<String>("Fail -> Email is already in use!", HttpStatus.BAD_REQUEST);
         }
 
-        // Creating user's account
-        Guest user = new Guest(signUpForm.getUsername(), encoder.encode(signUpForm.getPassword()), signUpForm.getRole());
-
-        //create entity based on roles
         if (createEntityBasedOnRoles(signUpForm))
             return ResponseEntity.ok().body("User registered successfully!");
         else return new ResponseEntity<String>("Fail -> couldn't create User", HttpStatus.BAD_REQUEST);

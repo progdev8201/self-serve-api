@@ -27,6 +27,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             DecodedJWT token = JwtProvider.verify(request.getHeader("Authorization"));
 
+            System.out.println("I set up the token");
+
             if (token != null)
                 SecurityContextHolder.getContext().setAuthentication(new JwtAuthentication(token));
 
