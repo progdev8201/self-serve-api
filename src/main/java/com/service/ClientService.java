@@ -59,40 +59,42 @@ public class ClientService {
 
     public BillDTO makeOrder(ProductDTO productToAdd, String guestUsername, Long billId, Long restaurentTableId, String commentaire) {
         //init orders
-        List<OrderItem> orderItemList = initOrderItems(productToAdd,commentaire);
+        List<OrderItem> orderItemList = initOrderItems(productToAdd, commentaire);
 
-        //find guest
-        Guest guest = guestRepository.findByUsername(guestUsername).get();
+        //init bill
+        Bill bill = initBill(billId, orderItemList, guestUsername, restaurentTableId);
 
-        //TODO:meilleur solution?? a voir mais il faut retrouver le restaurent pour l'associé au bill
+        //set valeur retour
+
+        return dtoUtils.mapBillToBillDTOWithOrderItems(bill);
+    }
+
+    private void addBillToValues(Long restaurantTableId, Bill bill, List<OrderItem> orderItemList) {
         //find restaurant table
-        RestaurentTable restaurentTable = restaurentTableRepository.findById(restaurentTableId).get();
+        RestaurentTable restaurentTable = restaurentTableRepository.findById(restaurantTableId).get();
 
         // find restaurant
         Restaurant restaurant = restaurentTable.getRestaurant();
 
-        //init bill
-        Bill bill = initBill(billId, orderItemList, guest, restaurant);
+        addBillToValues(orderItemList, restaurentTable, restaurant, bill);
 
-        AddBillToTable(billId, restaurentTable, bill);
-        addBillToRestaurant(billId, restaurant, bill);
-        setOrderItemsBill(orderItemList, bill);
-        restaurant = restaurantRepository.save(restaurant);
-        //TODO notify kitchen
-        //set valeur retour
-        BillDTO returnValue = dtoUtils.mapBillToBillDTOWithOrderItems(findBillInRestaurantList(restaurant, bill));
 
-        return returnValue;
     }
 
-    private void AddBillToTable(Long billId, RestaurentTable restaurentTable, Bill bill) {
+    private void addBillToValues(List<OrderItem> orderItemList, RestaurentTable restaurentTable, Restaurant restaurant, Bill bill) {
+        linkBillAndTable(bill.getId(), restaurentTable, bill);
+        linkBillAndOrderItems(orderItemList, bill);
+        linkBillAndRestaurant(bill.getId(), restaurant, bill);
+    }
+
+    private void linkBillAndTable(Long billId, RestaurentTable restaurentTable, Bill bill) {
         if (!isBillInStream(restaurentTable.getBills().stream(), billId)) {
             restaurentTable.getBills().add(bill);
             bill.setRestaurentTable(restaurentTable);
         }
     }
 
-    private void addBillToRestaurant(Long billId, Restaurant restaurant, Bill bill) {
+    private void linkBillAndRestaurant(Long billId, Restaurant restaurant, Bill bill) {
         restaurant.setBill(initEmptyList(restaurant.getBill()));
 
         //add empty bill to restaurant
@@ -102,30 +104,32 @@ public class ClientService {
             }
             restaurant.getBill().add(bill);
         }
-    }
-
-    private void setOrderItemsBill(List<OrderItem> orderItemList, Bill bill) {
-        orderItemList.forEach(orderItem -> {
-            orderItem.setBill(bill);
-        });
-    }
-
-    private Bill findBillInRestaurantList(Restaurant restaurant, Bill bill) {
-        return restaurant.getBill().stream().filter(x -> x.getId().equals(bill.getId())).findFirst().get();
-    }
-
-    private Bill initBill(Long billId, List<OrderItem> orderItemList, Guest guest, Restaurant restaurant) {
-        Bill bill = findBill(billId);
-
-        bill.setOrderCustomer(guest);
-        bill.setOrderItems(initEmptyList(bill.getOrderItems()));
-        bill.setPrixTotal(bill.getPrixTotal()+calculerPriceBill(orderItemList));
-        bill.getOrderItems().addAll(orderItemList);
-
         if (Objects.isNull(bill.getRestaurant())) {
             bill.setRestaurant(restaurant);
         }
+        //save le tout
+        restaurantRepository.save(restaurant);
+
+    }
+
+    private void linkBillAndOrderItems(List<OrderItem> orderItemList, Bill bill) {
+        orderItemList.forEach(orderItem -> {
+            orderItem.setBill(bill);
+        });
+        bill.getOrderItems().addAll(orderItemList);
+    }
+
+
+    private Bill initBill(Long billId, List<OrderItem> orderItemList, String guestUsername, Long restaurantTableId) {
+        Bill bill = findBill(billId);
+        Guest guest = guestRepository.findByUsername(guestUsername).get();
+
+        bill.setOrderCustomer(guest);
+        bill.setOrderItems(initEmptyList(bill.getOrderItems()));
+        bill.setPrixTotal(bill.getPrixTotal() + calculerPriceBill(orderItemList));
         bill.setBillStatus(BillStatus.PROGRESS);
+
+        addBillToValues(restaurantTableId, bill, orderItemList);
         return bill;
     }
 
@@ -139,17 +143,24 @@ public class ClientService {
         List<OrderItem> orderItems = new ArrayList<>();
         /**aller creer order item en fonction du produit**/
         Product product = productRepository.findById(productToAdd.getId()).get();
-        OrderItem orderItem = createOrderItemFromProduct(productToAdd,  commentaire, product);
+        OrderItem orderItem = initOrderItem(productToAdd,commentaire,product);
 
-        addCheckItemPrice(orderItem, orderItem.getCheckItems());
+        linkOrderItemAndProduct(orderItems, product, orderItem);
+
+        return orderItems;
+    }
+
+    private OrderItem initOrderItem(ProductDTO productToAdd,String commentaire, Product product) {
+        OrderItem orderItem = createOrderItemFromProduct(productToAdd, commentaire, product);
+        addCheckItemToOrderItemPrice(orderItem, orderItem.getCheckItems());
         setOrderItemOptions(productToAdd, orderItem);
+        return  orderItem;
+    }
 
+    private void linkOrderItemAndProduct(List<OrderItem> orderItems, Product product, OrderItem orderItem) {
         orderItems.add(orderItem);
         product.setOrderItems(initEmptyList(product.getOrderItems()));
         product.getOrderItems().addAll(orderItems);
-
-        productRepository.save(product);
-        return orderItems;
     }
 
     private double calculerPriceBill(List<OrderItem> orderItems) {
@@ -159,7 +170,7 @@ public class ClientService {
                 .getSum();
     }
 
-    private OrderItem createOrderItemFromProduct(ProductDTO productToAdd,  String commentaire, Product product) {
+    private OrderItem createOrderItemFromProduct(ProductDTO productToAdd, String commentaire, Product product) {
         OrderItem orderItem = ProductToOrderItems.instance.convert(product);
         orderItem.setProduct(product);
         orderItem.setOrderStatus(ProgressStatus.PROGRESS);
@@ -184,7 +195,7 @@ public class ClientService {
         for (OptionDTO optionDTO : productToAdd.getOptions()) {
             Option option = OptionDTOToOption.instance.convert(optionDTO);
             option.setCheckItemList(setUpCheckItems(optionDTO.getCheckItemList()));
-            addCheckItemPrice(orderItem, option.getCheckItemList());
+            addCheckItemToOrderItemPrice(orderItem, option.getCheckItemList());
             orderItem.getOption().add(option);
         }
     }
@@ -198,7 +209,7 @@ public class ClientService {
         return checkItemList;
     }
 
-    private void addCheckItemPrice(OrderItem orderItem, List<CheckItem> checkItems) {
+    private void addCheckItemToOrderItemPrice(OrderItem orderItem, List<CheckItem> checkItems) {
         checkItems.forEach(checkItem -> {
             if (checkItem.isActive()) {
                 orderItem.setPrix(roundDouble(orderItem.getPrix() + checkItem.getPrix()));
@@ -211,14 +222,11 @@ public class ClientService {
     }
 
     private Bill findBill(Long billId) {
-        Bill bill = null;
         if (Objects.nonNull(billId)) {
-            bill = billRepository.findById(billId).get();
-        } else if (Objects.isNull(bill)) {
-            bill = new Bill();
-            bill = billRepository.save(bill);
+            return billRepository.findById(billId).get();
+        } else {
+            return billRepository.save(new Bill());
         }
-        return bill;
     }
 
     private List initEmptyList(List list) {
@@ -232,13 +240,17 @@ public class ClientService {
         Bill bill = billRepository.findById(billId).get();
         if (Objects.nonNull(bill)) {
             bill.setBillStatus(BillStatus.PAYED);
-            restaurentTableService.deleteBillFromTable(bill);
-            bill.setRestaurentTable(null);
+            unlinkBillAndTable(bill);
             if (Objects.nonNull(billRepository.save(bill))) {
                 return true;
             }
         }
         return false;
+    }
+
+    private void unlinkBillAndTable(Bill bill) {
+        restaurentTableService.deleteBillFromTable(bill);
+        bill.setRestaurentTable(null);
     }
 
     private static double roundDouble(double prix) {
