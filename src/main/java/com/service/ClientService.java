@@ -84,9 +84,13 @@ public class ClientService {
         restaurant = restaurantRepository.save(restaurant);
         //TODO notify kitchen
         //set valeur retour
-        BillDTO returnValue = dtoUtils.mapBillToBillDTOWithOrderItems(restaurant.getBill().stream().filter(x -> x.getId().equals(bill.getId())).findFirst().get());
+        BillDTO returnValue = dtoUtils.mapBillToBillDTOWithOrderItems(findBillInRestaurantList(restaurant, bill));
 
         return returnValue;
+    }
+
+    private Bill findBillInRestaurantList(Restaurant restaurant, Bill bill) {
+        return restaurant.getBill().stream().filter(x -> x.getId().equals(bill.getId())).findFirst().get();
     }
 
     private Bill initBill(Long billId, List<OrderItem> orderItemList, Guest guest, Restaurant restaurant) {
