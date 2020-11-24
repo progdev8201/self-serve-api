@@ -58,13 +58,20 @@ public class ClientService {
     }
 
     public BillDTO makeOrder(ProductDTO productToAdd, String guestUsername, Long billId, Long restaurentTableId, String commentaire) {
+        //init orders
         List<OrderItem> orderItemList = initOrderItems(productToAdd,commentaire);
+
+        //find guest
         Guest guest = guestRepository.findByUsername(guestUsername).get();
 
         //TODO:meilleur solution?? a voir mais il faut retrouver le restaurent pour l'associé au bill
+        //find restaurant table
         RestaurentTable restaurentTable = restaurentTableRepository.findById(restaurentTableId).get();
 
+        // find restaurant
         Restaurant restaurant = restaurentTable.getRestaurant();
+
+        //init bill
         Bill bill = initBill(billId, orderItemList, guest, restaurant);
 
         AddBillToTable(billId, restaurentTable, bill);
@@ -87,6 +94,8 @@ public class ClientService {
 
     private void addBillToRestaurant(Long billId, Restaurant restaurant, Bill bill) {
         restaurant.setBill(initEmptyList(restaurant.getBill()));
+
+        //add empty bill to restaurant
         if (!isBillInStream(restaurant.getBill().stream(), billId)) {
             if (Objects.isNull(restaurant.getBill())) {
                 restaurant.setBill(new ArrayList<>());
