@@ -82,8 +82,8 @@ public class StripeService {
         AccountLinkCreateParams accountLinkparams =
                 AccountLinkCreateParams.builder()
                         .setAccount(account.getId())
-                        .setRefreshUrl(frontEndUrl + "/adminProductManagment")
-                        .setReturnUrl(frontEndUrl + "/adminProductManagment?accountId=" + account.getId())
+                        .setRefreshUrl(frontEndUrl + "/isStripeEnabled")
+                        .setReturnUrl(frontEndUrl + "/isStripeEnabled?accountId=" + account.getId())
                         .setType(AccountLinkCreateParams.Type.ACCOUNT_ONBOARDING)
                         .build();
         AccountLink accountLink = AccountLink.create(accountLinkparams);
@@ -91,12 +91,12 @@ public class StripeService {
         stripeCreateAccountUrlDTO.setValue(accountLink.getUrl());
         return stripeCreateAccountUrlDTO;
     }
-
+    //TODO pk on dois faire ca?
     public void initApplePay() throws StripeException {
         Stripe.apiKey = stripeAPIKey;
         ApplePayDomainCreateParams params =
                 ApplePayDomainCreateParams.builder()
-                        .setDomainName("aae756e7fbd7.ngrok.io")
+                        .setDomainName(frontEndUrl)
                         .build();
 
         ApplePayDomain domain = ApplePayDomain.create(params);

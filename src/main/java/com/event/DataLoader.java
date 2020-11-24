@@ -33,6 +33,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @Order(3)
+@Profile("!prod")
 @Component
 @Transactional
 public class DataLoader implements CommandLineRunner {
