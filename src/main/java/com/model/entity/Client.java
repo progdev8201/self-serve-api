@@ -24,13 +24,13 @@ public class Client  extends  Guest implements Serializable {
         this.telephone = telephone;
     }
 
-    public Client(String username, String password, String telephone, Set<Role> roles) {
-        super(username, password,roles);
+    public Client(String username, String password, String telephone, String role) {
+        super(username, password,role);
         this.telephone = telephone;
     }
 
     public Client(Guest user,String telephone){
-        super(user.getUsername(),user.getPassword(), user.getRoles());
+        super(user.getUsername(),user.getPassword(), user.getRole());
         this.telephone = telephone;
     }
 

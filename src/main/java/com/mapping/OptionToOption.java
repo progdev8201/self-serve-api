@@ -11,6 +11,5 @@ public interface OptionToOption {
     OptionToOption instance = Mappers.getMapper(OptionToOption.class);
 
     @Mapping(target = "checkItemList", ignore = true)
-    @Mapping(target = "id", ignore = true)
     Option convert(Option option);
 }

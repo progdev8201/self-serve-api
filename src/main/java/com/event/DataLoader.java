@@ -54,7 +54,7 @@ public class DataLoader implements CommandLineRunner {
     ProductRepository productRepository;
 
     @Autowired
-    RoleRepository roleRepository;
+    private AdminRepository adminRepository;
 
     @Autowired
     OwnerRepository ownerRepository;
@@ -74,10 +74,6 @@ public class DataLoader implements CommandLineRunner {
     private StripeService stripeService;
 
     @Autowired
-    private StripeSubscriptionProductRepository stripeSubscriptionProductRepository;
-
-    @Autowired
-
     private static final Logger LOGGER = LoggerFactory.getLogger(DataLoader.class);
 
     @Override
@@ -169,38 +165,8 @@ public class DataLoader implements CommandLineRunner {
         productList.add(product);
 
 
-        StripeSubscriptionProducts stripeSubscriptionProducts = new StripeSubscriptionProducts();
-        stripeSubscriptionProducts.setProductName("Dine in plan premium");
-        stripeSubscriptionProducts.setProductPrice(200.00);
-        stripeSubscriptionProducts.setProductDescription("Unlimited orders");
-        stripeSubscriptionProducts.setPriceId("price_1HiTbuC5UoZOX4GRhbClArla");
-        stripeSubscriptionProductRepository.save(stripeSubscriptionProducts);
-
-        StripeSubscriptionProducts stripeSubscriptionProducts2 = new StripeSubscriptionProducts();
-        stripeSubscriptionProducts2.setProductName("Dine in plan basic");
-        stripeSubscriptionProducts2.setProductPrice(125.00);
-
-        stripeSubscriptionProducts2.setPriceId("price_1HiTYKC5UoZOX4GRDOIONoDR");
-        stripeSubscriptionProducts2.setProductDescription("up to 500 orders");
-        stripeSubscriptionProductRepository.save(stripeSubscriptionProducts2);
-
-        if (roleRepository.findAll().size() == 0) {
+        if (adminRepository.findAll().size() == 0) {
             LOGGER.info("READY!...Populating database...");
-
-            LOGGER.info("Populating RoleRepository");
-
-            // This set is used as argument to roleRepository because converting a HashMap
-            // to a Set is not straight forward
-            Set<Role> roleSet = new HashSet<>();
-
-            Arrays.stream(RoleName.values()).forEach((RoleName roleName) -> {
-                LOGGER.info("Adding role: " + roleName + " to RoleRepository");
-                roleSet.add(new Role(roleName));
-            });
-
-            roleRepository.saveAll(roleSet);
-            roleRepository.flush();
-            LOGGER.info("RoleRepository populated");
 
             // create client and guest
             LOGGER.info("Creating default client and guest");
@@ -209,12 +175,15 @@ public class DataLoader implements CommandLineRunner {
             SignUpForm waiter = new SignUpForm("waiter@mail.com", "123456", "5147887884", "waiter");
             SignUpForm cook = new SignUpForm("cook@mail.com", "123456", "5147887884", "cook");
             SignUpForm owner = new SignUpForm("owner@mail.com", "123456", "5147887884", "owner");
+            SignUpForm admin = new SignUpForm("admin", "123456", "5147887884", "admin");
+
 
             authentificationService.registerUser(client);
             authentificationService.registerUser(guest);
             authentificationService.registerUser(owner);
             authentificationService.registerUser(cook);
             authentificationService.registerUser(waiter);
+            authentificationService.registerUser(admin);
         }
 
         RestaurantDTO restaurantDTO = kitchenService.createRestaurant("owner@mail.com", "le monde chico", 5);
