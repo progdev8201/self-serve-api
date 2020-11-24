@@ -69,36 +69,53 @@ public class KitchenService {
     //todo clean code
     ///generate qrCode
     public RestaurantDTO createRestaurant(String ownerUsername, String restaurantName, int nombreDeTable) throws IOException, WriterException {
+        //find owner
         Owner owner = ownerRepository.findByUsername(ownerUsername).get();
+
+        //create
         Restaurant restaurant = new Restaurant();
+
+        // set restaurant
         restaurant.setName(restaurantName);
         restaurant.setRestaurentTables(new ArrayList<>());
 
+        //add tables to restaurant
         for (int i = 0; i < nombreDeTable; i++)
             restaurant.getRestaurentTables().add(createTable(i, restaurant));
 
-        //add menu to restaurant
+        //create menu
         Menu menu = new Menu();
+
+        //bind menu to restaurant
         menu.setRestaurant(restaurant);
         restaurant.setMenu(menu);
 
+        //save restaurant
         restaurant = restaurantRepository.save(restaurant);
+
+        //create new restaurant list if list is null
         if (Objects.isNull(owner.getRestaurantList())) {
             owner.setRestaurantList(new ArrayList<>());
         }
+
+        // bind restaurant to owner
         restaurant.setOwner(owner);
-
-
         owner.getRestaurantList().add(restaurant);
+
+        // save owner
         owner = ownerRepository.save(owner);
 
+        //find saved restaurant
         Restaurant savedRestaurant = owner.getRestaurantList().stream().filter(resto -> {
             if (resto.getName().contentEquals(restaurantName))
                 return true;
             return false;
         }).findFirst().get();
 
+        // map restaurant
         RestaurantDTO restaurantDTO = dtoUtils.mapRestaurantToRestaurantDTO(savedRestaurant);
+
+        //return restaurant
         return restaurantDTO;
     }
     public RestaurantDTO uploadLogo(MultipartFile file, long restaurantId) throws IOException {
