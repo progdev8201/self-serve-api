@@ -93,25 +93,51 @@ public class ProductService {
     }
 
     public void delete(Long id) {
+        // find all products
         List<Product> prod = productRepository.findAll();
+
+        // find one product
         Product product = productRepository.findById(id).get();
+
+        // find menu from product
         Menu menu = product.getMenu();
+
+        // find product to remove
         Product productToRemove = menu.getProducts().stream().filter(product1 -> product1.getId() == id).findFirst().get();
+
+        // remove product
         menu.getProducts().remove(productToRemove);
+
+        // save menu
         menu = menuRepository.save(menu);
+
+        // print size of products
         LOGGER.info(String.valueOf(prod.size()));
+
+        //find all order items
         product.getOrderItems().forEach(orderItem -> {
+            // remove orderitem from bill
             Bill bill = orderItem.getBill();
             bill.getOrderItems().remove(orderItem);
             orderItem.setBill(null);
             billRepository.save(bill);
         });
+
+        //remove menu from product
         product.setMenu(null);
+
+        // delete product
         productRepository.delete(product);
+
+        //find all products
         prod = productRepository.findAll();
+
+        //print product size
         LOGGER.info(String.valueOf(prod.size()));
 
     }
+
+    //todo remove all if in filter
 
     public List<ProductDTO> findMenuSpecials(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
