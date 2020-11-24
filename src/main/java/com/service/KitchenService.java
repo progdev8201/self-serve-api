@@ -57,6 +57,8 @@ public class KitchenService {
     private final String QR_CODE_FILE_TYPE = "QR Code";
     private final String RESTAURANT_LOGO_FILE_TYPE = "LOGO";
 
+    //PUBLIC METHODS
+
     public OrderItemDTO changeOrderItemStatus(OrderItemDTO orderItemDTO) {
         OrderItem orderItem = orderItemRepository.findById(orderItemDTO.getId()).get();
 
@@ -157,6 +159,8 @@ public class KitchenService {
 
         return returnValue;
     }
+
+    //PRIVATE METHODS
 
     private boolean isOrderItemToFetch(OrderItem orderItem) {
         return (orderItem.getOrderStatus() == ProgressStatus.READY) ||

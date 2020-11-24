@@ -1,7 +1,13 @@
 package com.service;
 
-import com.mapping.*;
-import com.model.dto.*;
+import com.mapping.BillToBillDTO;
+import com.mapping.CheckItemDTOCheckItem;
+import com.mapping.OptionDTOToOption;
+import com.mapping.ProductToOrderItems;
+import com.model.dto.BillDTO;
+import com.model.dto.CheckItemDTO;
+import com.model.dto.OptionDTO;
+import com.model.dto.ProductDTO;
 import com.model.entity.*;
 import com.model.enums.BillStatus;
 import com.model.enums.ProgressStatus;
@@ -51,10 +57,29 @@ public class ClientService {
         this.dtoUtils = dtoUtils;
     }
 
+    //PUBLIC METHODS
+
     public BillDTO initBill() {
         Bill bill = new Bill();
         billRepository.save(bill);
         return BillToBillDTO.instance.convert(bill);
+    }
+
+    public boolean makePayment(Long billId) {
+        Bill bill = billRepository.findById(billId).get();
+        if (Objects.nonNull(bill)) {
+            bill.setBillStatus(BillStatus.PAYED);
+            unlinkBillAndTable(bill);
+            if (Objects.nonNull(billRepository.save(bill))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public BillDTO fetchBill(Long billId) {
+        Bill bill = billRepository.findById(billId).get();
+        return dtoUtils.mapBillToBillDTOWithOrderItems(bill);
     }
 
     public BillDTO makeOrder(ProductDTO productToAdd, String guestUsername, Long billId, Long restaurentTableId, String commentaire) {
@@ -68,6 +93,8 @@ public class ClientService {
 
         return dtoUtils.mapBillToBillDTOWithOrderItems(bill);
     }
+
+    // PRIVATE METHODS
 
     private void addBillToValues(Long restaurantTableId, Bill bill, List<OrderItem> orderItemList) {
         //find restaurant table
@@ -133,28 +160,22 @@ public class ClientService {
         return bill;
     }
 
-    public BillDTO fetchBill(Long billId) {
-        Bill bill = billRepository.findById(billId).get();
-        return dtoUtils.mapBillToBillDTOWithOrderItems(bill);
-    }
-
-
     private List<OrderItem> initOrderItems(ProductDTO productToAdd, String commentaire) {
         List<OrderItem> orderItems = new ArrayList<>();
         /**aller creer order item en fonction du produit**/
         Product product = productRepository.findById(productToAdd.getId()).get();
-        OrderItem orderItem = initOrderItem(productToAdd,commentaire,product);
+        OrderItem orderItem = initOrderItem(productToAdd, commentaire, product);
 
         linkOrderItemAndProduct(orderItems, product, orderItem);
 
         return orderItems;
     }
 
-    private OrderItem initOrderItem(ProductDTO productToAdd,String commentaire, Product product) {
+    private OrderItem initOrderItem(ProductDTO productToAdd, String commentaire, Product product) {
         OrderItem orderItem = createOrderItemFromProduct(productToAdd, commentaire, product);
         addCheckItemToOrderItemPrice(orderItem, orderItem.getCheckItems());
         setOrderItemOptions(productToAdd, orderItem);
-        return  orderItem;
+        return orderItem;
     }
 
     private void linkOrderItemAndProduct(List<OrderItem> orderItems, Product product, OrderItem orderItem) {
@@ -236,17 +257,6 @@ public class ClientService {
         return list;
     }
 
-    public boolean makePayment(Long billId) {
-        Bill bill = billRepository.findById(billId).get();
-        if (Objects.nonNull(bill)) {
-            bill.setBillStatus(BillStatus.PAYED);
-            unlinkBillAndTable(bill);
-            if (Objects.nonNull(billRepository.save(bill))) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     private void unlinkBillAndTable(Bill bill) {
         restaurentTableService.deleteBillFromTable(bill);
