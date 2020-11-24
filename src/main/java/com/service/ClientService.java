@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -57,32 +58,29 @@ public class ClientService {
     }
 
     public BillDTO makeOrder(ProductDTO productToAdd, String guestUsername, Long billId, Long restaurentTableId, String commentaire) {
-        Bill bill = findBill(billId);
-        List<OrderItem> orderItemList = findOrderItemsInDb(productToAdd, bill, commentaire);
+        List<OrderItem> orderItemList = initOrderItems(productToAdd,commentaire);
         Guest guest = guestRepository.findByUsername(guestUsername).get();
+
         //TODO:meilleur solution?? a voir mais il faut retrouver le restaurent pour l'associé au bill
         RestaurentTable restaurentTable = restaurentTableRepository.findById(restaurentTableId).get();
-        Restaurant restaurant = orderItemList.get(0).getProduct().getMenu().getRestaurant();
 
-        bill.setOrderCustomer(guest);
-        //
-        bill.setOrderItems(initEmptyList(bill.getOrderItems()));
-        bill.getOrderItems().addAll(orderItemList);
-        if (Objects.isNull(bill.getRestaurant())) {
-            bill.setRestaurant(restaurant);
-        }
-        bill.setBillStatus(BillStatus.PROGRESS);
-        restaurant.setBill(initEmptyList(restaurant.getBill()));
+        Restaurant restaurant = restaurentTable.getRestaurant();
+        Bill bill = initBill(billId, orderItemList, guest, restaurant);
+
         if (!isBillInStream(restaurentTable.getBills().stream(), billId)) {
-            bill.setRestaurentTable(restaurentTable);
             restaurentTable.getBills().add(bill);
+            bill.setRestaurentTable(restaurentTable);
         }
+        restaurant.setBill(initEmptyList(restaurant.getBill()));
         if (!isBillInStream(restaurant.getBill().stream(), billId)) {
             if (Objects.isNull(restaurant.getBill())) {
                 restaurant.setBill(new ArrayList<>());
             }
             restaurant.getBill().add(bill);
         }
+        orderItemList.forEach(orderItem -> {
+            orderItem.setBill(bill);
+        });
         restaurant = restaurantRepository.save(restaurant);
         //TODO notify kitchen
         //set valeur retour
@@ -91,37 +89,70 @@ public class ClientService {
         return returnValue;
     }
 
+    private Bill initBill(Long billId, List<OrderItem> orderItemList, Guest guest, Restaurant restaurant) {
+        Bill bill = findBill(billId);
+
+        bill.setOrderCustomer(guest);
+        bill.setOrderItems(initEmptyList(bill.getOrderItems()));
+        bill.setPrixTotal(bill.getPrixTotal()+calculerPriceBill(orderItemList));
+        bill.getOrderItems().addAll(orderItemList);
+
+        if (Objects.isNull(bill.getRestaurant())) {
+            bill.setRestaurant(restaurant);
+        }
+        bill.setBillStatus(BillStatus.PROGRESS);
+        return bill;
+    }
+
     public BillDTO fetchBill(Long billId) {
         Bill bill = billRepository.findById(billId).get();
         return dtoUtils.mapBillToBillDTOWithOrderItems(bill);
     }
 
 
-    private List<OrderItem> findOrderItemsInDb(ProductDTO productToAdd, Bill bill, String commentaire) {
+    private List<OrderItem> initOrderItems(ProductDTO productToAdd, String commentaire) {
         List<OrderItem> orderItems = new ArrayList<>();
+        /**aller creer order item en fonction du produit**/
         Product product = productRepository.findById(productToAdd.getId()).get();
+        OrderItem orderItem = createOrderItemFromProduct(productToAdd,  commentaire, product);
 
+        addCheckItemPrice(orderItem, orderItem.getCheckItems());
+        setOrderItemOptions(productToAdd, orderItem);
+
+        orderItems.add(orderItem);
+        product.setOrderItems(initEmptyList(product.getOrderItems()));
+        product.getOrderItems().addAll(orderItems);
+
+        productRepository.save(product);
+        return orderItems;
+    }
+
+    private double calculerPriceBill(List<OrderItem> orderItems) {
+        return orderItems.stream()
+                .map(OrderItem::getPrix)
+                .collect(Collectors.summarizingDouble(Double::doubleValue))
+                .getSum();
+    }
+
+    private OrderItem createOrderItemFromProduct(ProductDTO productToAdd,  String commentaire, Product product) {
         OrderItem orderItem = ProductToOrderItems.instance.convert(product);
         orderItem.setProduct(product);
         orderItem.setOrderStatus(ProgressStatus.PROGRESS);
-        Date dateCommandeFini = new Date(System.currentTimeMillis() + (product.getTempsDePreparation()) * 60000);
+
+        Date dateCommandeFini = setDatePreparation(product.getTempsDePreparation());
+
+        orderItem.setProduct(product);
         orderItem.setTempsDePreparation(dateCommandeFini);
-        orderItem.setBill(bill);
         orderItem.setDelaiDePreparation(LocalDateTime.now().minusMinutes(product.getTempsDePreparation()));
         orderItem.setCommentaires(commentaire);
         orderItem.setOption(new ArrayList<>());
         orderItem.setCheckItems(setUpCheckItems(productToAdd.getCheckItems()));
-        addCheckItemPrice(orderItem,orderItem.getCheckItems());
-        setOrderItemOptions(productToAdd, orderItem);
-        orderItems.add(orderItem);
-        orderItem = orderItemRepository.save(orderItem);
-        product.setOrderItems(initEmptyList(product.getOrderItems()));
-        product.getOrderItems().add(orderItem);
-        productRepository.save(product);
+        return orderItem;
+    }
 
-        bill.setPrixTotal(bill.getPrixTotal() + orderItem.getPrix());
-
-        return orderItems;
+    private Date setDatePreparation(int tempsPrepatarion) {
+        Date dateCommandeFini = new Date(System.currentTimeMillis() + (tempsPrepatarion) * 60000);
+        return dateCommandeFini;
     }
 
     private void setOrderItemOptions(ProductDTO productToAdd, OrderItem orderItem) {
@@ -158,8 +189,7 @@ public class ClientService {
         Bill bill = null;
         if (Objects.nonNull(billId)) {
             bill = billRepository.findById(billId).get();
-        }
-        if (Objects.isNull(bill)) {
+        } else if (Objects.isNull(bill)) {
             bill = new Bill();
             bill = billRepository.save(bill);
         }
