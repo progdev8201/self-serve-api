@@ -95,9 +95,6 @@ public class ProductService {
     }
 
     public void delete(Long id) {
-        // find all products
-        List<Product> prod = productRepository.findAll();
-
         // find one product
         Product product = productRepository.findById(id).get();
 
@@ -111,11 +108,9 @@ public class ProductService {
         menu.getProducts().remove(productToRemove);
 
         // save menu
-        menu = menuRepository.save(menu);
+        menuRepository.save(menu);
 
-        // print size of products
-        LOGGER.info(String.valueOf(prod.size()));
-
+        //todo a retirer? on voudrai pas garder cette info pour des stats?
         //find all order items
         product.getOrderItems().forEach(orderItem -> {
             // remove orderitem from bill
@@ -130,12 +125,6 @@ public class ProductService {
 
         // delete product
         productRepository.delete(product);
-
-        //find all products
-        prod = productRepository.findAll();
-
-        //print product size
-        LOGGER.info(String.valueOf(prod.size()));
 
     }
 
