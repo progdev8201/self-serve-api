@@ -1,6 +1,5 @@
 package com.service;
 
-import com.mapping.*;
 import com.model.dto.MenuDTO;
 import com.model.dto.ProductDTO;
 import com.model.entity.*;
@@ -10,7 +9,8 @@ import com.repository.BillRepository;
 import com.repository.ImgFileRepository;
 import com.repository.MenuRepository;
 import com.repository.ProductRepository;
-import com.service.DtoUtil.DTOUtils;
+import com.service.Util.DTOUtils;
+import com.service.Util.ImgFileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,12 +179,9 @@ public class ProductService {
 
     public List<ProductDTO> findMenuChoixDuChef(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getProducts().stream().filter(r -> {
-            if (r.getProductType() == ProductType.CHEFCHOICE) {
-                return true;
-            }
-            return false;
-        }).collect(Collectors.toList());
+        List<Product> productList = menu.getProducts().stream().filter(r ->
+                r.getProductType() == ProductType.CHEFCHOICE
+        ).collect(Collectors.toList());
         return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
@@ -219,15 +216,9 @@ public class ProductService {
     public ProductDTO uploadFile(MultipartFile file, long productId) throws IOException {
         Product product = productRepository.findById(productId).get();
 
-        ImgFile img = new ImgFile();
-        img.setFileType(file.getContentType());
-        img.setFileName(StringUtils.cleanPath(file.getOriginalFilename()));
-        img.setData(file.getBytes());
+        product.setImgFile(imgFileRepository.save(ImgFileUtils.createImgFile(file, StringUtils.cleanPath(file.getOriginalFilename()), file.getContentType())));
 
-        product.setImgFile(imgFileRepository.save(img));
-        product = productRepository.save(product);
-
-        return dtoUtils.mapProductToProductDTO(product);
+        return dtoUtils.mapProductToProductDTO(productRepository.save(product));
     }
 
     public byte[] returnImgAsByteArrayString(Long id) {

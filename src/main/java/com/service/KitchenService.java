@@ -13,7 +13,8 @@ import com.model.entity.*;
 import com.model.enums.ProductType;
 import com.model.enums.ProgressStatus;
 import com.repository.*;
-import com.service.DtoUtil.DTOUtils;
+import com.service.Util.DTOUtils;
+import com.service.Util.ImgFileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -81,7 +82,7 @@ public class KitchenService {
     public RestaurantDTO uploadLogo(MultipartFile file, long restaurantId) throws IOException {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
 
-        ImgFile img = createImgFile(file, StringUtils.cleanPath(file.getOriginalFilename()), RESTAURANT_LOGO_FILE_TYPE);
+        ImgFile img = ImgFileUtils.createImgFile(file, StringUtils.cleanPath(file.getOriginalFilename()), RESTAURANT_LOGO_FILE_TYPE);
 
         restaurant.setImgFile(imgFileRepository.save(img));
 
@@ -177,24 +178,11 @@ public class KitchenService {
         return restaurant;
     }
 
-    private ImgFile createImgFile(MultipartFile file, String filename, String fileType) throws IOException {
-        ImgFile img = createImgFile(file.getBytes(), fileType);
-        img.setFileName(filename);
-        return img;
-    }
-
-    private ImgFile createImgFile(byte[] bytes, String fileType) throws IOException {
-        ImgFile imgFile = new ImgFile();
-        imgFile.setFileType(fileType);
-        imgFile.setData(bytes);
-        return imgFile;
-    }
-
     private RestaurentTable createTable(int tableNumber, Restaurant restaurant) throws WriterException, IOException {
         RestaurentTable restaurentTable = new RestaurentTable();
         restaurentTable.setTableNumber(tableNumber);
         restaurentTable.setRestaurant(restaurant);
-        ImgFile imgFile = createImgFile(generateQRCode(frontEndUrl, Integer.toString(restaurentTable.getTableNumber())), QR_CODE_FILE_TYPE);
+        ImgFile imgFile =ImgFileUtils.createImgFile(generateQRCode(frontEndUrl, Integer.toString(restaurentTable.getTableNumber())), QR_CODE_FILE_TYPE);
         restaurentTable.setImgFile(imgFile);
         return restaurentTable;
     }

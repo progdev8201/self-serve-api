@@ -1,4 +1,4 @@
-package com.service.DtoUtil;
+package com.service.Util;
 
 import com.mapping.*;
 import com.model.dto.*;

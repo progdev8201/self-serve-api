@@ -6,7 +6,7 @@ import com.model.entity.*;
 import com.repository.MenuRepository;
 import com.repository.OwnerRepository;
 import com.repository.ProductRepository;
-import com.service.DtoUtil.DTOUtils;
+import com.service.Util.DTOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
