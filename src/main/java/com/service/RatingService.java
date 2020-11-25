@@ -5,13 +5,12 @@ import com.model.entity.Product;
 import com.model.entity.Rate;
 import com.repository.ProductRepository;
 import com.repository.RateRepository;
-import com.service.DtoUtil.DTOUtils;
+import com.service.Util.DTOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 

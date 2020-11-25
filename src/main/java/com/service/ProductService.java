@@ -1,6 +1,5 @@
 package com.service;
 
-import com.mapping.*;
 import com.model.dto.MenuDTO;
 import com.model.dto.ProductDTO;
 import com.model.entity.*;
@@ -10,7 +9,8 @@ import com.repository.BillRepository;
 import com.repository.ImgFileRepository;
 import com.repository.MenuRepository;
 import com.repository.ProductRepository;
-import com.service.DtoUtil.DTOUtils;
+import com.service.Util.DTOUtils;
+import com.service.Util.ImgFileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,27 +75,26 @@ public class ProductService {
     public ProductDTO create(ProductDTO productDTO, Long menuId) {
 
         // convert product dto to a product
-        Product product = DTOUtils.mapProductDTOToProduct(productDTO,imgFileRepository);
-
-        Product finalProduct = productRepository.save(product);
+        Product product = DTOUtils.mapProductDTOToProduct(productDTO, imgFileRepository);
 
         menuRepository.findById(menuId).ifPresent(menu -> {
-            finalProduct.setMenu(menu);
-            menu.getProducts().add(finalProduct);
-            menu = menuRepository.save(menu);
+            linkMenuAndProduct(product, menu);
         });
 
         return DTOUtils.mapProductToProductDTO(product);
     }
 
+    private void linkMenuAndProduct(Product finalProduct, Menu menu) {
+        finalProduct.setMenu(menu);
+        menu.getProducts().add(finalProduct);
+        menuRepository.save(menu);
+    }
+
     public void update(ProductDTO productDTO) {
-        productRepository.save(DTOUtils.mapProductDTOToProduct(productDTO,imgFileRepository));
+        productRepository.save(DTOUtils.mapProductDTOToProduct(productDTO, imgFileRepository));
     }
 
     public void delete(Long id) {
-        // find all products
-        List<Product> prod = productRepository.findAll();
-
         // find one product
         Product product = productRepository.findById(id).get();
 
@@ -109,8 +108,9 @@ public class ProductService {
         menu.getProducts().remove(productToRemove);
 
         // save menu
-        menu = menuRepository.save(menu);
+        menuRepository.save(menu);
 
+        //todo a retirer? on voudrai pas garder cette info pour des stats?
         //find all order items
         product.getOrderItems().forEach(orderItem -> {
             // remove orderitem from bill
@@ -126,72 +126,51 @@ public class ProductService {
         // delete product
         productRepository.delete(product);
 
-        //find all products
-        prod = productRepository.findAll();
-
-        //print product size
-        LOGGER.info(String.valueOf(prod.size()));
-
     }
 
     //todo remove all if in filter
 
     public List<ProductDTO> findMenuSpecials(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getProducts().stream().filter(r -> {
-            if (r.getProductType() == ProductType.SPECIAL) {
-                return true;
-            }
-            return false;
-        }).collect(Collectors.toList());
+        List<Product> productList = menu.getProducts().stream().filter(r ->
+                r.getProductType() == ProductType.SPECIAL
+        ).collect(Collectors.toList());
         return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
     public List<ProductDTO> findMenuDinerProduct(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getProducts().stream().filter(r -> {
-            if (r.getProductMenuType() == ProductMenuType.DINER) {
-                return true;
-            }
-            return false;
-        }).collect(Collectors.toList());
+        List<Product> productList = menu.getProducts().stream().filter(r ->
+                r.getProductMenuType() == ProductMenuType.DINER
+        ).collect(Collectors.toList());
         return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
     public List<ProductDTO> findMenuDejeunerProduct(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getProducts().stream().filter(r -> {
-            if (r.getProductMenuType() == ProductMenuType.DEJEUNER) {
-                return true;
-            }
-            return false;
-        }).collect(Collectors.toList());
+        List<Product> productList = menu.getProducts().stream().filter(r ->
+                r.getProductMenuType() == ProductMenuType.DEJEUNER
+        ).collect(Collectors.toList());
         return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
     public List<ProductDTO> findMenuSouper(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getProducts().stream().filter(r -> {
-            if (r.getProductMenuType() == ProductMenuType.SOUPER) {
-                return true;
-            }
-            return false;
-        }).collect(Collectors.toList());
+        List<Product> productList = menu.getProducts().stream().filter(r ->
+                r.getProductMenuType() == ProductMenuType.SOUPER
+        ).collect(Collectors.toList());
         return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
     public List<ProductDTO> findMenuChoixDuChef(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getProducts().stream().filter(r -> {
-            if (r.getProductType() == ProductType.CHEFCHOICE) {
-                return true;
-            }
-            return false;
-        }).collect(Collectors.toList());
+        List<Product> productList = menu.getProducts().stream().filter(r ->
+                r.getProductType() == ProductType.CHEFCHOICE
+        ).collect(Collectors.toList());
         return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
@@ -201,7 +180,6 @@ public class ProductService {
         Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(ProductType.SPECIAL);
         ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
-        retour.setProductType(product.getProductType());
         return retour;
     }
 
@@ -210,9 +188,7 @@ public class ProductService {
     public ProductDTO removeProductType(ProductDTO productDTO) {
         Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(null);
-        product = productRepository.save(product);
         ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
-        retour.setProductType(product.getProductType());
         return retour;
     }
 
@@ -229,15 +205,9 @@ public class ProductService {
     public ProductDTO uploadFile(MultipartFile file, long productId) throws IOException {
         Product product = productRepository.findById(productId).get();
 
-        ImgFile img = new ImgFile();
-        img.setFileType(file.getContentType());
-        img.setFileName(StringUtils.cleanPath(file.getOriginalFilename()));
-        img.setData(file.getBytes());
+        product.setImgFile(imgFileRepository.save(ImgFileUtils.createImgFile(file, StringUtils.cleanPath(file.getOriginalFilename()), file.getContentType())));
 
-        product.setImgFile(imgFileRepository.save(img));
-        product = productRepository.save(product);
-
-        return dtoUtils.mapProductToProductDTO(product);
+        return dtoUtils.mapProductToProductDTO(productRepository.save(product));
     }
 
     public byte[] returnImgAsByteArrayString(Long id) {
