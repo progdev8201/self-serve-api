@@ -111,9 +111,6 @@ public class ProductService {
         // save menu
         menu = menuRepository.save(menu);
 
-        // print size of products
-        LOGGER.info(String.valueOf(prod.size()));
-
         //find all order items
         product.getOrderItems().forEach(orderItem -> {
             // remove orderitem from bill
