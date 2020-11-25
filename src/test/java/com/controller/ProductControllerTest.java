@@ -3,9 +3,9 @@ package com.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.JsonObject;
-import com.model.dto.BillDTO;
-import com.model.dto.MenuDTO;
-import com.model.dto.ProductDTO;
+import com.model.dto.*;
+import com.model.entity.CheckItem;
+import com.model.entity.Option;
 import com.model.entity.Product;
 import com.model.enums.ProductType;
 import com.repository.MenuRepository;
@@ -25,6 +25,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,14 +78,6 @@ class ProductControllerTest {
         MenuDTO menuDTOResponse = mapper.readValue(result.getResponse().getContentAsString(), MenuDTO.class);
 
         assertEquals(ProductType.SPECIAL, menuDTOResponse.getProducts().get(0).getProductType());
-    }
-
-    private ProductDTO initProductDTO() {
-        ProductDTO productDTO = new ProductDTO();
-        productDTO.setId(1L);
-        productDTO.setPrix(39.99);
-        productDTO.setName("killua");
-        return productDTO;
     }
 
     @Test
@@ -327,12 +320,26 @@ class ProductControllerTest {
         }
     }
 
-
     private MockMvc initMockMvc(){
         return MockMvcBuilders.standaloneSetup(productController).build();
     }
+
     private MockMvc initMockMvcMenuController(){
         return MockMvcBuilders.standaloneSetup(menuController).build();
     }
 
+    private ProductDTO initProductDTO() {
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setId(1L);
+        productDTO.setPrix(39.99);
+        productDTO.setName("killua");
+        productDTO.setCheckItems(new ArrayList<>());
+        productDTO.getCheckItems().add(new CheckItemDTO());
+        productDTO.setOptions(new ArrayList<>());
+        OptionDTO option = new OptionDTO();
+        option.setCheckItemList(new ArrayList<>());
+        option.getCheckItemList().add(new CheckItemDTO());
+        productDTO.getOptions().add(option);
+        return productDTO;
+    }
 }

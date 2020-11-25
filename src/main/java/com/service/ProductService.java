@@ -75,21 +75,23 @@ public class ProductService {
     public ProductDTO create(ProductDTO productDTO, Long menuId) {
 
         // convert product dto to a product
-        Product product = DTOUtils.mapProductDTOToProduct(productDTO,imgFileRepository);
-
-        Product finalProduct = productRepository.save(product);
+        Product product = DTOUtils.mapProductDTOToProduct(productDTO, imgFileRepository);
 
         menuRepository.findById(menuId).ifPresent(menu -> {
-            finalProduct.setMenu(menu);
-            menu.getProducts().add(finalProduct);
-            menu = menuRepository.save(menu);
+            linkMenuAndProduct(product, menu);
         });
 
         return DTOUtils.mapProductToProductDTO(product);
     }
 
+    private void linkMenuAndProduct(Product finalProduct, Menu menu) {
+        finalProduct.setMenu(menu);
+        menu.getProducts().add(finalProduct);
+        menuRepository.save(menu);
+    }
+
     public void update(ProductDTO productDTO) {
-        productRepository.save(DTOUtils.mapProductDTOToProduct(productDTO,imgFileRepository));
+        productRepository.save(DTOUtils.mapProductDTOToProduct(productDTO, imgFileRepository));
     }
 
     public void delete(Long id) {
@@ -141,48 +143,36 @@ public class ProductService {
 
     public List<ProductDTO> findMenuSpecials(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getProducts().stream().filter(r -> {
-            if (r.getProductType() == ProductType.SPECIAL) {
-                return true;
-            }
-            return false;
-        }).collect(Collectors.toList());
+        List<Product> productList = menu.getProducts().stream().filter(r ->
+                r.getProductType() == ProductType.SPECIAL
+        ).collect(Collectors.toList());
         return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
     public List<ProductDTO> findMenuDinerProduct(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getProducts().stream().filter(r -> {
-            if (r.getProductMenuType() == ProductMenuType.DINER) {
-                return true;
-            }
-            return false;
-        }).collect(Collectors.toList());
+        List<Product> productList = menu.getProducts().stream().filter(r ->
+                r.getProductMenuType() == ProductMenuType.DINER
+        ).collect(Collectors.toList());
         return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
     public List<ProductDTO> findMenuDejeunerProduct(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getProducts().stream().filter(r -> {
-            if (r.getProductMenuType() == ProductMenuType.DEJEUNER) {
-                return true;
-            }
-            return false;
-        }).collect(Collectors.toList());
+        List<Product> productList = menu.getProducts().stream().filter(r ->
+                r.getProductMenuType() == ProductMenuType.DEJEUNER
+        ).collect(Collectors.toList());
         return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
 
     public List<ProductDTO> findMenuSouper(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getProducts().stream().filter(r -> {
-            if (r.getProductMenuType() == ProductMenuType.SOUPER) {
-                return true;
-            }
-            return false;
-        }).collect(Collectors.toList());
+        List<Product> productList = menu.getProducts().stream().filter(r ->
+                r.getProductMenuType() == ProductMenuType.SOUPER
+        ).collect(Collectors.toList());
         return dtoUtils.mapProductListToProductDTOList(productList);
 
     }
@@ -204,7 +194,6 @@ public class ProductService {
         Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(ProductType.SPECIAL);
         ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
-        retour.setProductType(product.getProductType());
         return retour;
     }
 
@@ -213,9 +202,7 @@ public class ProductService {
     public ProductDTO removeProductType(ProductDTO productDTO) {
         Product product = productRepository.findById(productDTO.getId()).get();
         product.setProductType(null);
-        product = productRepository.save(product);
         ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
-        retour.setProductType(product.getProductType());
         return retour;
     }
 

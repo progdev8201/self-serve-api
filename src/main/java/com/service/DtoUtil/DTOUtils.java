@@ -4,6 +4,7 @@ import com.mapping.*;
 import com.model.dto.*;
 import com.model.entity.*;
 import com.repository.ImgFileRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,6 +14,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class DTOUtils {
+    @Autowired
+    private ImgFileRepository imgFileRepository;
 
     //BILL DTO UTILS
 
