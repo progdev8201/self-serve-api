@@ -1,10 +1,6 @@
 server:
   port: 8081
 spring:
-  h2:
-    console:
-      enabled: true
-      path: /h2
   datasource:
     url: jdbc:mysql://database-free-dev.cfyl0usqef7r.us-east-2.rds.amazonaws.com:3306/selfserve
     username: admin
