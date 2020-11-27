@@ -1,5 +1,6 @@
 package com.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.gson.JsonObject;
@@ -9,6 +10,7 @@ import com.model.entity.Option;
 import com.model.entity.Product;
 import com.model.enums.ProductType;
 import com.repository.MenuRepository;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +81,34 @@ class ProductControllerTest {
 
         assertEquals(ProductType.SPECIAL, menuDTOResponse.getProducts().get(0).getProductType());
     }
+   /* @Test
+    public void findAllProductFromMenu() throws Exception {
+        MockMvc mvc = initMockMvc();
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/product/menu/{id}","1").
+                            contentType(MediaType.APPLICATION_JSON).
+                            accept(MediaType.APPLICATION_JSON)).
+                            andExpect(status().isOk()).
+                            andReturn();
+        ObjectMapper mapper=new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        List<ProductDTO> productDTOS = mapper.readValue(result.getResponse().getContentAsString(),List.class);
+        assertEquals(15,productDTOS.size());
+
+    }
+
+    @Test
+    public void findProductById() throws Exception {
+        MockMvc mvc = initMockMvc();
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/product/{id}","1").
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        ObjectMapper mapper=new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        ProductDTO productDTO = mapper.readValue(result.getResponse().getContentAsString(),ProductDTO.class);
+        assertNotNull(productDTO);
+    }*/
 
     @Test
     public void testFetchMenuWaiterRequest() throws Exception {
@@ -166,6 +196,30 @@ class ProductControllerTest {
         MenuDTO menuDTOResponse = mapper.readValue(result.getResponse().getContentAsString(), MenuDTO.class);
 
         assertEquals(ProductType.CHEFCHOICE, menuDTOResponse.getProducts().get(0).getProductType());
+    }
+
+    @Test
+    public void testCreateProduct() throws Exception {
+        MockMvc mvc= initMockMvc();
+        ProductDTO productDTO = initProductDTONoId();
+        ObjectMapper objectMapper =new ObjectMapper();
+
+
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("productDTO",objectMapper.writeValueAsString(productDTO));
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/product/{menuId}","1").
+                            content(objectMapper.writeValueAsString(productDTO)).
+                            contentType(MediaType.APPLICATION_JSON).
+                            accept(MediaType.APPLICATION_JSON)).
+                            andExpect(status().isOk()).
+                            andReturn();
+        ProductDTO returnValue = objectMapper.readValue(result.getResponse().getContentAsString(),ProductDTO.class);
+        assertEquals("killua",returnValue.getName());
+        assertEquals(39.99,returnValue.getPrix());
+        assertEquals(1,productDTO.getCheckItems().size());
+        assertEquals(1,productDTO.getOptions().size());
+
     }
 
     @Test
@@ -329,8 +383,13 @@ class ProductControllerTest {
     }
 
     private ProductDTO initProductDTO() {
-        ProductDTO productDTO = new ProductDTO();
+        ProductDTO productDTO = initProductDTONoId();
         productDTO.setId(1L);
+
+        return productDTO;
+    }
+    private ProductDTO initProductDTONoId() {
+        ProductDTO productDTO = new ProductDTO();
         productDTO.setPrix(39.99);
         productDTO.setName("killua");
         productDTO.setCheckItems(new ArrayList<>());
@@ -340,6 +399,8 @@ class ProductControllerTest {
         option.setCheckItemList(new ArrayList<>());
         option.getCheckItemList().add(new CheckItemDTO());
         productDTO.getOptions().add(option);
+        productDTO.setCheckItems(new ArrayList<>());
+        productDTO.getCheckItems().add(new CheckItemDTO());
         return productDTO;
     }
 }

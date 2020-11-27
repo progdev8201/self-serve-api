@@ -11,7 +11,7 @@ public class Menu implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(cascade ={CascadeType.PERSIST})
     private List<Product> products;
 
     @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
