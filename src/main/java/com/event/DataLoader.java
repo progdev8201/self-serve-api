@@ -206,6 +206,17 @@ public class DataLoader implements CommandLineRunner {
         RestaurentTable restaurentTable = new RestaurentTable();
         restaurant.setRestaurentTables(new ArrayList<>());
         restaurant.getRestaurentTables().add(restaurentTable);
+        restaurantRepository.save(restaurant);
+        //restaurant + menu pour ajout/delete de produit
+
+        restaurant = new Restaurant();
+        product = createProduct(ProductMenuType.SOUPER, null, "download.jpg");
+        restaurant.setMenu(new Menu());
+        product.setMenu(restaurant.getMenu());
+        orderItem = createOrderItem(ProgressStatus.PROGRESS, ProductType.WAITERREQUEST, product);
+        orderItem.setBill(bill);
+        product.setOrderItems(Collections.singletonList(orderItem));
+        restaurant.getMenu().setProducts(Collections.singletonList(product));
 
         restaurantRepository.save(restaurant);
         System.out.println("APPLICATION IS READY!!!");

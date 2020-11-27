@@ -51,12 +51,15 @@ public class ProductService {
 
 
     //todo this method needs to go
-    public Product find(Long id) {
-        return productRepository.findById(id).get();
+    public ProductDTO find(Long id) {
+        return DTOUtils.mapProductToProductDTO(productRepository.findById(id).get());
     }
 
-    public List<Product> findAllProductFromMenu(Long id) {
-        return menuRepository.findById(id).get().getProducts();
+    public List<ProductDTO> findAllProductFromMenu(Long id) {
+        List<Product> productList = menuRepository.findById(id).get().getProducts();
+        return productList.stream().
+                map(DTOUtils::mapProductToProductDTO).
+                collect(Collectors.toList());
     }
 
     public List<ProductDTO> findAllWaiterRequestProductFromMenu(Long id) {
