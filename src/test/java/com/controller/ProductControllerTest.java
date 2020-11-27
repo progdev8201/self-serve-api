@@ -81,7 +81,7 @@ class ProductControllerTest {
 
         assertEquals(ProductType.SPECIAL, menuDTOResponse.getProducts().get(0).getProductType());
     }
-   /* @Test
+    @Test
     public void findAllProductFromMenu() throws Exception {
         MockMvc mvc = initMockMvc();
         MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/product/menu/{id}","1").
@@ -93,7 +93,6 @@ class ProductControllerTest {
         mapper.registerModule(new JavaTimeModule());
         List<ProductDTO> productDTOS = mapper.readValue(result.getResponse().getContentAsString(),List.class);
         assertEquals(15,productDTOS.size());
-
     }
 
     @Test
@@ -108,7 +107,7 @@ class ProductControllerTest {
         mapper.registerModule(new JavaTimeModule());
         ProductDTO productDTO = mapper.readValue(result.getResponse().getContentAsString(),ProductDTO.class);
         assertNotNull(productDTO);
-    }*/
+    }
 
     @Test
     public void testFetchMenuWaiterRequest() throws Exception {
@@ -160,7 +159,17 @@ class ProductControllerTest {
 
         assertEquals(null, menuDTOResponse.getProducts().get(1).getProductType());
     }
+    @Test
+    public void deleteProduct() throws Exception {
+        MockMvc mvc = initMockMvc();
 
+        MvcResult result= mvc.perform(MockMvcRequestBuilders.delete(   "/product/{id}","16").
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+
+    }
     @Test
     public void testSetChoixChefPourProduit() throws Exception {
         MockMvc mvc = initMockMvc();
@@ -207,8 +216,8 @@ class ProductControllerTest {
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("productDTO",objectMapper.writeValueAsString(productDTO));
-
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/product/{menuId}","1").
+        //on utilise un menu different pour pas que ca interfere avk les autres tests
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/product/{menuId}","2").
                             content(objectMapper.writeValueAsString(productDTO)).
                             contentType(MediaType.APPLICATION_JSON).
                             accept(MediaType.APPLICATION_JSON)).
