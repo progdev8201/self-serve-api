@@ -40,12 +40,12 @@ public class ProductController {
     //GET MAPPING
 
     @GetMapping("/{id}")
-    public Product find(@PathVariable Long id) {
+    public ProductDTO find(@PathVariable Long id) {
         return productService.find(id);
     }
 
     @GetMapping("/menu/{id}")
-    public List<Product> findAllProductFromMenu(@PathVariable Long id) {
+    public List<ProductDTO> findAllProductFromMenu(@PathVariable Long id) {
         return productService.findAllProductFromMenu(id);
     }
 
