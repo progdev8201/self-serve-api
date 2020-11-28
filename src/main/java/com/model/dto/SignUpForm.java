@@ -25,6 +25,9 @@ public class SignUpForm {
         this.adresse = "";
     }
 
+    public SignUpForm() {
+    }
+
     public String getTelephone() {
         return telephone;
     }
