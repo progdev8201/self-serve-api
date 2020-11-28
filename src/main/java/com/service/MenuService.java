@@ -87,15 +87,6 @@ public class MenuService {
         return products;
     }
 
-    private MenuDTO returnMenu(Menu menu) {
-        MenuDTO returnValue = MenuToMenuDTO.instance.convert(menuRepository.save(menu));
-        returnValue.setSpeciaux(new ArrayList<>());
-        for (Product special : menu.getSpeciaux()) {
-            returnValue.getSpeciaux().add(ProductToProductDTO.instance.convert(special));
-            returnValue.setSpeciaux(returnValue.getSpeciaux());
-        }
-        return returnValue;
-    }
 
     public List<RestaurantSelectionDTO> findAllRestaurantName(String ownerUsername){
         List<RestaurantSelectionDTO> restaurantSelectionDTOS = new ArrayList<>();

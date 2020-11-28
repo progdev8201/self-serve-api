@@ -1,10 +1,9 @@
 package com.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.model.dto.BillDTO;
-import com.model.dto.MenuDTO;
-import com.model.dto.RestaurantSelectionDTO;
+import com.model.dto.*;
 import com.service.ClientService;
 import com.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +22,10 @@ public class MenuController {
 
     @PostMapping("/changeFeatured")
     public ResponseEntity<MenuDTO> changeFeatured (@RequestBody Map<String, String> json) throws JsonProcessingException {
-        MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menu"),MenuDTO.class);
-        return ResponseEntity.ok(menuService.createSpecial(menuDTO,menuDTO.getProducts()));
+        ObjectMapper mapper = new ObjectMapper();
+        MenuDTO menuDTO = mapper.readValue(json.get("menuDTO"),MenuDTO.class);
+        List<ProductDTO> productDTOS = mapper.readValue(json.get("productDTOList"), new TypeReference<List<ProductDTO>>(){});
+        return ResponseEntity.ok(menuService.createSpecial(menuDTO,productDTOS));
     }
 
     @PostMapping("/removeFeatured")
