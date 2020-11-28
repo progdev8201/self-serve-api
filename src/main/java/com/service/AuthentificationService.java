@@ -65,7 +65,7 @@ public class AuthentificationService {
             return ResponseEntity.ok(new JwtResponse(token));
         }
 
-        return null;
+        return new ResponseEntity<JwtResponse>(HttpStatus.BAD_REQUEST);
     }
 
     public ResponseEntity<OwnerDTO> fetchOwner(OwnerDTO ownerDTO) {
@@ -90,14 +90,12 @@ public class AuthentificationService {
     private boolean createEntityBasedOnRoles(SignUpForm user) {
         Optional<RoleName> roleName = lookupRoleNameByName(user.getRole());
 
-        if (!roleName.isPresent()) {
+        if (!roleName.isPresent())
             return false;
-        }
 
         switch (roleName.get()) {
             case ROLE_CLIENT:
                 adminRepository.save(new Client(user.getUsername(), encoder.encode(user.getPassword()), user.getTelephone(), RoleName.ROLE_CLIENT.toString()));
-                // send email
                 LOGGER.info("I created a new client");
                 return true;
 
@@ -126,10 +124,9 @@ public class AuthentificationService {
                 return true;
 
             default:
-                break;
+                return false;
         }
 
-        return false;
     }
 
 }
