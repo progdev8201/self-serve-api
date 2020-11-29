@@ -21,6 +21,8 @@ public class SubscriptionEntityDTO implements Serializable {
 
     private String status;
 
+    private String latestInvoiceStatus;
+
     private OwnerDTO owner;
 
     private StripeSubscriptionProductsDTO stripeSubscriptionProducts;
@@ -105,5 +107,13 @@ public class SubscriptionEntityDTO implements Serializable {
 
     public void setOwner(OwnerDTO owner) {
         this.owner = owner;
+    }
+
+    public String getLatestInvoiceStatus() {
+        return latestInvoiceStatus;
+    }
+
+    public void setLatestInvoiceStatus(String latestInvoiceStatus) {
+        this.latestInvoiceStatus = latestInvoiceStatus;
     }
 }
