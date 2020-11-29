@@ -215,6 +215,7 @@ public class ClientService {
     private void setOrderItemOptions(ProductDTO productToAdd, OrderItem orderItem) {
         for (OptionDTO optionDTO : productToAdd.getOptions()) {
             Option option = OptionDTOToOption.instance.convert(optionDTO);
+            option.setId(null);
             option.setCheckItemList(setUpCheckItems(optionDTO.getCheckItemList()));
             addCheckItemToOrderItemPrice(orderItem, option.getCheckItemList());
             orderItem.getOption().add(option);
@@ -225,6 +226,7 @@ public class ClientService {
         List<CheckItem> checkItemList = new ArrayList<>();
         checkItemDTOS.forEach(checkItemDTO -> {
             CheckItem checkItem = CheckItemDTOCheckItem.instance.convert(checkItemDTO);
+            checkItem.setId(null);
             checkItemList.add(checkItem);
         });
         return checkItemList;
