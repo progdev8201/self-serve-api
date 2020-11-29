@@ -1,3 +1,5 @@
+hibernate:
+  dialect: org.hibernate.dialect.MySQL8Dialect
 server:
   port: 8081
 spring:
@@ -12,7 +14,7 @@ spring:
     driverClassName: com.mysql.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
   mail:
     host: smtp.gmail.com
     port: 587
