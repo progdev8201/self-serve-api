@@ -1,6 +1,6 @@
 package com.model.dto;
 
-public class CreateSubscriptionRequestDTO {
+public class SubscriptionRequestDTO {
     String customerId;
     String paymentMethodId;
     String priceId;

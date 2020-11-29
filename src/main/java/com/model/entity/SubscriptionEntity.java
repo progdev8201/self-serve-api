@@ -21,6 +21,8 @@ public class SubscriptionEntity implements Serializable {
 
     private String status;
 
+    private String latestInvoiceStatus;
+
     @ManyToOne
     private StripeSubscriptionProducts stripeSubscriptionProducts;
 
@@ -98,5 +100,13 @@ public class SubscriptionEntity implements Serializable {
 
     public void setOwner(Owner owner) {
         this.owner = owner;
+    }
+
+    public String getLatestInvoiceStatus() {
+        return latestInvoiceStatus;
+    }
+
+    public void setLatestInvoiceStatus(String latestInvoiceStatus) {
+        this.latestInvoiceStatus = latestInvoiceStatus;
     }
 }
