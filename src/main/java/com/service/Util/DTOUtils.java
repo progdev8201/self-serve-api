@@ -50,6 +50,16 @@ public class DTOUtils {
         return orderItemDTO;
     }
 
+    public MenuDTO mapMenuToMenuDTO(Menu menu) {
+        MenuDTO menuDTO = MenuToMenuDTO.instance.convert(menu);
+        menuDTO.setRestaurant(RestaurantToRestaurantDTO.instance.convert(menu.getRestaurant()));
+        menuDTO.setProducts(menu.getProducts()
+                .stream()
+                .map(product -> mapProductToProductDTO(product))
+                .collect(Collectors.toList()));
+        return menuDTO;
+    }
+
     private OptionDTO mapOptionToOptionDTOForBill(Option option) {
         OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
 
@@ -66,20 +76,7 @@ public class DTOUtils {
         return optionDTO;
     }
 
-    //MENU DTO UTILS
-
-    public MenuDTO generateMenuDTO(Menu menu) {
-        MenuDTO returnValue = MenuToMenuDTO.instance.convert(menu);
-        returnValue.setSpeciaux(new ArrayList<>());
-        for (Product special : menu.getSpeciaux()) {
-            returnValue.getSpeciaux().add(ProductToProductDTO.instance.convert(special));
-            returnValue.setSpeciaux(returnValue.getSpeciaux());
-        }
-        return returnValue;
-    }
-
     //PRODUCT DTO UTILS
-
     public static List<ProductDTO> mapProductListToProductDTOList(List<Product> products) {
         return products.stream()
                 .map(product -> mapProductToProductDTO(product))
@@ -199,6 +196,16 @@ public class DTOUtils {
                 .collect(Collectors.toList()));
 
         return restaurantDTO;
+    }
+
+    public RestaurantSelectionDTO mapRestaurantToRestaurantSelectionDTO(Restaurant restaurant) {
+        RestaurantSelectionDTO restaurantSelectionDTO = new RestaurantSelectionDTO();
+        restaurantSelectionDTO.setRestaurantId(restaurant.getId());
+        restaurantSelectionDTO.setRestaurantName(restaurant.getName());
+        restaurantSelectionDTO.setRestaurentTablesDTO(restaurant.getRestaurentTables().stream()
+                .map(restaurentTable -> RestaurentTableToRestaurenTableDTO.instance.convert(restaurentTable))
+                .collect(Collectors.toList()));
+        return restaurantSelectionDTO;
     }
 
 }

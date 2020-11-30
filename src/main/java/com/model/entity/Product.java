@@ -2,11 +2,10 @@ package com.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.model.enums.ProductMenuType;
-import com.model.enums.ProductType;
+import com.model.enums.MenuType;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -48,7 +47,7 @@ public class Product implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 60)
-    private ProductType productType;
+    private MenuType menuType;
 
 
     @Enumerated(EnumType.STRING)
@@ -56,7 +55,7 @@ public class Product implements Serializable {
     private ProductMenuType productMenuType;
 
 
-    public Product(long id, String name, String description, Menu menu, List<Option> options, List<OrderItem> orderItems, double prix, int tempsDePreparation, String imgUrl, ImgFile imgFile, List<Rate> rates, ProductType productType, ProductMenuType productMenuType) {
+    public Product(long id, String name, String description, Menu menu, List<Option> options, List<OrderItem> orderItems, double prix, int tempsDePreparation, String imgUrl, ImgFile imgFile, List<Rate> rates, MenuType menuType, ProductMenuType productMenuType) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -68,7 +67,7 @@ public class Product implements Serializable {
         this.imgUrl = imgUrl;
         this.imgFile = imgFile;
         this.rates = rates;
-        this.productType = productType;
+        this.menuType = menuType;
         this.productMenuType = productMenuType;
     }
 
@@ -179,11 +178,11 @@ public class Product implements Serializable {
         this.tempsDePreparation = tempsDePreparation;
     }
 
-    public ProductType getProductType() {
-        return productType;
+    public MenuType getProductType() {
+        return menuType;
     }
 
-    public void setProductType(ProductType productType) {
-        this.productType = productType;
+    public void setProductType(MenuType menuType) {
+        this.menuType = menuType;
     }
 }

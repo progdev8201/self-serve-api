@@ -1,5 +1,6 @@
 package com.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.zxing.*;
@@ -356,20 +357,17 @@ class KitchenRestControllerTest {
     }
 
     @Test
-    public void testfindMenuParRestaurantTable() throws Exception {
+    public void testfindRestaurantParRestaurantTable() throws Exception {
         MockMvc mvc = initMockMvc();
-        JSONObject sendObj = new JSONObject();
-        sendObj.put("restaurantTableId","1");
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/findMenuByRestaurantId").
-                content(sendObj.toString()).
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/rest/kitchen/findMenuByRestaurantId/{tableID}","1").
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        MenuDTO menuDTO = mapper.readValue(result.getResponse().getContentAsString(),MenuDTO.class);
-        assertEquals(1,menuDTO.getId());
+        RestaurantDTO restaurantDTO = mapper.readValue(result.getResponse().getContentAsString(), RestaurantDTO.class);
+        assertEquals(2,restaurantDTO.getId());
     }
 
     private MenuDTO createMenuDTO() {

@@ -1,14 +1,12 @@
 package com.service;
 
+import com.mapping.MenuToMenuDTO;
 import com.model.dto.MenuDTO;
 import com.model.dto.ProductDTO;
 import com.model.entity.*;
 import com.model.enums.ProductMenuType;
-import com.model.enums.ProductType;
-import com.repository.BillRepository;
-import com.repository.ImgFileRepository;
-import com.repository.MenuRepository;
-import com.repository.ProductRepository;
+import com.model.enums.MenuType;
+import com.repository.*;
 import com.service.Util.DTOUtils;
 import com.service.Util.ImgFileUtils;
 import org.slf4j.Logger;
@@ -41,6 +39,9 @@ public class ProductService {
     private BillRepository billRepository;
 
     @Autowired
+    private RestaurantRepository restaurantRepository;
+
+    @Autowired
     private DTOUtils dtoUtils;
 
 
@@ -62,15 +63,13 @@ public class ProductService {
                 collect(Collectors.toList());
     }
 
-    public List<ProductDTO> findAllWaiterRequestProductFromMenu(Long id) {
-        List<ProductDTO> productDTOS = new ArrayList<>();
-        menuRepository.findById(id).get().getProducts().stream().forEach(product -> {
-            if ((product.getProductType() == ProductType.WAITERREQUEST) || (product.getProductType() == ProductType.WAITERCALL)) {
-                productDTOS.add(dtoUtils.mapProductToProductDTO(product));
-            }
-        });
-
-        return productDTOS;
+    public MenuDTO findMenuWaiterRequest(Long id) {
+        Restaurant restaurant = restaurantRepository.findById(id).get();
+        return restaurant.getMenus()
+                .stream()
+                .filter(menu -> menu.getMenuType()==MenuType.WAITERREQUEST)
+                .map(menu -> dtoUtils.mapMenuToMenuDTO(menu))
+                .collect(Collectors.toList()).get(0);
     }
 
     //todo fix create and update method way too much repetition and code to interact with a simple entity  (clean code)
@@ -136,7 +135,7 @@ public class ProductService {
     public List<ProductDTO> findMenuSpecials(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
         List<Product> productList = menu.getProducts().stream().filter(r ->
-                r.getProductType() == ProductType.SPECIAL
+                r.getProductType() == MenuType.SPECIAL
         ).collect(Collectors.toList());
         return dtoUtils.mapProductListToProductDTOList(productList);
 
@@ -172,7 +171,7 @@ public class ProductService {
     public List<ProductDTO> findMenuChoixDuChef(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
         List<Product> productList = menu.getProducts().stream().filter(r ->
-                r.getProductType() == ProductType.CHEFCHOICE
+                r.getProductType() == MenuType.CHEFCHOICE
         ).collect(Collectors.toList());
         return dtoUtils.mapProductListToProductDTOList(productList);
 
@@ -181,7 +180,7 @@ public class ProductService {
     // todo ici dans la methode product dto on set deja le product type alors pk le reset
     public ProductDTO setProductSpecial(ProductDTO productDTO) {
         Product product = productRepository.findById(productDTO.getId()).get();
-        product.setProductType(ProductType.SPECIAL);
+        product.setProductType(MenuType.SPECIAL);
         ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
         return retour;
     }
@@ -198,7 +197,7 @@ public class ProductService {
     public ProductDTO setProductChefChoice(ProductDTO productDTO) {
 
         Product product = productRepository.findById(productDTO.getId()).get();
-        product.setProductType(ProductType.CHEFCHOICE);
+        product.setProductType(MenuType.CHEFCHOICE);
         ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
 
         retour.setProductType(product.getProductType());

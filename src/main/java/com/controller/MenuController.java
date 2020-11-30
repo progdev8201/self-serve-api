@@ -20,24 +20,10 @@ public class MenuController {
     @Autowired
     MenuService menuService;
 
-    @PostMapping("/changeFeatured")
-    public ResponseEntity<MenuDTO> changeFeatured (@RequestBody Map<String, String> json) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        MenuDTO menuDTO = mapper.readValue(json.get("menuDTO"),MenuDTO.class);
-        List<ProductDTO> productDTOS = mapper.readValue(json.get("productDTOList"), new TypeReference<List<ProductDTO>>(){});
-        return ResponseEntity.ok(menuService.createSpecial(menuDTO,productDTOS));
-    }
-
-    @PostMapping("/removeFeatured")
-    public ResponseEntity<MenuDTO> removeFeatured(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menu"),MenuDTO.class);
-        return ResponseEntity.ok(menuService.removeSpecial(menuDTO,menuDTO.getProducts()));
-    }
-
     @PostMapping("/getMenu")
-    public ResponseEntity<MenuDTO> getMenu(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        Long menuId = new ObjectMapper().readValue(json.get("menuId"),Long.class);
-        return ResponseEntity.ok(menuService.findMenu(menuId));
+    public ResponseEntity<List<MenuDTO>> getMenu(@RequestBody Map<String, String> json) throws JsonProcessingException {
+        Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
+        return ResponseEntity.ok(menuService.findAllMenuForRestaurants(restaurantId));
     }
 
     @GetMapping("/restaurantName/{ownerId}")

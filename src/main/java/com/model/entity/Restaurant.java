@@ -24,8 +24,8 @@ public class Restaurant implements Serializable {
     @OneToOne
     private CustomProprety customProprety;
 
-    @OneToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
-    private Menu menu;
+    @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Menu> menus;
 
     @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.REMOVE, CascadeType.MERGE})
     private ImgFile imgFile;
@@ -70,8 +70,12 @@ public class Restaurant implements Serializable {
         this.customProprety = customProprety;
     }
 
-    public Menu getMenu() {
-        return menu;
+    public List<Menu> getMenus() {
+        return menus;
+    }
+
+    public void setMenus(List<Menu> menu) {
+        this.menus = menu;
     }
 
     public ImgFile getImgFile() {
@@ -80,10 +84,6 @@ public class Restaurant implements Serializable {
 
     public void setImgFile(ImgFile imgFile) {
         this.imgFile = imgFile;
-    }
-
-    public void setMenu(Menu menu) {
-        this.menu = menu;
     }
 
     public List<RestaurentTable> getRestaurentTables() {

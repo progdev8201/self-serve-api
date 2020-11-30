@@ -1,10 +1,8 @@
 package com.model.dto;
 
-import com.model.entity.CheckItem;
-import com.model.enums.ProductType;
+import com.model.enums.MenuType;
 import com.model.enums.ProgressStatus;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -24,7 +22,7 @@ public class OrderItemDTO {
 
     private List <CheckItemDTO> checkItems;
 
-    private ProductType productType;
+    private MenuType menuType;
 
     private String commentaires;
 
@@ -96,12 +94,12 @@ public class OrderItemDTO {
         this.option = option;
     }
 
-    public ProductType getProductType() {
-        return productType;
+    public MenuType getProductType() {
+        return menuType;
     }
 
-    public void setProductType(ProductType productType) {
-        this.productType = productType;
+    public void setProductType(MenuType menuType) {
+        this.menuType = menuType;
     }
 
     public List<CheckItemDTO> getCheckItems() {

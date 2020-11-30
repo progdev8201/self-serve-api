@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.zxing.WriterException;
-import com.model.dto.MenuDTO;
 import com.model.dto.OrderItemDTO;
 import com.model.dto.RestaurantDTO;
 import com.model.dto.RestaurentTableDTO;
@@ -157,11 +156,9 @@ public class KitchenRestController {
         return ResponseEntity.ok(kitchenService.changeOrderItem(orderItemId, tempsAjoute));
     }
 
-    @PostMapping("/findMenuByRestaurantId")
-    public ResponseEntity<MenuDTO> findMenuByRestaurantId(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        Long restaurantIdDTO = mapper.readValue(json.get("restaurantTableId"), Long.class);
-        return ResponseEntity.ok(kitchenService.menuParRestaurantTable(restaurantIdDTO));
+    @GetMapping("/findMenuByRestaurantId/{tableID}")
+    public ResponseEntity<RestaurantDTO> findRestaurantByRestaurantId(@PathVariable long tableID){
+        return ResponseEntity.ok(kitchenService.findRestaurantByRestaurantTableId(tableID));
     }
 
 

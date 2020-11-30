@@ -1,5 +1,5 @@
 package com.model.entity;
-import com.model.enums.ProductType;
+import com.model.enums.MenuType;
 import com.model.enums.ProgressStatus;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -25,7 +25,7 @@ public class OrderItem implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 60)
-    private ProductType productType;
+    private MenuType menuType;
 
     @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.MERGE})
     private List <CheckItem> checkItems;
@@ -77,12 +77,12 @@ public class OrderItem implements Serializable {
         this.bill = bill;
     }
 
-    public ProductType getProductType() {
-        return productType;
+    public MenuType getProductType() {
+        return menuType;
     }
 
-    public void setProductType(ProductType productType) {
-        this.productType = productType;
+    public void setProductType(MenuType menuType) {
+        this.menuType = menuType;
     }
 
     public List<CheckItem> getCheckItems() {

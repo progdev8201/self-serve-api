@@ -1,7 +1,7 @@
 package com.model.dto;
 
 import com.model.enums.ProductMenuType;
-import com.model.enums.ProductType;
+import com.model.enums.MenuType;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class ProductDTO {
 
     private List<RateDTO> rates;
 
-    private ProductType productType;
+    private MenuType menuType;
 
     private ProductMenuType productMenuType;
 
@@ -67,12 +67,12 @@ public class ProductDTO {
         this.productMenuType = productMenuType;
     }
 
-    public ProductType getProductType() {
-        return productType;
+    public MenuType getProductType() {
+        return menuType;
     }
 
-    public void setProductType(ProductType productType) {
-        this.productType = productType;
+    public void setProductType(MenuType menuType) {
+        this.menuType = menuType;
     }
 
     public long getId() {
