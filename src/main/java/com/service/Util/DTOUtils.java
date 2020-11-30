@@ -205,6 +205,9 @@ public class DTOUtils {
         restaurantSelectionDTO.setRestaurentTablesDTO(restaurant.getRestaurentTables().stream()
                 .map(restaurentTable -> RestaurentTableToRestaurenTableDTO.instance.convert(restaurentTable))
                 .collect(Collectors.toList()));
+        restaurantSelectionDTO.setMenuDTOS(restaurant.getMenus().stream()
+                .map(menu -> mapMenuToMenuDTO(menu))
+                .collect(Collectors.toList()));
         return restaurantSelectionDTO;
     }
 

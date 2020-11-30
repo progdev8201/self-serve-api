@@ -39,10 +39,6 @@ public class MenuService {
     @Autowired
     DTOUtils dtoUtils;
 
-    @Autowired
-    public MenuService(MenuRepository menuRepository) {
-        this.menuRepository = menuRepository;
-    }
 
 
     public List<MenuDTO> findAllMenuForRestaurants(Long id) {

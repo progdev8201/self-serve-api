@@ -141,33 +141,6 @@ public class ProductService {
 
     }
 
-    public List<ProductDTO> findMenuDinerProduct(MenuDTO menuDTO) {
-        Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getProducts().stream().filter(r ->
-                r.getProductMenuType() == ProductMenuType.DINER
-        ).collect(Collectors.toList());
-        return dtoUtils.mapProductListToProductDTOList(productList);
-
-    }
-
-    public List<ProductDTO> findMenuDejeunerProduct(MenuDTO menuDTO) {
-        Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getProducts().stream().filter(r ->
-                r.getProductMenuType() == ProductMenuType.DEJEUNER
-        ).collect(Collectors.toList());
-        return dtoUtils.mapProductListToProductDTOList(productList);
-
-    }
-
-    public List<ProductDTO> findMenuSouper(MenuDTO menuDTO) {
-        Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getProducts().stream().filter(r ->
-                r.getProductMenuType() == ProductMenuType.SOUPER
-        ).collect(Collectors.toList());
-        return dtoUtils.mapProductListToProductDTOList(productList);
-
-    }
-
     public List<ProductDTO> findMenuChoixDuChef(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
         List<Product> productList = menu.getProducts().stream().filter(r ->
