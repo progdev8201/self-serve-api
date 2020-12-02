@@ -178,11 +178,11 @@ public class Product implements Serializable {
         this.tempsDePreparation = tempsDePreparation;
     }
 
-    public MenuType getProductType() {
+    public MenuType getMenuType() {
         return menuType;
     }
 
-    public void setProductType(MenuType menuType) {
+    public void setMenuType(MenuType menuType) {
         this.menuType = menuType;
     }
 }

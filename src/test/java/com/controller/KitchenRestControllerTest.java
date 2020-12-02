@@ -355,11 +355,10 @@ class KitchenRestControllerTest {
         List<RestaurentTableDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), List.class);
         assertEquals(1, reponse.size());
     }
-
     @Test
     public void testfindRestaurantParRestaurantTable() throws Exception {
         MockMvc mvc = initMockMvc();
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/rest/kitchen/findMenuByRestaurantId/{tableID}","1").
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/rest/kitchen/findRestaurantByRestaurantTableId/{tableID}","1").
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).

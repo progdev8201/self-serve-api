@@ -40,13 +40,33 @@ public class MenuService {
     DTOUtils dtoUtils;
 
 
-
     public List<MenuDTO> findAllMenuForRestaurants(Long id) {
         Restaurant restaurant = restaurantRepository.findById(id).get();
         return restaurant.getMenus().stream()
                 .filter(menu -> menu.getMenuType() == MenuType.FOOD)
                 .map(menu -> dtoUtils.mapMenuToMenuDTO(menu))
                 .collect(Collectors.toList());
+    }
+
+    public MenuDTO createMenu(Long restoId, String menuName) {
+        Restaurant restaurant = restaurantRepository.findById(restoId).get();
+        if (Objects.nonNull(findMenuInRestaurantByName(menuName, restaurant))) {
+            return null;
+        }
+        Menu menu = new Menu();
+        menu.setName(menuName);
+        menu.setProducts(new ArrayList<>());
+        restaurant.getMenus().add(menu);
+        menu = findMenuInRestaurantByName(menuName, restaurantRepository.save(restaurant));
+        return dtoUtils.mapMenuToMenuDTO(menu);
+    }
+
+    private Menu findMenuInRestaurantByName(String menuName, Restaurant restaurant) {
+        Menu menu = restaurant.getMenus()
+                .stream()
+                .filter(x -> x.getName().contentEquals(menuName))
+                .findFirst().orElse(null);
+        return menu;
     }
 
     public List<RestaurantSelectionDTO> findAllRestaurantName(String ownerUsername) {

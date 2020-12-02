@@ -92,7 +92,7 @@ public class DTOUtils {
     public static ProductDTO mapProductToProductDTO(Product product) {
         ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
         productDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(product.getImgFile()));
-        productDTO.setProductType(product.getProductType());
+        productDTO.setMenuType(product.getMenuType());
 
         //map product checkItems
         productDTO.setCheckItems(product.getCheckItems()
@@ -115,7 +115,7 @@ public class DTOUtils {
         if (productDTO.getImgFileDTO() != null)
             product.setImgFile(imgFileRepository.findById(productDTO.getImgFileDTO().getId()).get());
 
-        product.setProductType(productDTO.getProductType());
+        product.setMenuType(productDTO.getMenuType());
 
         //map product checkItems
         product.setCheckItems(productDTO.getCheckItems()

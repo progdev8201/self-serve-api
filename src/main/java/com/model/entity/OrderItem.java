@@ -77,11 +77,11 @@ public class OrderItem implements Serializable {
         this.bill = bill;
     }
 
-    public MenuType getProductType() {
+    public MenuType getMenuType() {
         return menuType;
     }
 
-    public void setProductType(MenuType menuType) {
+    public void setMenuType(MenuType menuType) {
         this.menuType = menuType;
     }
 

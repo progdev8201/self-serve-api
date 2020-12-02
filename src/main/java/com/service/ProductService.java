@@ -1,10 +1,8 @@
 package com.service;
 
-import com.mapping.MenuToMenuDTO;
 import com.model.dto.MenuDTO;
 import com.model.dto.ProductDTO;
 import com.model.entity.*;
-import com.model.enums.ProductMenuType;
 import com.model.enums.MenuType;
 import com.repository.*;
 import com.service.Util.DTOUtils;
@@ -19,7 +17,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -135,7 +132,7 @@ public class ProductService {
     public List<ProductDTO> findMenuSpecials(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
         List<Product> productList = menu.getProducts().stream().filter(r ->
-                r.getProductType() == MenuType.SPECIAL
+                r.getMenuType() == MenuType.SPECIAL
         ).collect(Collectors.toList());
         return dtoUtils.mapProductListToProductDTOList(productList);
 
@@ -144,7 +141,7 @@ public class ProductService {
     public List<ProductDTO> findMenuChoixDuChef(MenuDTO menuDTO) {
         Menu menu = menuRepository.findById(menuDTO.getId()).get();
         List<Product> productList = menu.getProducts().stream().filter(r ->
-                r.getProductType() == MenuType.CHEFCHOICE
+                r.getMenuType() == MenuType.CHEFCHOICE
         ).collect(Collectors.toList());
         return dtoUtils.mapProductListToProductDTOList(productList);
 
@@ -153,16 +150,16 @@ public class ProductService {
     // todo ici dans la methode product dto on set deja le product type alors pk le reset
     public ProductDTO setProductSpecial(ProductDTO productDTO) {
         Product product = productRepository.findById(productDTO.getId()).get();
-        product.setProductType(MenuType.SPECIAL);
+        product.setMenuType(MenuType.SPECIAL);
         ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
         return retour;
     }
 
     // todo mm chose qu'au dessus on set le product type deux
     // todo on save deux fois le produit ce qui n'est pas optimal
-    public ProductDTO removeProductType(ProductDTO productDTO) {
+    public ProductDTO removeMenuType(ProductDTO productDTO) {
         Product product = productRepository.findById(productDTO.getId()).get();
-        product.setProductType(null);
+        product.setMenuType(null);
         ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
         return retour;
     }
@@ -170,10 +167,10 @@ public class ProductService {
     public ProductDTO setProductChefChoice(ProductDTO productDTO) {
 
         Product product = productRepository.findById(productDTO.getId()).get();
-        product.setProductType(MenuType.CHEFCHOICE);
+        product.setMenuType(MenuType.CHEFCHOICE);
         ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
 
-        retour.setProductType(product.getProductType());
+        retour.setMenuType(product.getMenuType());
         return retour;
     }
 

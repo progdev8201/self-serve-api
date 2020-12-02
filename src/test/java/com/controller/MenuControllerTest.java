@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.model.dto.*;
+import com.model.entity.Menu;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,58 @@ public class MenuControllerTest {
         mapper.registerModule(new JavaTimeModule());
         List<MenuDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<MenuDTO>>(){});
         assertEquals(3, reponse.size());
+    }
+    @Test
+    public void testCreateMenu() throws Exception {
+        MockMvc mvc = initMockMvc();
+        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
+
+
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("restaurantId", "1");
+        sendObj.put("menuName", "le menu bien bon");
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/menu/createMenu").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        MenuDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), MenuDTO.class);
+        assertEquals("le menu bien bon",reponse.getName());
+    }
+    @Test
+    public void testCreateWithSameNameTwiceBadRequest() throws Exception {
+        MockMvc mvc = initMockMvc();
+        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
+
+
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("restaurantId", "1");
+        sendObj.put("menuName", "le menu bien bon bon");
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/menu/createMenu").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        MenuDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), MenuDTO.class);
+        assertEquals("le menu bien bon bon",reponse.getName());
+
+        result = mvc.perform(MockMvcRequestBuilders.post("/menu/createMenu").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isBadRequest()).
+                andReturn();
+        String value= result.getResponse().getContentAsString();
+        assertEquals("Fail -> Menu with same name already exists",value);
     }
 
 

@@ -159,7 +159,7 @@ public class DataLoader implements CommandLineRunner {
         product.setName("SUGAR");
         productList.add(product);
 
-        product = createProduct(null, MenuType.WAITERREQUEST, "sugar.png", menuRequest);
+        product = createProduct(null, MenuType.WAITERCALL, "sugar.png", menuRequest);
         product.setName("CALL WAITER");
         productList.add(product);
 
@@ -240,7 +240,7 @@ public class DataLoader implements CommandLineRunner {
         img.setProduct(product);
         product.setImgFile(img);
         product.setProductMenuType(productMenuType);
-        product.setProductType(menuType);
+        product.setMenuType(menuType);
         // product.setImgUrl(serverPort+absolutePath+1);
         product.setDescription("cest bon cest bon cest bon");
         product.setOrderItems(new ArrayList<>());
@@ -291,7 +291,7 @@ public class DataLoader implements CommandLineRunner {
     public OrderItem createOrderItem(ProgressStatus progressStatus, MenuType menuType, Product product) {
         OrderItem orderItem = new OrderItem();
         orderItem.setOrderStatus(progressStatus);
-        orderItem.setProductType(menuType);
+        orderItem.setMenuType(menuType);
         orderItem.setProduct(product);
         orderItem.setTempsDePreparation(new Date(System.currentTimeMillis()));
         return orderItem;

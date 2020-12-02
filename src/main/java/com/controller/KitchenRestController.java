@@ -156,8 +156,8 @@ public class KitchenRestController {
         return ResponseEntity.ok(kitchenService.changeOrderItem(orderItemId, tempsAjoute));
     }
 
-    @GetMapping("/findMenuByRestaurantId/{tableID}")
-    public ResponseEntity<RestaurantDTO> findRestaurantByRestaurantId(@PathVariable long tableID){
+    @GetMapping("/findRestaurantByRestaurantTableId/{tableID}")
+    public ResponseEntity<RestaurantDTO> findRestaurantByRestaurantTableId(@PathVariable long tableID){
         return ResponseEntity.ok(kitchenService.findRestaurantByRestaurantTableId(tableID));
     }
 

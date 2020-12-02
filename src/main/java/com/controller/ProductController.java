@@ -80,10 +80,10 @@ public class ProductController {
 
     }
 
-    @PostMapping("/deleteProductType")
-    public ResponseEntity<ProductDTO> removeProductType(@RequestBody Map<String, String> json) throws JsonProcessingException {
+    @PostMapping("/deleteMenuType")
+    public ResponseEntity<ProductDTO> removeMenuType(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ProductDTO productDTO = new ObjectMapper().readValue(json.get("productDTO"), ProductDTO.class);
-        return ResponseEntity.ok(productService.removeProductType(productDTO));
+        return ResponseEntity.ok(productService.removeMenuType(productDTO));
     }
 
     @PostMapping("/setMenuChefChoice")

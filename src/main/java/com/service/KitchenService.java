@@ -162,8 +162,8 @@ public class KitchenService {
 
     private boolean isOrderItemToFetch(OrderItem orderItem) {
         return (orderItem.getOrderStatus() == ProgressStatus.READY) ||
-                (orderItem.getProductType() == MenuType.WAITERREQUEST) ||
-                (orderItem.getProductType() == MenuType.WAITERCALL);
+                (orderItem.getMenuType() == MenuType.WAITERREQUEST) ||
+                (orderItem.getMenuType() == MenuType.WAITERCALL);
     }
 
     private Restaurant initRestaurant(String restaurantName, int nombreDeTable) throws WriterException, IOException {
