@@ -72,21 +72,20 @@ public class ProductService {
     //todo fix create and update method way too much repetition and code to interact with a simple entity  (clean code)
 
     public ProductDTO create(ProductDTO productDTO, Long menuId) {
-
         // convert product dto to a product
         Product product = DTOUtils.mapProductDTOToProduct(productDTO, imgFileRepository);
-
-        menuRepository.findById(menuId).ifPresent(menu -> {
-            linkMenuAndProduct(product, menu);
-        });
+        Menu menu =menuRepository.findById(menuId).get();
+        product = linkMenuAndProduct(product, menu);
 
         return DTOUtils.mapProductToProductDTO(product);
     }
 
-    private void linkMenuAndProduct(Product finalProduct, Menu menu) {
+    private Product linkMenuAndProduct(Product finalProduct, Menu menu) {
         finalProduct.setMenu(menu);
         menu.getProducts().add(finalProduct);
-        menuRepository.save(menu);
+        menu =menuRepository.save(menu);
+        //on retourne le dernier produit qu'on a save
+        return menu.getProducts().get(menu.getProducts().size()-1);
     }
 
     public void update(ProductDTO productDTO) {
