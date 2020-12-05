@@ -2,6 +2,7 @@ package com.model.dto;
 
 import com.model.entity.Product;
 import com.model.entity.Restaurant;
+import com.model.enums.MenuType;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,6 +15,8 @@ public class MenuDTO {
     private RestaurantDTO restaurant;
 
     private String name;
+
+    private MenuType menuType;
 
     public Long getId() {
         return id;
@@ -29,6 +32,14 @@ public class MenuDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public MenuType getMenuType() {
+        return menuType;
+    }
+
+    public void setMenuType(MenuType menuType) {
+        this.menuType = menuType;
     }
 
     public List<ProductDTO> getProducts() {

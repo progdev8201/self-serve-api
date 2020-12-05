@@ -4,10 +4,7 @@ import com.mapping.*;
 import com.model.dto.*;
 import com.model.entity.*;
 import com.model.enums.MenuType;
-import com.repository.MenuRepository;
-import com.repository.OwnerRepository;
-import com.repository.ProductRepository;
-import com.repository.RestaurantRepository;
+import com.repository.*;
 import com.service.Util.DTOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +28,9 @@ public class MenuService {
     private OwnerRepository ownerRepository;
 
     @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    @Autowired
     private ProductService productService;
 
     @Autowired
@@ -47,8 +47,18 @@ public class MenuService {
                 .map(menu -> dtoUtils.mapMenuToMenuDTO(menu))
                 .collect(Collectors.toList());
     }
+    public void deleteMenuFromRestaurantList(Long restaurantId, Long menuId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
+        Menu menuToRemove =restaurant.getMenus()
+                .stream()
+                .filter(menu -> menu.getId()==menuId)
+                .findFirst().get();
+        restaurant.getMenus().remove(menuToRemove);
+        restaurantRepository.save(restaurant);
+    }
 
-    public MenuDTO createMenu(Long restoId, String menuName) {
+
+    public MenuDTO createMenu(Long restoId, String menuName,MenuType menuType) {
         Restaurant restaurant = restaurantRepository.findById(restoId).get();
         if (Objects.nonNull(findMenuInRestaurantByName(menuName, restaurant))) {
             return null;
@@ -56,6 +66,7 @@ public class MenuService {
         Menu menu = new Menu();
         menu.setName(menuName);
         menu.setProducts(new ArrayList<>());
+        menu.setMenuType(menuType);
         restaurant.getMenus().add(menu);
         menu = findMenuInRestaurantByName(menuName, restaurantRepository.save(restaurant));
         return dtoUtils.mapMenuToMenuDTO(menu);
