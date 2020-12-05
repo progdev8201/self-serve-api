@@ -132,6 +132,12 @@ public class DTOUtils {
         return product;
     }
 
+    public static Menu mapMenuDTOToMenu(MenuDTO menuDTO,Menu menu){
+        menu.setName(menuDTO.getName());
+        menu.setMenuType(menuDTO.getMenuType());
+        return menu;
+    }
+
     private static OptionDTO mapOptionToOptionDTO(Option option) {
         OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
 

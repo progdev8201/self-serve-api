@@ -34,6 +34,11 @@ public class MenuController {
             return new ResponseEntity<String>("Fail -> Menu with same name already exists", HttpStatus.BAD_REQUEST);
         return ResponseEntity.ok(menuDTO);
     }
+    @PutMapping("/updateMenu")
+    public ResponseEntity<?> updateMenu(@RequestBody MenuRequestDTO menuRequestDTO) {
+        MenuDTO menuDTO =menuService.updateMenu(menuRequestDTO.getMenuId(), menuRequestDTO.getMenuName(), menuRequestDTO.getMenuType());
+        return ResponseEntity.ok(menuDTO);
+    }
     @DeleteMapping("/deleteMenu/{restaurantId}/{menuId}")
     public ResponseEntity<?> deleteMenu(@PathVariable("restaurantId") Long restaurantId, @PathVariable("menuId") Long menuId) {
         menuService.deleteMenuFromRestaurantList(restaurantId, menuId);

@@ -72,6 +72,14 @@ public class MenuService {
         return dtoUtils.mapMenuToMenuDTO(menu);
     }
 
+    public MenuDTO updateMenu (Long menuId, String menuName,MenuType menuType){
+        Menu menu = menuRepository.findById(menuId).get();
+        menu.setName(menuName);
+        menu.setMenuType(menuType);
+        menu =menuRepository.save(menu);
+        return dtoUtils.mapMenuToMenuDTO(menuRepository.save(menu));
+    }
+
     private Menu findMenuInRestaurantByName(String menuName, Restaurant restaurant) {
         Menu menu = restaurant.getMenus()
                 .stream()
