@@ -59,14 +59,6 @@ public class ProductDTO {
         this.imgUrl = imgUrl;
     }
 
-    public ProductMenuType getProductMenuType() {
-        return productMenuType;
-    }
-
-    public void setProductMenuType(ProductMenuType productMenuType) {
-        this.productMenuType = productMenuType;
-    }
-
     public MenuType getMenuType() {
         return menuType;
     }

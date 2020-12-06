@@ -82,6 +82,7 @@ public class ProductService {
 
     private Product linkMenuAndProduct(Product finalProduct, Menu menu) {
         finalProduct.setMenu(menu);
+        finalProduct.setMenuType(menu.getMenuType());
         menu.getProducts().add(finalProduct);
         menu =menuRepository.save(menu);
         //on retourne le dernier produit qu'on a save

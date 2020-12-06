@@ -24,6 +24,12 @@ public class MenuController {
     @PostMapping("/getMenu")
     public ResponseEntity<List<MenuDTO>> getMenu(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
+        return ResponseEntity.ok(menuService.findFoodMenuForRestaurants(restaurantId));
+    }
+
+    @PostMapping("/getAllMenu")
+    public ResponseEntity<List<MenuDTO>> getAllMenu(@RequestBody Map<String, String> json) throws JsonProcessingException {
+        Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
         return ResponseEntity.ok(menuService.findAllMenuForRestaurants(restaurantId));
     }
 

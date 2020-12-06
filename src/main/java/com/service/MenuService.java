@@ -40,25 +40,35 @@ public class MenuService {
     DTOUtils dtoUtils;
 
 
-    public List<MenuDTO> findAllMenuForRestaurants(Long id) {
+    public List<MenuDTO> findFoodMenuForRestaurants(Long id) {
         Restaurant restaurant = restaurantRepository.findById(id).get();
-        return restaurant.getMenus().stream()
+        return restaurant.getMenus()
+                .stream()
                 .filter(menu -> menu.getMenuType() == MenuType.FOOD)
                 .map(menu -> dtoUtils.mapMenuToMenuDTO(menu))
                 .collect(Collectors.toList());
     }
+
+    public List<MenuDTO> findAllMenuForRestaurants(Long id) {
+        Restaurant restaurant = restaurantRepository.findById(id).get();
+        return restaurant.getMenus()
+                .stream()
+                .map(menu -> dtoUtils.mapMenuToMenuDTO(menu))
+                .collect(Collectors.toList());
+    }
+
     public void deleteMenuFromRestaurantList(Long restaurantId, Long menuId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
-        Menu menuToRemove =restaurant.getMenus()
+        Menu menuToRemove = restaurant.getMenus()
                 .stream()
-                .filter(menu -> menu.getId()==menuId)
+                .filter(menu -> menu.getId() == menuId)
                 .findFirst().get();
         restaurant.getMenus().remove(menuToRemove);
         restaurantRepository.save(restaurant);
     }
 
 
-    public MenuDTO createMenu(Long restoId, String menuName,MenuType menuType) {
+    public MenuDTO createMenu(Long restoId, String menuName, MenuType menuType) {
         Restaurant restaurant = restaurantRepository.findById(restoId).get();
         if (Objects.nonNull(findMenuInRestaurantByName(menuName, restaurant))) {
             return null;
@@ -72,11 +82,11 @@ public class MenuService {
         return dtoUtils.mapMenuToMenuDTO(menu);
     }
 
-    public MenuDTO updateMenu (Long menuId, String menuName,MenuType menuType){
+    public MenuDTO updateMenu(Long menuId, String menuName, MenuType menuType) {
         Menu menu = menuRepository.findById(menuId).get();
         menu.setName(menuName);
         menu.setMenuType(menuType);
-        menu =menuRepository.save(menu);
+        menu = menuRepository.save(menu);
         return dtoUtils.mapMenuToMenuDTO(menuRepository.save(menu));
     }
 

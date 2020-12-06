@@ -95,71 +95,71 @@ public class DataLoader implements CommandLineRunner {
         //create product list
         List<Product> productList = new ArrayList<>();
 
-        Product product = createProduct(ProductMenuType.DEJEUNER, null, "download.jpg", menuDejeuner);
-        orderItem = createOrderItem(ProgressStatus.READY, MenuType.SPECIAL, product);
+        Product product = createProduct( MenuType.FOOD, "download.jpg", menuDejeuner);
+        orderItem = createOrderItem(ProgressStatus.READY, MenuType.FOOD, product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
         productList.add(product);
         bill.getOrderItems().add(orderItem);
 
-        product = createProduct(ProductMenuType.DINER, null, "download.jpg", menuDejeuner);
-        orderItem = createOrderItem(ProgressStatus.READY, MenuType.SPECIAL, product);
+        product = createProduct( MenuType.FOOD, "download.jpg", menuDejeuner);
+        orderItem = createOrderItem(ProgressStatus.READY, MenuType.FOOD, product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
         productList.add(product);
         bill.getOrderItems().add(orderItem);
 
 
-        product = createProduct(ProductMenuType.SOUPER, null, "download.jpg", menuDejeuner);
+        product = createProduct( MenuType.FOOD, "download.jpg", menuDejeuner);
         orderItem = createOrderItem(ProgressStatus.PROGRESS, MenuType.WAITERREQUEST, product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
         productList.add(product);
         bill.getOrderItems().add(orderItem);
 
-        product = createProduct(ProductMenuType.SOUPER, MenuType.SPECIAL, "download.jpg", menuDiner);
+        product = createProduct( MenuType.FOOD, "download.jpg", menuDiner);
         orderItem = createOrderItem(ProgressStatus.PROGRESS, MenuType.WAITERREQUEST, product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
         productList.add(product);
         bill.getOrderItems().add(orderItem);
 
-        product = createProduct(ProductMenuType.SOUPER, MenuType.SPECIAL, "download.jpg", menuDiner);
+        product = createProduct( MenuType.FOOD, "download.jpg", menuDiner);
         productList.add(product);
 
-        product = createProduct(ProductMenuType.SOUPER, MenuType.SPECIAL, "download.jpg", menuDiner);
+        product = createProduct( MenuType.FOOD, "download.jpg", menuDiner);
         productList.add(product);
 
-        product = createProduct(ProductMenuType.DINER, MenuType.CHEFCHOICE, "download.jpg", menuSouper);
+        product = createProduct( MenuType.FOOD, "download.jpg", menuSouper);
         productList.add(product);
 
-        product = createProduct(ProductMenuType.DINER, MenuType.CHEFCHOICE, "download.jpg", menuSouper);
+        product = createProduct( MenuType.FOOD, "download.jpg", menuSouper);
         productList.add(product);
 
-        product = createProduct(ProductMenuType.DINER, MenuType.CHEFCHOICE, "download.jpg", menuSouper);
+        product = createProduct( MenuType.FOOD, "download.jpg", menuSouper);
         productList.add(product);
 
-        product = createProduct(null, MenuType.WAITERREQUEST, "fork.png", menuRequest);
+        product = createProduct( MenuType.WAITERREQUEST, "fork.png", menuRequest);
         product.setName("FORK");
         productList.add(product);
 
-        product = createProduct(null, MenuType.WAITERREQUEST, "knife.png", menuRequest);
+        product = createProduct( MenuType.WAITERREQUEST, "knife.png", menuRequest);
         product.setName("KNIFE");
         productList.add(product);
 
-        product = createProduct(null, MenuType.WAITERREQUEST, "salt.png", menuRequest);
+        product = createProduct( MenuType.WAITERREQUEST, "salt.png", menuRequest);
         product.setName("SALT");
         productList.add(product);
 
-        product = createProduct(null, MenuType.WAITERREQUEST, "sauce.png", menuRequest);
+        product = createProduct( MenuType.WAITERREQUEST, "sauce.png", menuRequest);
         product.setName("SAUCE");
         productList.add(product);
 
-        product = createProduct(null, MenuType.WAITERREQUEST, "sugar.png", menuRequest);
+        product = createProduct( MenuType.WAITERREQUEST, "sugar.png", menuRequest);
         product.setName("SUGAR");
         productList.add(product);
 
-        product = createProduct(null, MenuType.WAITERCALL, "sugar.png", menuRequest);
+        product = createProduct( MenuType.WAITERCALL, "sugar.png", menuRequest);
         product.setName("CALL WAITER");
         productList.add(product);
 
@@ -215,7 +215,7 @@ public class DataLoader implements CommandLineRunner {
 
         restaurant = new Restaurant();
         Menu menuSupp = createMenu("Dejeuner",MenuType.FOOD);
-        product = createProduct(ProductMenuType.SOUPER, null, "download.jpg",menuSupp);
+        product = createProduct( null, "download.jpg",menuSupp);
         restaurant.setMenus(Collections.singletonList(menuSupp));
         restaurantRepository.save(restaurant);
         System.out.println("APPLICATION IS READY!!!");
@@ -229,7 +229,7 @@ public class DataLoader implements CommandLineRunner {
         return menuRequest;
     }
 
-    private Product createProduct(ProductMenuType productMenuType, MenuType menuType, String fileToCopy, Menu menu) throws IOException {
+    private Product createProduct(MenuType menuType, String fileToCopy, Menu menu) throws IOException {
         Product product = new Product();
         product.setName("le steak chico");
         product.setPrix(29.99);
@@ -239,7 +239,6 @@ public class DataLoader implements CommandLineRunner {
         img.setFileType("image");
         img.setProduct(product);
         product.setImgFile(img);
-        product.setProductMenuType(productMenuType);
         product.setMenuType(menuType);
         // product.setImgUrl(serverPort+absolutePath+1);
         product.setDescription("cest bon cest bon cest bon");

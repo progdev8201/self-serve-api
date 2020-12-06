@@ -106,14 +106,6 @@ public class Product implements Serializable {
         this.imgUrl = imgUrl;
     }
 
-    public ProductMenuType getProductMenuType() {
-        return productMenuType;
-    }
-
-    public void setProductMenuType(ProductMenuType productMenuType) {
-        this.productMenuType = productMenuType;
-    }
-
     public long getId() {
         return id;
     }
