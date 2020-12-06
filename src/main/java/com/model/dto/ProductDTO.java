@@ -1,6 +1,5 @@
 package com.model.dto;
 
-import com.model.enums.ProductMenuType;
 import com.model.enums.MenuType;
 
 import java.util.List;
@@ -29,8 +28,6 @@ public class ProductDTO {
     private List<RateDTO> rates;
 
     private MenuType menuType;
-
-    private ProductMenuType productMenuType;
 
     private ImgFileDTO imgFileDTO;
 

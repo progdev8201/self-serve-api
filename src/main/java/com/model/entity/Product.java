@@ -1,7 +1,6 @@
 package com.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.model.enums.ProductMenuType;
 import com.model.enums.MenuType;
 
 import javax.persistence.*;
@@ -50,12 +49,8 @@ public class Product implements Serializable {
     private MenuType menuType;
 
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 60)
-    private ProductMenuType productMenuType;
 
-
-    public Product(long id, String name, String description, Menu menu, List<Option> options, List<OrderItem> orderItems, double prix, int tempsDePreparation, String imgUrl, ImgFile imgFile, List<Rate> rates, MenuType menuType, ProductMenuType productMenuType) {
+    public Product(long id, String name, String description, Menu menu, List<Option> options, List<OrderItem> orderItems, double prix, int tempsDePreparation, String imgUrl, ImgFile imgFile, List<Rate> rates, MenuType menuType) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -68,7 +63,6 @@ public class Product implements Serializable {
         this.imgFile = imgFile;
         this.rates = rates;
         this.menuType = menuType;
-        this.productMenuType = productMenuType;
     }
 
     public Product() {
