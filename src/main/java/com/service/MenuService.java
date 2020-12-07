@@ -3,9 +3,8 @@ package com.service;
 import com.mapping.*;
 import com.model.dto.*;
 import com.model.entity.*;
-import com.repository.MenuRepository;
-import com.repository.OwnerRepository;
-import com.repository.ProductRepository;
+import com.model.enums.MenuType;
+import com.repository.*;
 import com.service.Util.DTOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -28,72 +28,82 @@ public class MenuService {
     private OwnerRepository ownerRepository;
 
     @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    @Autowired
     private ProductService productService;
+
+    @Autowired
+    private RestaurantRepository restaurantRepository;
 
     @Autowired
     DTOUtils dtoUtils;
 
-    @Autowired
-    public MenuService(MenuRepository menuRepository) {
-        this.menuRepository = menuRepository;
+
+    public List<MenuDTO> findFoodMenuForRestaurants(Long id) {
+        Restaurant restaurant = restaurantRepository.findById(id).get();
+        return restaurant.getMenus()
+                .stream()
+                .filter(menu -> menu.getMenuType() == MenuType.FOOD)
+                .map(menu -> dtoUtils.mapMenuToMenuDTO(menu))
+                .collect(Collectors.toList());
     }
 
-    //permet de set des obj en vedette
-    public MenuDTO createSpecial(MenuDTO menuDTO, List<ProductDTO> specialProducts) {
-        List<Product> products = findSpecialsInBD(specialProducts);
-        Menu menu = menuRepository.findById(menuDTO.getId()).get();
+    public List<MenuDTO> findAllMenuForRestaurants(Long id) {
+        Restaurant restaurant = restaurantRepository.findById(id).get();
+        return restaurant.getMenus()
+                .stream()
+                .map(menu -> dtoUtils.mapMenuToMenuDTO(menu))
+                .collect(Collectors.toList());
+    }
 
-        if (Objects.isNull(menu.getSpeciaux())) {
-            menu.setSpeciaux(products);
-        } else {
-            menu.getSpeciaux().addAll(products);
-            menu.setSpeciaux(menu.getSpeciaux());
+    public void deleteMenuFromRestaurantList(Long restaurantId, Long menuId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
+        Menu menuToRemove = restaurant.getMenus()
+                .stream()
+                .filter(menu -> menu.getId() == menuId)
+                .findFirst().get();
+        restaurant.getMenus().remove(menuToRemove);
+        restaurantRepository.save(restaurant);
+    }
+
+
+    public MenuDTO createMenu(Long restoId, String menuName, MenuType menuType) {
+        Restaurant restaurant = restaurantRepository.findById(restoId).get();
+        if (Objects.nonNull(findMenuInRestaurantByName(menuName, restaurant))) {
+            return null;
         }
+        Menu menu = new Menu();
+        menu.setName(menuName);
+        menu.setProducts(new ArrayList<>());
+        menu.setMenuType(menuType);
+        restaurant.getMenus().add(menu);
+        menu = findMenuInRestaurantByName(menuName, restaurantRepository.save(restaurant));
+        return dtoUtils.mapMenuToMenuDTO(menu);
+    }
+
+    public MenuDTO updateMenu(Long menuId, String menuName, MenuType menuType) {
+        Menu menu = menuRepository.findById(menuId).get();
+        menu.setName(menuName);
+        menu.setMenuType(menuType);
         menu = menuRepository.save(menu);
-        return dtoUtils.generateMenuDTO(menu);
+        return dtoUtils.mapMenuToMenuDTO(menuRepository.save(menu));
     }
 
-
-    //permet de set des obj en vedette
-    public MenuDTO removeSpecial(MenuDTO menuDTO, List<ProductDTO> specialProducts) {
-        List<Product> products = findSpecialsInBD(specialProducts);
-        Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> speciauxDuMenu = menu.getSpeciaux();
-        speciauxDuMenu.removeAll(products);
-        menu.setSpeciaux(speciauxDuMenu);
-        menu = menuRepository.save(menu);
-        return dtoUtils.generateMenuDTO(menu);
+    private Menu findMenuInRestaurantByName(String menuName, Restaurant restaurant) {
+        Menu menu = restaurant.getMenus()
+                .stream()
+                .filter(x -> x.getName().contentEquals(menuName))
+                .findFirst().orElse(null);
+        return menu;
     }
 
-    public MenuDTO findMenu(Long id) {
-        Menu menu = menuRepository.findById(id).get();
-        MenuDTO menuDTO = MenuToMenuDTO.instance.convert(menu);
-        menuDTO.setSpeciaux(productService.findMenuSpecials(menuDTO));
-        menuDTO.setFeatured(productService.findMenuChoixDuChef(menuDTO));
-        menuDTO.setDejeuner(productService.findMenuDejeunerProduct(menuDTO));
-        menuDTO.setSouper(productService.findMenuSouper(menuDTO));
-        menuDTO.setDiner(productService.findMenuDinerProduct(menuDTO));
-        menuDTO.setProducts(dtoUtils.mapProductListToProductDTOList(menu.getProducts()));
-
-        return menuDTO;
-    }
-
-    private List<Product> findSpecialsInBD(List<ProductDTO> specialProducts) {
-        List<Product> products = new ArrayList<>();
-        for (ProductDTO productDTO : specialProducts) {
-            Product product = productRepository.findById(productDTO.getId()).get();
-            products.add(product);
-        }
-        return products;
-    }
-
-
-    public List<RestaurantSelectionDTO> findAllRestaurantName(String ownerUsername){
+    public List<RestaurantSelectionDTO> findAllRestaurantName(String ownerUsername) {
         List<RestaurantSelectionDTO> restaurantSelectionDTOS = new ArrayList<>();
 
-        ownerRepository.findByUsername(ownerUsername).ifPresent(owner ->{
+        ownerRepository.findByUsername(ownerUsername).ifPresent(owner -> {
             owner.getRestaurantList().forEach(restaurant -> {
-                restaurantSelectionDTOS.add(new RestaurantSelectionDTO(restaurant.getId(), restaurant.getMenu().getId(),restaurant.getName(),restaurant.getRestaurentTables()));
+                restaurantSelectionDTOS.add(dtoUtils.mapRestaurantToRestaurantSelectionDTO(restaurant));
             });
         });
 

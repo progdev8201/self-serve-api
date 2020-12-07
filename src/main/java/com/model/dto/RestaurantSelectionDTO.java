@@ -2,6 +2,7 @@ package com.model.dto;
 
 
 import com.mapping.RestaurentTableToRestaurenTableDTO;
+import com.model.entity.Menu;
 import com.model.entity.RestaurentTable;
 
 import java.io.Serializable;
@@ -10,22 +11,11 @@ import java.util.List;
 
 public class RestaurantSelectionDTO implements Serializable {
     private Long restaurantId;
-    private Long menuId;
+    private List<MenuDTO> menuDTOS;
     private String restaurantName;
     private List<RestaurentTableDTO> restaurentTablesDTO;
 
     public RestaurantSelectionDTO() {
-    }
-
-    public RestaurantSelectionDTO(Long restaurantId ,Long menuId, String restaurantName,List<RestaurentTable> restaurentTables) {
-        this.restaurantId = restaurantId;
-        this.menuId = menuId;
-        this.restaurantName = restaurantName;
-        restaurentTablesDTO = new ArrayList<>();
-
-        restaurentTables.forEach(restaurentTable -> {
-            restaurentTablesDTO.add(RestaurentTableToRestaurenTableDTO.instance.convert(restaurentTable));
-        });
     }
 
     public List<RestaurentTableDTO> getRestaurentTablesDTO() {
@@ -44,12 +34,12 @@ public class RestaurantSelectionDTO implements Serializable {
         this.restaurantId = restaurantId;
     }
 
-    public Long getMenuId() {
-        return menuId;
+    public List<MenuDTO> getMenuDTOS() {
+        return menuDTOS;
     }
 
-    public void setMenuId(Long menuId) {
-        this.menuId = menuId;
+    public void setMenuDTOS(List<MenuDTO> menuDTOS) {
+        this.menuDTOS = menuDTOS;
     }
 
     public String getRestaurantName() {
@@ -63,8 +53,10 @@ public class RestaurantSelectionDTO implements Serializable {
     @Override
     public String toString() {
         return "RestaurantSelectionDTO{" +
-                "menuId=" + menuId +
+                "restaurantId=" + restaurantId +
+                ", menuDTOS=" + menuDTOS +
                 ", restaurantName='" + restaurantName + '\'' +
+                ", restaurentTablesDTO=" + restaurentTablesDTO +
                 '}';
     }
 }

@@ -50,6 +50,16 @@ public class DTOUtils {
         return orderItemDTO;
     }
 
+    public MenuDTO mapMenuToMenuDTO(Menu menu) {
+        MenuDTO menuDTO = MenuToMenuDTO.instance.convert(menu);
+        menuDTO.setRestaurant(RestaurantToRestaurantDTO.instance.convert(menu.getRestaurant()));
+        menuDTO.setProducts(menu.getProducts()
+                .stream()
+                .map(product -> mapProductToProductDTO(product))
+                .collect(Collectors.toList()));
+        return menuDTO;
+    }
+
     private OptionDTO mapOptionToOptionDTOForBill(Option option) {
         OptionDTO optionDTO = OptionToOptionDTO.instance.convert(option);
 
@@ -66,20 +76,7 @@ public class DTOUtils {
         return optionDTO;
     }
 
-    //MENU DTO UTILS
-
-    public MenuDTO generateMenuDTO(Menu menu) {
-        MenuDTO returnValue = MenuToMenuDTO.instance.convert(menu);
-        returnValue.setSpeciaux(new ArrayList<>());
-        for (Product special : menu.getSpeciaux()) {
-            returnValue.getSpeciaux().add(ProductToProductDTO.instance.convert(special));
-            returnValue.setSpeciaux(returnValue.getSpeciaux());
-        }
-        return returnValue;
-    }
-
     //PRODUCT DTO UTILS
-
     public static List<ProductDTO> mapProductListToProductDTOList(List<Product> products) {
         return products.stream()
                 .map(product -> mapProductToProductDTO(product))
@@ -95,7 +92,7 @@ public class DTOUtils {
     public static ProductDTO mapProductToProductDTO(Product product) {
         ProductDTO productDTO = ProductToProductDTO.instance.convert(product);
         productDTO.setImgFileDTO(ImgFileToImgFileDTO.instance.convert(product.getImgFile()));
-        productDTO.setProductType(product.getProductType());
+        productDTO.setMenuType(product.getMenuType());
 
         //map product checkItems
         productDTO.setCheckItems(product.getCheckItems()
@@ -118,7 +115,7 @@ public class DTOUtils {
         if (productDTO.getImgFileDTO() != null)
             product.setImgFile(imgFileRepository.findById(productDTO.getImgFileDTO().getId()).get());
 
-        product.setProductType(productDTO.getProductType());
+        product.setMenuType(productDTO.getMenuType());
 
         //map product checkItems
         product.setCheckItems(productDTO.getCheckItems()
@@ -133,6 +130,12 @@ public class DTOUtils {
                 .collect(Collectors.toList()));
 
         return product;
+    }
+
+    public static Menu mapMenuDTOToMenu(MenuDTO menuDTO,Menu menu){
+        menu.setName(menuDTO.getName());
+        menu.setMenuType(menuDTO.getMenuType());
+        return menu;
     }
 
     private static OptionDTO mapOptionToOptionDTO(Option option) {
@@ -199,6 +202,19 @@ public class DTOUtils {
                 .collect(Collectors.toList()));
 
         return restaurantDTO;
+    }
+
+    public RestaurantSelectionDTO mapRestaurantToRestaurantSelectionDTO(Restaurant restaurant) {
+        RestaurantSelectionDTO restaurantSelectionDTO = new RestaurantSelectionDTO();
+        restaurantSelectionDTO.setRestaurantId(restaurant.getId());
+        restaurantSelectionDTO.setRestaurantName(restaurant.getName());
+        restaurantSelectionDTO.setRestaurentTablesDTO(restaurant.getRestaurentTables().stream()
+                .map(restaurentTable -> RestaurentTableToRestaurenTableDTO.instance.convert(restaurentTable))
+                .collect(Collectors.toList()));
+        restaurantSelectionDTO.setMenuDTOS(restaurant.getMenus().stream()
+                .map(menu -> mapMenuToMenuDTO(menu))
+                .collect(Collectors.toList()));
+        return restaurantSelectionDTO;
     }
 
 }

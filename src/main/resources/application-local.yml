@@ -28,7 +28,7 @@ spring:
 
 config:
   securite:
-    active: true
+    active: false
   styles:
     images:
       path: "\\src\\main\\resources\\img\\"

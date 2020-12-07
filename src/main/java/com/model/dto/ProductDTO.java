@@ -1,7 +1,6 @@
 package com.model.dto;
 
-import com.model.enums.ProductMenuType;
-import com.model.enums.ProductType;
+import com.model.enums.MenuType;
 
 import java.util.List;
 
@@ -28,9 +27,7 @@ public class ProductDTO {
 
     private List<RateDTO> rates;
 
-    private ProductType productType;
-
-    private ProductMenuType productMenuType;
+    private MenuType menuType;
 
     private ImgFileDTO imgFileDTO;
 
@@ -59,20 +56,12 @@ public class ProductDTO {
         this.imgUrl = imgUrl;
     }
 
-    public ProductMenuType getProductMenuType() {
-        return productMenuType;
+    public MenuType getMenuType() {
+        return menuType;
     }
 
-    public void setProductMenuType(ProductMenuType productMenuType) {
-        this.productMenuType = productMenuType;
-    }
-
-    public ProductType getProductType() {
-        return productType;
-    }
-
-    public void setProductType(ProductType productType) {
-        this.productType = productType;
+    public void setMenuType(MenuType menuType) {
+        this.menuType = menuType;
     }
 
     public long getId() {

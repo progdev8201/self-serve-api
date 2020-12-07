@@ -1,6 +1,6 @@
-package com.model.dto;
+package com.model.dto.requests;
 
-public class StripeClientSecretDTO {
+public class StripeAccountIdDTO {
     private String value;
 
     public String getValue() {

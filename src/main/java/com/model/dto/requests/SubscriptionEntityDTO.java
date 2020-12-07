@@ -1,9 +1,7 @@
-package com.model.dto;
+package com.model.dto.requests;
 
-import com.model.entity.Owner;
-import com.model.entity.StripeSubscriptionProducts;
+import com.model.dto.OwnerDTO;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
 public class SubscriptionEntityDTO implements Serializable {

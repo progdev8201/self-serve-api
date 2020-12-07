@@ -15,7 +15,7 @@ public class RestaurantDTO {
 
     private CustomPropretyDTO customProprety;
 
-    private MenuDTO menu;
+    private List<MenuDTO> menus;
 
     private List<RestaurentTableDTO> restaurentTables;
 
@@ -69,12 +69,12 @@ public class RestaurantDTO {
         this.customProprety = customProprety;
     }
 
-    public MenuDTO getMenu() {
-        return menu;
+    public List<MenuDTO> getMenus() {
+        return menus;
     }
 
-    public void setMenu(MenuDTO menu) {
-        this.menu = menu;
+    public void setMenus(List<MenuDTO> menus) {
+        this.menus = menus;
     }
 
     public List<RestaurentTableDTO> getRestaurentTables() {
@@ -93,7 +93,6 @@ public class RestaurantDTO {
                 ", billList=" + bill +
                 ", owner=" + owner +
                 ", customProprety=" + customProprety +
-                ", menu=" + menu +
                 ", restaurentTablesDTO=" + restaurentTables +
                 '}';
     }

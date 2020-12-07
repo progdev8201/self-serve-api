@@ -6,11 +6,10 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.mapping.OrderItemToOrderItemDTO;
-import com.model.dto.MenuDTO;
 import com.model.dto.OrderItemDTO;
 import com.model.dto.RestaurantDTO;
 import com.model.entity.*;
-import com.model.enums.ProductType;
+import com.model.enums.MenuType;
 import com.model.enums.ProgressStatus;
 import com.repository.*;
 import com.service.Util.DTOUtils;
@@ -136,11 +135,9 @@ public class KitchenService {
 
     }
 
-    public MenuDTO menuParRestaurantTable(Long restaurantId) {
+    public RestaurantDTO findRestaurantByRestaurantTableId(Long restaurantId) {
         RestaurentTable restaurentTable = restaurentTableRepository.findById(restaurantId).get();
-        MenuDTO menuDTO = dtoUtils.generateMenuDTO(restaurentTable.getRestaurant().getMenu());
-        menuDTO.setRestaurant(dtoUtils.mapRestaurantToRestaurantDTO(restaurentTable.getRestaurant()));
-        return menuDTO;
+        return dtoUtils.mapRestaurantToRestaurantDTO(restaurentTable.getRestaurant());
     }
 
     public List<OrderItemDTO> fetchWaiterRequest(Long restaurantId) {
@@ -165,8 +162,8 @@ public class KitchenService {
 
     private boolean isOrderItemToFetch(OrderItem orderItem) {
         return (orderItem.getOrderStatus() == ProgressStatus.READY) ||
-                (orderItem.getProductType() == ProductType.WAITERREQUEST) ||
-                (orderItem.getProductType() == ProductType.WAITERCALL);
+                (orderItem.getMenuType() == MenuType.WAITERREQUEST) ||
+                (orderItem.getMenuType() == MenuType.WAITERCALL);
     }
 
     private Restaurant initRestaurant(String restaurantName, int nombreDeTable) throws WriterException, IOException {
@@ -174,7 +171,6 @@ public class KitchenService {
 
         createTables(nombreDeTable, restaurant);
 
-        initRestaurantMenu(restaurant);
         return restaurant;
     }
 
@@ -221,16 +217,7 @@ public class KitchenService {
         return owner;
     }
 
-    private void initRestaurantMenu(Restaurant restaurant) {
-        //add menu to restaurant
-        Menu menu = new Menu();
-        linkMenuAndRestaurant(restaurant, menu);
-    }
 
-    private void linkMenuAndRestaurant(Restaurant restaurant, Menu menu) {
-        menu.setRestaurant(restaurant);
-        restaurant.setMenu(menu);
-    }
 
     private void createTables(int nombreDeTable, Restaurant restaurant) throws WriterException, IOException {
         for (int i = 0; i < nombreDeTable; i++)

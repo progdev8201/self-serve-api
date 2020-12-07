@@ -1,12 +1,10 @@
 package com.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.model.enums.ProductMenuType;
-import com.model.enums.ProductType;
+import com.model.enums.MenuType;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -48,15 +46,11 @@ public class Product implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 60)
-    private ProductType productType;
+    private MenuType menuType;
 
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 60)
-    private ProductMenuType productMenuType;
 
-
-    public Product(long id, String name, String description, Menu menu, List<Option> options, List<OrderItem> orderItems, double prix, int tempsDePreparation, String imgUrl, ImgFile imgFile, List<Rate> rates, ProductType productType, ProductMenuType productMenuType) {
+    public Product(long id, String name, String description, Menu menu, List<Option> options, List<OrderItem> orderItems, double prix, int tempsDePreparation, String imgUrl, ImgFile imgFile, List<Rate> rates, MenuType menuType) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -68,8 +62,7 @@ public class Product implements Serializable {
         this.imgUrl = imgUrl;
         this.imgFile = imgFile;
         this.rates = rates;
-        this.productType = productType;
-        this.productMenuType = productMenuType;
+        this.menuType = menuType;
     }
 
     public Product() {
@@ -105,14 +98,6 @@ public class Product implements Serializable {
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
-    }
-
-    public ProductMenuType getProductMenuType() {
-        return productMenuType;
-    }
-
-    public void setProductMenuType(ProductMenuType productMenuType) {
-        this.productMenuType = productMenuType;
     }
 
     public long getId() {
@@ -179,11 +164,11 @@ public class Product implements Serializable {
         this.tempsDePreparation = tempsDePreparation;
     }
 
-    public ProductType getProductType() {
-        return productType;
+    public MenuType getMenuType() {
+        return menuType;
     }
 
-    public void setProductType(ProductType productType) {
-        this.productType = productType;
+    public void setMenuType(MenuType menuType) {
+        this.menuType = menuType;
     }
 }

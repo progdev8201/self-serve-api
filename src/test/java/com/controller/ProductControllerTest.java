@@ -1,32 +1,20 @@
 package com.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.google.gson.JsonObject;
 import com.model.dto.*;
-import com.model.entity.CheckItem;
-import com.model.entity.Option;
-import com.model.entity.Product;
-import com.model.enums.ProductType;
-import com.repository.MenuRepository;
-import org.json.JSONException;
+import com.model.enums.MenuType;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,20 +54,8 @@ class ProductControllerTest {
         ObjectMapper mapper=new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         ProductDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
-        assertEquals(ProductType.SPECIAL, reponse.getProductType());
+        assertEquals(MenuType.SPECIAL, reponse.getMenuType());
 
-        JSONObject sendObj2 = new JSONObject();
-        sendObj2.put("menuId","1");
-        mvc = initMockMvcMenuController();
-        result= mvc.perform(MockMvcRequestBuilders.post(   "/menu/getMenu").
-                content(sendObj2.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
-                andExpect(status().isOk()).
-                andReturn();
-        MenuDTO menuDTOResponse = mapper.readValue(result.getResponse().getContentAsString(), MenuDTO.class);
-
-        assertEquals(ProductType.SPECIAL, menuDTOResponse.getProducts().get(0).getProductType());
     }
     @Test
     public void findAllProductFromMenu() throws Exception {
@@ -92,7 +68,7 @@ class ProductControllerTest {
         ObjectMapper mapper=new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         List<ProductDTO> productDTOS = mapper.readValue(result.getResponse().getContentAsString(),List.class);
-        assertEquals(15,productDTOS.size());
+        assertEquals(3,productDTOS.size());
     }
 
     @Test
@@ -112,53 +88,17 @@ class ProductControllerTest {
     @Test
     public void testFetchMenuWaiterRequest() throws Exception {
         MockMvc mvc = initMockMvc();
-        MvcResult result= mvc.perform(MockMvcRequestBuilders.get(   "/product/findWaiterRequestProducts/{id}","1").
+        MvcResult result= mvc.perform(MockMvcRequestBuilders.get(   "/product/findWaiterRequestProducts/{id}","2").
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
         ObjectMapper mapper=new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        List<ProductDTO> productDTOS = mapper.readValue(result.getResponse().getContentAsString(),List.class);
-        assertEquals(6,productDTOS.size());
+        MenuDTO menuDTO = mapper.readValue(result.getResponse().getContentAsString(),MenuDTO.class);
+        assertEquals(6,menuDTO.getProducts().size());
     }
 
-    @Test
-    public void testSetSpecialPourProduitChercherTypeProduitNonModifie() throws Exception {
-        MockMvc mvc = initMockMvc();
-        LinkedMultiValueMap<String,String> requestParams = new LinkedMultiValueMap<>();
-
-        ProductDTO productDTO = initProductDTO();
-        ObjectMapper objectMapper =new ObjectMapper();
-
-
-        JSONObject sendObj = new JSONObject();
-        sendObj.put("productDTO",objectMapper.writeValueAsString(productDTO));
-
-        MvcResult result= mvc.perform(MockMvcRequestBuilders.post(   "/product/setMenuSpecial").
-                content(sendObj.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
-                andExpect(status().isOk()).
-                andReturn();
-        ObjectMapper mapper=new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        ProductDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
-        assertEquals(ProductType.SPECIAL, reponse.getProductType());
-
-        JSONObject sendObj2 = new JSONObject();
-        sendObj2.put("menuId","1");
-        mvc = initMockMvcMenuController();
-        result= mvc.perform(MockMvcRequestBuilders.post(   "/menu/getMenu").
-                content(sendObj2.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
-                andExpect(status().isOk()).
-                andReturn();
-        MenuDTO menuDTOResponse = mapper.readValue(result.getResponse().getContentAsString(), MenuDTO.class);
-
-        assertEquals(null, menuDTOResponse.getProducts().get(1).getProductType());
-    }
     @Test
     public void deleteProduct() throws Exception {
         MockMvc mvc = initMockMvc();
@@ -191,20 +131,8 @@ class ProductControllerTest {
         ObjectMapper mapper=new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         ProductDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
-        assertEquals(ProductType.CHEFCHOICE, reponse.getProductType());
+        assertEquals(MenuType.CHEFCHOICE, reponse.getMenuType());
 
-        JSONObject sendObj2 = new JSONObject();
-        sendObj2.put("menuId","1");
-        mvc = initMockMvcMenuController();
-        result= mvc.perform(MockMvcRequestBuilders.post(   "/menu/getMenu").
-                content(sendObj2.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
-                andExpect(status().isOk()).
-                andReturn();
-        MenuDTO menuDTOResponse = mapper.readValue(result.getResponse().getContentAsString(), MenuDTO.class);
-
-        assertEquals(ProductType.CHEFCHOICE, menuDTOResponse.getProducts().get(0).getProductType());
     }
 
     @Test
@@ -252,9 +180,9 @@ class ProductControllerTest {
         ObjectMapper mapper=new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         ProductDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
-        assertEquals(ProductType.SPECIAL, reponse.getProductType());
+        assertEquals(MenuType.SPECIAL, reponse.getMenuType());
 
-         result= mvc.perform(MockMvcRequestBuilders.post(   "/product/deleteProductType").
+         result= mvc.perform(MockMvcRequestBuilders.post(   "/product/deleteMenuType").
                 content(sendObj.toString()).
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
@@ -262,7 +190,7 @@ class ProductControllerTest {
                 andReturn();
         ProductDTO productDTOResponse = mapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
         assertEquals(productDTO.getId(), productDTOResponse.getId());
-        assertEquals(null, productDTOResponse.getProductType());
+        assertEquals(null, productDTOResponse.getMenuType());
     }
 
     @Test
@@ -305,7 +233,7 @@ class ProductControllerTest {
         ObjectMapper mapper=new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         ProductDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
-        assertEquals(ProductType.SPECIAL, reponse.getProductType());
+        assertEquals(MenuType.SPECIAL, reponse.getMenuType());
 
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setId(1L);
@@ -320,7 +248,7 @@ class ProductControllerTest {
                 andReturn();
         List<ProductDTO> productDTOResponse = Arrays.stream(mapper.readValue(result.getResponse().getContentAsString(), ProductDTO[].class)).collect(Collectors.toList());
         for(ProductDTO x : productDTOResponse){
-            assertEquals(ProductType.SPECIAL, x.getProductType());
+            assertEquals(MenuType.SPECIAL, x.getMenuType());
         }
     }
 
@@ -364,7 +292,7 @@ class ProductControllerTest {
         ObjectMapper mapper=new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         ProductDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
-        assertEquals(ProductType.CHEFCHOICE, reponse.getProductType());
+        assertEquals(MenuType.CHEFCHOICE, reponse.getMenuType());
 
         MenuDTO menuDTO = new MenuDTO();
         menuDTO.setId(1L);
@@ -379,7 +307,7 @@ class ProductControllerTest {
                 andReturn();
         List<ProductDTO> productDTOResponse =Arrays.stream(mapper.readValue(result.getResponse().getContentAsString(), ProductDTO[].class)).collect(Collectors.toList());
         for(ProductDTO x : productDTOResponse){
-            assertEquals(ProductType.CHEFCHOICE, x.getProductType());
+            assertEquals(MenuType.CHEFCHOICE, x.getMenuType());
         }
     }
 
