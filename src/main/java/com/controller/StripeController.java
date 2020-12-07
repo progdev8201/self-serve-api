@@ -71,9 +71,15 @@ public class StripeController {
         return ResponseEntity.ok(stripeService.createCheckoutSession(ownerEmail));
     }
     @PostMapping("/createSubscription")
-    public ResponseEntity<SubscriptionEntityDTO> createSubscriptionRequestDTO(@RequestBody CreateSubscriptionRequestDTO createSubscriptionRequestDTO) throws StripeException, JSONException {
-        return ResponseEntity.ok(stripeService.createSubscription(createSubscriptionRequestDTO));
+    public ResponseEntity<SubscriptionEntityDTO> createSubscription(@RequestBody SubscriptionRequestDTO subscriptionRequestDTO) throws StripeException, JSONException {
+        return ResponseEntity.ok(stripeService.createSubscription(subscriptionRequestDTO));
     }
+    //permet de mettre a jour la methode de payment si jamais la methode de payment fail;
+    @PostMapping("/retrySubscription")
+    public ResponseEntity<SubscriptionEntityDTO> retrySubscriptionPaymentMethod(@RequestBody SubscriptionRequestDTO subscriptionRequestDTO) throws Exception {
+        return ResponseEntity.ok(stripeService.retryInvoice(subscriptionRequestDTO));
+    }
+
 
     @PostMapping("/cancelSubscription")
     public ResponseEntity<SubscriptionEntityDTO> cancelSubscription(@RequestBody RetreiveSubscriptionRequestDTO retreiveSubscriptionRequestDTO) throws StripeException {

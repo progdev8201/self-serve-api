@@ -48,6 +48,8 @@ public class StripeService {
     @Autowired
     private StripeSubscriptionProductRepository stripeSubscriptionProductRepository;
 
+    private static String STRIPE_PAID_INVOICE ="paid";
+
     public StripeCreateAccountUrlDTO createStripeAccount(String ownerUsername) throws StripeException {
         Stripe.apiKey = stripeAPIKey;
 
@@ -188,40 +190,19 @@ public class StripeService {
                 .collect(Collectors.toList());
     }
 
-    public SubscriptionEntityDTO createSubscription(CreateSubscriptionRequestDTO createSubscriptionRequestDTO) throws StripeException, JSONException {
-        Customer customer = Customer.retrieve(createSubscriptionRequestDTO.getCustomerId());
-        Owner owner = ownerRepository.findByStripeCustomerId(createSubscriptionRequestDTO.getCustomerId()).get();
-        StripeSubscriptionProducts stripeSubscriptionProducts = stripeSubscriptionProductRepository.findByPriceId(createSubscriptionRequestDTO.getPriceId()).get();
+    public SubscriptionEntityDTO createSubscription(SubscriptionRequestDTO subscriptionRequestDTO) throws StripeException, JSONException {
+        Customer customer = Customer.retrieve(subscriptionRequestDTO.getCustomerId());
+        Owner owner = ownerRepository.findByStripeCustomerId(subscriptionRequestDTO.getCustomerId()).get();
+        StripeSubscriptionProducts stripeSubscriptionProducts = stripeSubscriptionProductRepository.findByPriceId(subscriptionRequestDTO.getPriceId()).get();
         try {
             // Set the default payment method on the customer
-            PaymentMethod pm = PaymentMethod.retrieve(
-                    createSubscriptionRequestDTO.getPaymentMethodId()
-            );
-            pm.attach(
-                    PaymentMethodAttachParams
-                            .builder()
-                            .setCustomer(customer.getId())
-                            .build()
-            );
+            setPaymentMethod(subscriptionRequestDTO, customer);
         } catch (CardException e) {
             // Since it's a decline, CardException will be caught
-            SubscriptionEntityDTO subscriptionEntityDTO = new SubscriptionEntityDTO();
-            subscriptionEntityDTO.setErrorMessage(e.getLocalizedMessage());
-
-            return subscriptionEntityDTO;
+            return setErrorInSubscriptionEntity(e);
         }
 
-        CustomerUpdateParams customerUpdateParams = CustomerUpdateParams
-                .builder()
-                .setInvoiceSettings(
-                        CustomerUpdateParams
-                                .InvoiceSettings.builder()
-                                .setDefaultPaymentMethod(createSubscriptionRequestDTO.getPaymentMethodId())
-                                .build()
-                )
-                .build();
-
-        customer.update(customerUpdateParams);
+        updateCustomerParams(subscriptionRequestDTO, customer);
 
         // Create the subscription
         SubscriptionCreateParams subCreateParams = SubscriptionCreateParams
@@ -229,7 +210,7 @@ public class StripeService {
                 .addItem(
                         SubscriptionCreateParams
                                 .Item.builder()
-                                .setPrice(createSubscriptionRequestDTO.getPriceId())
+                                .setPrice(subscriptionRequestDTO.getPriceId())
                                 .build()
                 )
                 .setCustomer(customer.getId())
@@ -237,12 +218,26 @@ public class StripeService {
                 .build();
 
         Subscription subscription = Subscription.create(subCreateParams);
-        SubscriptionEntity subscriptionEntity = populateSubscriptionEntity(subscription, new SubscriptionEntity());
+        SubscriptionEntity subscriptionEntity = populateSubscriptionEntity(subscription, Optional.ofNullable(owner.getSubscriptionEntity()).orElse(new SubscriptionEntity()));
         subscriptionEntity.setStripeSubscriptionProducts(stripeSubscriptionProducts);
         subscriptionEntity.setOwner(owner);
         owner.setSubscriptionEntity(subscriptionEntity);
         ownerRepository.save(owner);
         return SubscriptionEntityToSubscriptionEntityDTO.instance.convert(subscriptionEntity);
+    }
+
+    private void updateCustomerParams(SubscriptionRequestDTO subscriptionRequestDTO, Customer customer) throws StripeException {
+        CustomerUpdateParams customerUpdateParams = CustomerUpdateParams
+                .builder()
+                .setInvoiceSettings(
+                        CustomerUpdateParams
+                                .InvoiceSettings.builder()
+                                .setDefaultPaymentMethod(subscriptionRequestDTO.getPaymentMethodId())
+                                .build()
+                )
+                .build();
+
+        customer.update(customerUpdateParams);
     }
 
     public SubscriptionEntityDTO cancelSubscription(String ownerEmail) throws StripeException {
@@ -270,16 +265,37 @@ public class StripeService {
         return SubscriptionEntityToSubscriptionEntityDTO.instance.convert(subscriptionEntity);
     }
 
-    private SubscriptionEntity populateSubscriptionEntity(Subscription subscription, SubscriptionEntity subscriptionEntity) throws StripeException {
-        subscriptionEntity.setSubscriptionId(subscription.getId());
-        subscriptionEntity.setCreated(subscription.getCreated());
-        subscriptionEntity.setObject(subscription.getObject());
-        subscriptionEntity.setStatus(subscription.getStatus());
-        subscriptionEntity.setPeriodStart(subscription.getCurrentPeriodStart());
-        subscriptionEntity.setPeriodEnd(subscription.getCurrentPeriodEnd());
-        return subscriptionEntity;
-    }
+    public SubscriptionEntityDTO retryInvoice(SubscriptionRequestDTO subscriptionRequestDTO) throws Exception {
+        Customer customer = Customer.retrieve(subscriptionRequestDTO.getCustomerId());
+        Owner owner = ownerRepository.findByStripeCustomerId(subscriptionRequestDTO.getCustomerId()).get();
 
+        try {
+            // Set the default payment method on the customer
+            setPaymentMethod(subscriptionRequestDTO, customer);
+        } catch (CardException e) {
+            // Since it's a decline, CardException will be caught
+            return setErrorInSubscriptionEntity(e);
+        }
+
+        updateCustomerParams(subscriptionRequestDTO, customer);
+
+        InvoiceRetrieveParams params = InvoiceRetrieveParams
+                .builder()
+                .addAllExpand(Arrays.asList("payment_intent"))
+                .build();
+        Subscription subscription = Subscription.retrieve(owner.getSubscriptionEntity().getSubscriptionId());
+        Invoice invoice = Invoice.retrieve(
+                subscription.getLatestInvoice(),
+                params,
+                null
+        );
+        if(!invoice.getStatus().contentEquals(STRIPE_PAID_INVOICE)){
+            throw new Exception("payment card not valid");
+        }
+        owner.getSubscriptionEntity().setLatestInvoiceStatus(invoice.getStatus());
+        owner=ownerRepository.save(owner);
+        return SubscriptionEntityToSubscriptionEntityDTO.instance.convert(owner.getSubscriptionEntity());
+    }
 
     public byte[] returnDomainFile() throws IOException {
         Path currentRelativePath = Paths.get("");
@@ -289,9 +305,45 @@ public class StripeService {
         return bytes;
     }
 
+    private SubscriptionEntity populateSubscriptionEntity(Subscription subscription, SubscriptionEntity subscriptionEntity) throws StripeException {
+        Invoice invoice = getInvoice(subscription);
+        subscriptionEntity.setSubscriptionId(subscription.getId());
+        subscriptionEntity.setCreated(subscription.getCreated());
+        subscriptionEntity.setLatestInvoiceStatus(invoice.getStatus());
+        subscriptionEntity.setObject(subscription.getObject());
+        subscriptionEntity.setStatus(subscription.getStatus());
+        subscriptionEntity.setPeriodStart(subscription.getCurrentPeriodStart());
+        subscriptionEntity.setPeriodEnd(subscription.getCurrentPeriodEnd());
+        return subscriptionEntity;
+    }
+
+    private Invoice getInvoice(Subscription subscription) throws StripeException {
+        Invoice invoice = Invoice.retrieve(subscription.getLatestInvoice());
+        return invoice;
+    }
+
+
     private StripeSessionCustomerIdDTO returnStripeSessionCustomerIdDTO(Owner owner) {
         StripeSessionCustomerIdDTO stripeSessionCustomerIdDTO = new StripeSessionCustomerIdDTO();
         stripeSessionCustomerIdDTO.setCustomerId(owner.getStripeCustomerId());
         return stripeSessionCustomerIdDTO;
+    }
+
+    private SubscriptionEntityDTO setErrorInSubscriptionEntity(CardException e) {
+        SubscriptionEntityDTO subscriptionEntityDTO = new SubscriptionEntityDTO();
+        subscriptionEntityDTO.setErrorMessage(e.getLocalizedMessage());
+        return subscriptionEntityDTO;
+    }
+
+    private void setPaymentMethod(SubscriptionRequestDTO subscriptionRequestDTO, Customer customer) throws StripeException {
+        PaymentMethod pm = PaymentMethod.retrieve(
+                subscriptionRequestDTO.getPaymentMethodId()
+        );
+        pm.attach(
+                PaymentMethodAttachParams
+                        .builder()
+                        .setCustomer(customer.getId())
+                        .build()
+        );
     }
 }
