@@ -43,7 +43,7 @@ front-end:
   url : "http://localhost:3000/"
 config:
   securite:
-    active: false
+    active: true
   styles:
     images:
       path: "\\src\\main\\resources\\img\\"

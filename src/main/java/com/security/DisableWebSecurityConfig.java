@@ -25,7 +25,7 @@ import java.util.List;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @ConditionalOnProperty(name = "config.securite.active", havingValue = "false")
-public class WebSecurityConfigDev extends WebSecurityConfigurerAdapter implements WebSecurityConfigInterface {
+public class DisableWebSecurityConfig extends WebSecurityConfigurerAdapter implements WebSecurityConfigInterface {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
