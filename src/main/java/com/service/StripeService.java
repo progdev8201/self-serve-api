@@ -5,10 +5,7 @@ import com.mapping.SubscriptionEntityToSubscriptionEntityDTO;
 import com.model.dto.*;
 import com.model.dto.requests.*;
 import com.model.entity.*;
-import com.repository.MenuRepository;
-import com.repository.OwnerRepository;
-import com.repository.StripeSubscriptionProductRepository;
-import com.repository.SubscriptionEntityRepository;
+import com.repository.*;
 import com.stripe.Stripe;
 import com.stripe.exception.CardException;
 import com.stripe.exception.StripeException;
@@ -41,6 +38,9 @@ public class StripeService {
 
     @Autowired
     private MenuRepository menuRepository;
+
+    @Autowired
+    private RestaurantRepository restaurantRepository;
 
     @Autowired
     private SubscriptionEntityRepository subscriptionEntityRepository;
@@ -112,9 +112,9 @@ public class StripeService {
         ownerRepository.save(owner);
     }
 
-    public StripeAccountIdDTO getAccountId(Long menuId){
-        Menu menu = menuRepository.findById(menuId).get();
-        Owner owner = menu.getRestaurant().getOwner();
+    public StripeAccountIdDTO getAccountId(Long restaurantId){
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
+        Owner owner = restaurant.getOwner();
         if(owner.getStripeEnable()){
             StripeAccountIdDTO stripeAccountIdDTO = new StripeAccountIdDTO();
             stripeAccountIdDTO.setValue(owner.getStripeAccountId());

@@ -39,7 +39,7 @@ public class StripeController {
     }
     @PostMapping("/getAccountId")
     public ResponseEntity<StripeAccountIdDTO> getStripeAccountId(@RequestBody Map<String,String> json) throws JsonProcessingException {
-        Long menuId = new ObjectMapper().readValue(json.get("menuId"),Long.class);
+        Long menuId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
         return ResponseEntity.ok(stripeService.getAccountId(menuId));
     }
 
