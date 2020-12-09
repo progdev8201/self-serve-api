@@ -1,7 +1,5 @@
 package com.model.dto;
 
-import com.model.entity.ImgFile;
-
 import java.util.List;
 
 public class RestaurantDTO {

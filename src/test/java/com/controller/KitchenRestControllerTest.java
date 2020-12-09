@@ -10,6 +10,7 @@ import com.model.dto.*;
 import com.model.entity.OrderItem;
 import com.model.enums.OrderStatus;
 import com.model.enums.ProgressStatus;
+import com.model.enums.RoleName;
 import com.service.ClientService;
 import org.h2.store.fs.FileUtils;
 import org.json.JSONException;
@@ -43,6 +44,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // TODO: all test should include assert arrange act as comments so its easier to understand code
 @SpringBootTest
@@ -87,8 +91,8 @@ class KitchenRestControllerTest {
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
+                contentType(APPLICATION_JSON).
+                accept(APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
 
@@ -103,8 +107,8 @@ class KitchenRestControllerTest {
         mvc = initMockMvc();
         result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/findAllTables").
                 content(sendObj.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
+                contentType(APPLICATION_JSON).
+                accept(APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
         List<LinkedHashMap<String, Object>> reponse = mapper.readValue(result.getResponse().getContentAsString(), ArrayList.class);
@@ -121,8 +125,8 @@ class KitchenRestControllerTest {
         mvc = initMockMvc();
         result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/findAllTables").
                 content(sendObj.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
+                contentType(APPLICATION_JSON).
+                accept(APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
         reponse = mapper.readValue(result.getResponse().getContentAsString(), ArrayList.class);
@@ -154,8 +158,8 @@ class KitchenRestControllerTest {
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
                 content(sendObj.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
+                contentType(APPLICATION_JSON).
+                accept(APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
 
@@ -173,8 +177,8 @@ class KitchenRestControllerTest {
         mvc = initMockMvc();
         mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/changeOrderItemStatus").
                 content(sendObj.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
+                contentType(APPLICATION_JSON).
+                accept(APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
 
@@ -183,8 +187,8 @@ class KitchenRestControllerTest {
         mvc = initMockMvc();
         result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/findAllTables").
                 content(sendObj.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
+                contentType(APPLICATION_JSON).
+                accept(APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
         ArrayList reponse = mapper.readValue(result.getResponse().getContentAsByteArray(), ArrayList.class);
@@ -209,8 +213,8 @@ class KitchenRestControllerTest {
         sendObj.put("nombreDeTable", "5");
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/createRestaurant").
                 content(sendObj.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
+                contentType(APPLICATION_JSON).
+                accept(APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
         RestaurantDTO response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), RestaurantDTO.class);
@@ -221,10 +225,10 @@ class KitchenRestControllerTest {
             String pathDansProjet = fileBasePath + "qr.jpg";
             Path currentRelativePath = Paths.get("");
             String absolutePath = currentRelativePath.toAbsolutePath().toString();
-            result = mvc.perform(MockMvcRequestBuilders.get("/product//getProductImg/{imgId}", restaurentTableDTO.getImgFileDTO().getId()).
+            result = mvc.perform(get("/product//getProductImg/{imgId}", restaurentTableDTO.getImgFileDTO().getId()).
                     content(sendObj.toString()).
-                    contentType(MediaType.APPLICATION_JSON).
-                    accept(MediaType.APPLICATION_JSON)).
+                    contentType(APPLICATION_JSON).
+                    accept(APPLICATION_JSON)).
                     andExpect(status().isOk()).
                     andReturn();
             byte[] bytes = result.getResponse().getContentAsByteArray();
@@ -252,8 +256,8 @@ class KitchenRestControllerTest {
         MockMvc mvc = initMockMvc();
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/modifierNomTable").
                 content(sendObj.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
+                contentType(APPLICATION_JSON).
+                accept(APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
         ObjectMapper mapper = new ObjectMapper();
@@ -267,8 +271,8 @@ class KitchenRestControllerTest {
     public void testAddTable() throws Exception {
         MockMvc mvc = initMockMvc();
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/addTable/"+ 2L + "/" + 5).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
+                contentType(APPLICATION_JSON).
+                accept(APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
 
@@ -290,8 +294,8 @@ class KitchenRestControllerTest {
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/getWaiterRequest").
                 content(sendObj.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
+                contentType(APPLICATION_JSON).
+                accept(APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
 
@@ -315,8 +319,8 @@ class KitchenRestControllerTest {
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/changeOrderItemTime").
                 content(sendObj.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
+                contentType(APPLICATION_JSON).
+                accept(APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
 
@@ -346,8 +350,8 @@ class KitchenRestControllerTest {
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/findAllTables").
                 content(sendObj.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
+                contentType(APPLICATION_JSON).
+                accept(APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
         ObjectMapper mapper = new ObjectMapper();
@@ -358,9 +362,9 @@ class KitchenRestControllerTest {
     @Test
     public void testfindRestaurantParRestaurantTable() throws Exception {
         MockMvc mvc = initMockMvc();
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/rest/kitchen/findRestaurantByRestaurantTableId/{tableID}","1").
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
+        MvcResult result = mvc.perform(get("/rest/kitchen/findRestaurantByRestaurantTableId/{tableID}","1").
+                contentType(APPLICATION_JSON).
+                accept(APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
         ObjectMapper mapper = new ObjectMapper();
@@ -368,6 +372,54 @@ class KitchenRestControllerTest {
         RestaurantDTO restaurantDTO = mapper.readValue(result.getResponse().getContentAsString(), RestaurantDTO.class);
         assertEquals(2,restaurantDTO.getId());
     }
+
+    @Test
+    public void updateRestaurantEmployeeCookTest() throws Exception{
+        // Arrange
+        RestaurantUserDto cook = new RestaurantUserDto(6L,"newCookMail@mail.com","ibawe",2L, RoleName.ROLE_COOK);
+        RestaurantUserDto waiter = new RestaurantUserDto(5L,"newWaiterMail@mail.com","ibawe",2L, RoleName.ROLE_WAITER);
+        MockMvc mvc = initMockMvc();
+        ObjectMapper mapper = new ObjectMapper();
+        Long restaurantId = 2L;
+
+        // Act
+        mvc.perform(put("/rest/kitchen/updateRestaurantUser")
+                .content(mapper.writeValueAsString(cook))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        mvc.perform(put("/rest/kitchen/updateRestaurantUser")
+                .content(mapper.writeValueAsString(waiter))
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        MvcResult result = mvc.perform(get("/rest/kitchen/restaurantEmployees/" + restaurantId)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        mapper.registerModule(new JavaTimeModule());
+
+        List<RestaurantUserDto> restaurantUserDtos = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<RestaurantUserDto>>() {});
+
+        // Assert
+        assertEquals(cook.getId(),restaurantUserDtos.get(0).getId());
+        assertEquals(cook.getUsername(),restaurantUserDtos.get(0).getUsername());
+        assertEquals(cook.getRestaurantId(),restaurantUserDtos.get(0).getRestaurantId());
+        assertEquals(cook.getRole(),restaurantUserDtos.get(0).getRole());
+
+        assertEquals(waiter.getId(),restaurantUserDtos.get(1).getId());
+        assertEquals(waiter.getUsername(),restaurantUserDtos.get(1).getUsername());
+        assertEquals(waiter.getRestaurantId(),restaurantUserDtos.get(1).getRestaurantId());
+        assertEquals(waiter.getRole(),restaurantUserDtos.get(1).getRole());
+    }
+
+    // Private Methods
 
     private MenuDTO createMenuDTO() {
         List<ProductDTO> productDTOS = new ArrayList<>();

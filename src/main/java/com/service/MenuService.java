@@ -22,22 +22,19 @@ public class MenuService {
     private MenuRepository menuRepository;
 
     @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
     private OwnerRepository ownerRepository;
 
     @Autowired
-    private OrderItemRepository orderItemRepository;
+    private CookRepository cookRepository;
 
     @Autowired
-    private ProductService productService;
+    private WaiterRepository waiterRepository;
 
     @Autowired
     private RestaurantRepository restaurantRepository;
 
     @Autowired
-    DTOUtils dtoUtils;
+    private DTOUtils dtoUtils;
 
 
     public List<MenuDTO> findFoodMenuForRestaurants(Long id) {

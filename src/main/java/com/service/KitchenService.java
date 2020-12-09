@@ -8,14 +8,18 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.mapping.OrderItemToOrderItemDTO;
 import com.model.dto.OrderItemDTO;
 import com.model.dto.RestaurantDTO;
+import com.model.dto.RestaurantUserDto;
 import com.model.entity.*;
 import com.model.enums.MenuType;
 import com.model.enums.ProgressStatus;
+import com.model.enums.RoleName;
 import com.repository.*;
 import com.service.Util.DTOUtils;
 import com.service.Util.ImgFileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -37,17 +41,26 @@ public class KitchenService {
     @Autowired
     private RestaurentTableRepository restaurentTableRepository;
 
+    @Autowired
+    private CookRepository cookRepository;
+
+    @Autowired
+    private WaiterRepository waiterRepository;
 
     @Autowired
     private RestaurantRepository restaurantRepository;
+
     @Value("${front-end.url}")
-    String frontEndUrl;
+    private String frontEndUrl;
 
     @Autowired
-    ImgFileRepository imgFileRepository;
+    private ImgFileRepository imgFileRepository;
 
     @Autowired
     private OwnerRepository ownerRepository;
+
+    @Autowired
+    private PasswordEncoder encoder;
 
     @Autowired
     private DTOUtils dtoUtils;
@@ -76,6 +89,40 @@ public class KitchenService {
         Restaurant savedRestaurant = findRestaurantInOwnerList(restaurantName, owner);
 
         return dtoUtils.mapRestaurantToRestaurantDTO(savedRestaurant);
+    }
+
+    public ResponseEntity<String> addUserToRestaurant(RestaurantUserDto restaurantUserDto) {
+        if (restaurantUserDto.getRole().equals(RoleName.ROLE_COOK)) {
+            addCookToRestaurant(restaurantUserDto);
+            return ResponseEntity.ok().build();
+        } else if (restaurantUserDto.getRole().equals(RoleName.ROLE_WAITER)) {
+            addWaiterToRestaurant(restaurantUserDto);
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.badRequest().body("The role attributed does not exist!");
+    }
+
+    public ResponseEntity<String> updateRestaurantEmployee(RestaurantUserDto restaurantUserDto) {
+        if (restaurantUserDto.getRole().equals(RoleName.ROLE_COOK)) {
+            updateRestaurantCook(restaurantUserDto);
+            return ResponseEntity.ok().build();
+        } else if (restaurantUserDto.getRole().equals(RoleName.ROLE_WAITER)) {
+            updateRestaurantWaiter(restaurantUserDto);
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.badRequest().body("The role attributed does not exist");
+    }
+
+    public List<RestaurantUserDto> findRestaurantEmployees(Long restaurantId){
+        List<RestaurantUserDto> restaurantUserDtos = new ArrayList<>();
+
+        cookRepository.findCookByRestaurant_Id(restaurantId).ifPresent(cook -> restaurantUserDtos.add(new RestaurantUserDto(cook)));
+
+        waiterRepository.findWaiterByRestaurant_Id(restaurantId).ifPresent(waiter -> restaurantUserDtos.add(new RestaurantUserDto(waiter)));
+
+        return restaurantUserDtos;
     }
 
     public RestaurantDTO uploadLogo(MultipartFile file, long restaurantId) throws IOException {
@@ -108,6 +155,7 @@ public class KitchenService {
         List<Restaurant> restaurants = owner.getRestaurantList().stream().filter(resto -> resto.getId() != restaurantId).collect(Collectors.toList());
 
         owner.setRestaurantList(restaurants);
+
         ownerRepository.save(owner);
     }
 
@@ -158,7 +206,41 @@ public class KitchenService {
         return returnValue;
     }
 
+
     //PRIVATE METHODS
+    private void updateRestaurantWaiter(RestaurantUserDto restaurantUserDto) {
+        waiterRepository.findById(restaurantUserDto.getId()).ifPresent(waiter -> {
+            waiter.setUsername(restaurantUserDto.getUsername());
+            waiter.setPassword(encoder.encode(restaurantUserDto.getPassword()));
+            waiterRepository.save(waiter);
+        });
+    }
+
+    private void updateRestaurantCook(RestaurantUserDto restaurantUserDto) {
+        cookRepository.findById(restaurantUserDto.getId()).ifPresent(cook -> {
+            cook.setUsername(restaurantUserDto.getUsername());
+            cook.setPassword(encoder.encode(restaurantUserDto.getPassword()));
+            cookRepository.save(cook);
+        });
+    }
+
+    private void addCookToRestaurant(RestaurantUserDto restaurantUserDto) {
+        restaurantRepository.findById(restaurantUserDto.getRestaurantId()).ifPresent(restaurant -> {
+            Cook cook = new Cook(restaurantUserDto);
+            cook.setPassword(encoder.encode(cook.getPassword()));
+            cook.setRestaurant(restaurant);
+            cookRepository.save(cook);
+        });
+    }
+
+    private void addWaiterToRestaurant(RestaurantUserDto restaurantUserDto) {
+        restaurantRepository.findById(restaurantUserDto.getRestaurantId()).ifPresent(restaurant -> {
+            Waiter waiter = new Waiter(restaurantUserDto);
+            waiter.setPassword(encoder.encode(waiter.getPassword()));
+            waiter.setRestaurant(restaurant);
+            waiterRepository.save(waiter);
+        });
+    }
 
     private boolean isOrderItemToFetch(OrderItem orderItem) {
         return (orderItem.getOrderStatus() == ProgressStatus.READY) ||
@@ -178,7 +260,7 @@ public class KitchenService {
         RestaurentTable restaurentTable = new RestaurentTable();
         restaurentTable.setTableNumber(tableNumber);
         restaurentTable.setRestaurant(restaurant);
-        ImgFile imgFile =ImgFileUtils.createImgFile(generateQRCode(frontEndUrl, Integer.toString(restaurentTable.getTableNumber())), QR_CODE_FILE_TYPE);
+        ImgFile imgFile = ImgFileUtils.createImgFile(generateQRCode(frontEndUrl, Integer.toString(restaurentTable.getTableNumber())), QR_CODE_FILE_TYPE);
         restaurentTable.setImgFile(imgFile);
         return restaurentTable;
     }
@@ -216,7 +298,6 @@ public class KitchenService {
         owner = ownerRepository.save(owner);
         return owner;
     }
-
 
 
     private void createTables(int nombreDeTable, Restaurant restaurant) throws WriterException, IOException {
