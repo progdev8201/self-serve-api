@@ -40,7 +40,7 @@ stripe:
 
 
 front-end:
-  url : "http://localhost:3000/"
+  url : "https://front-end-dev.i-serve.ca"
 config:
   securite:
     active: true
