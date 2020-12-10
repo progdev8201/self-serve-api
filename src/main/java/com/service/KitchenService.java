@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -46,6 +47,9 @@ public class KitchenService {
 
     @Autowired
     private WaiterRepository waiterRepository;
+
+    @Autowired
+    private AdminRepository adminRepository;
 
     @Autowired
     private RestaurantRepository restaurantRepository;
@@ -92,6 +96,10 @@ public class KitchenService {
     }
 
     public ResponseEntity<String> addUserToRestaurant(RestaurantUserDto restaurantUserDto) {
+        if (adminRepository.existsByUsername(restaurantUserDto.getUsername()))
+            return ResponseEntity.badRequest().body("Username already exist");
+
+
         if (restaurantUserDto.getRole().equals(RoleName.ROLE_COOK)) {
             addCookToRestaurant(restaurantUserDto);
             return ResponseEntity.ok().build();
@@ -104,6 +112,13 @@ public class KitchenService {
     }
 
     public ResponseEntity<String> updateRestaurantEmployee(RestaurantUserDto restaurantUserDto) {
+        Admin admin = adminRepository.findById(restaurantUserDto.getId()).get();
+
+        if (!admin.getUsername().equals(restaurantUserDto.getUsername())){
+            if (adminRepository.existsByUsername(restaurantUserDto.getUsername()))
+                return ResponseEntity.badRequest().body("Username already exist");
+        }
+
         if (restaurantUserDto.getRole().equals(RoleName.ROLE_COOK)) {
             updateRestaurantCook(restaurantUserDto);
             return ResponseEntity.ok().build();
@@ -115,7 +130,7 @@ public class KitchenService {
         return ResponseEntity.badRequest().body("The role attributed does not exist");
     }
 
-    public List<RestaurantUserDto> findRestaurantEmployees(Long restaurantId){
+    public List<RestaurantUserDto> findRestaurantEmployees(Long restaurantId) {
         List<RestaurantUserDto> restaurantUserDtos = new ArrayList<>();
 
         cookRepository.findCookByRestaurant_Id(restaurantId).ifPresent(cook -> restaurantUserDtos.add(new RestaurantUserDto(cook)));
@@ -206,11 +221,11 @@ public class KitchenService {
         return returnValue;
     }
 
-    public Long findCookRestaurantId(String username){
+    public Long findCookRestaurantId(String username) {
         return cookRepository.findCookByUsername(username).get().getRestaurant().getId();
     }
 
-    public Long findWaiterRestaurantId(String username){
+    public Long findWaiterRestaurantId(String username) {
         System.out.println("My id");
         System.out.println(waiterRepository.findWaiterByUsername(username).get().getRestaurant().getId());
         return waiterRepository.findWaiterByUsername(username).get().getRestaurant().getId();
