@@ -52,7 +52,7 @@ public class KitchenService {
     @Autowired
     private DTOUtils dtoUtils;
 
-    private final String restaurantTableIdPrefix = "start?restaurantTableId=";
+    private final String restaurantTableIdPrefix = "/start?restaurantTableId=";
 
     private final String QR_CODE_FILE_TYPE = "QR Code";
     private final String RESTAURANT_LOGO_FILE_TYPE = "LOGO";

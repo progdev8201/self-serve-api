@@ -34,7 +34,7 @@ stripe:
 
 
 front-end:
-  url : "https://i-serve.ca/"
+  url : "https://i-serve.ca"
 config:
   securite:
     active: true
