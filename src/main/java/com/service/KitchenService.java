@@ -206,6 +206,15 @@ public class KitchenService {
         return returnValue;
     }
 
+    public Long findCookRestaurantId(String username){
+        return cookRepository.findCookByUsername(username).get().getRestaurant().getId();
+    }
+
+    public Long findWaiterRestaurantId(String username){
+        System.out.println("My id");
+        System.out.println(waiterRepository.findWaiterByUsername(username).get().getRestaurant().getId());
+        return waiterRepository.findWaiterByUsername(username).get().getRestaurant().getId();
+    }
 
     //PRIVATE METHODS
     private void updateRestaurantWaiter(RestaurantUserDto restaurantUserDto) {

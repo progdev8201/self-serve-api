@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.MediaType.ALL;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -380,6 +381,7 @@ class KitchenRestControllerTest {
         RestaurantUserDto waiter = new RestaurantUserDto(5L,"newWaiterMail@mail.com","ibawe",2L, RoleName.ROLE_WAITER);
         MockMvc mvc = initMockMvc();
         ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
         Long restaurantId = 2L;
 
         // Act
@@ -403,7 +405,6 @@ class KitchenRestControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        mapper.registerModule(new JavaTimeModule());
 
         List<RestaurantUserDto> restaurantUserDtos = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<RestaurantUserDto>>() {});
 
@@ -418,6 +419,49 @@ class KitchenRestControllerTest {
         assertEquals(waiter.getRestaurantId(),restaurantUserDtos.get(1).getRestaurantId());
         assertEquals(waiter.getRole(),restaurantUserDtos.get(1).getRole());
     }
+
+    //todo find out why is there a 406 error
+   /* @Test
+    public void findCookRestaurantId() throws Exception {
+        // Arrange
+        String cookUsername = "cook@mail.com";
+        MockMvc mvc = initMockMvc();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        // Act
+        MvcResult result = mvc.perform(get("/rest/kitchen/cookRestaurant/" + cookUsername)
+                .contentType(ALL)
+                .accept(ALL))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Long restaurantId = mapper.readValue(result.getResponse().getContentAsString(),Long.class);
+
+        // Assert
+        assertEquals(2,restaurantId);
+    }
+
+    @Test
+    public void findWaiterRestaurantId() throws Exception {
+        // Arrange
+        String waiterUsername = "waiter@mail.com";
+        MockMvc mvc = initMockMvc();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        // Act
+        MvcResult result = mvc.perform(get("/rest/kitchen/waiterRestaurant/" + waiterUsername)
+                .contentType(ALL)
+                .accept(ALL))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Long restaurantId = mapper.readValue(result.getResponse().getContentAsString(),Long.class);
+
+        // Assert
+        assertEquals(2,restaurantId);
+    }*/
 
     // Private Methods
 

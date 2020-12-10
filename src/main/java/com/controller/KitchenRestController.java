@@ -80,6 +80,16 @@ public class KitchenRestController {
         return ResponseEntity.ok(kitchenService.findRestaurantByRestaurantTableId(tableID));
     }
 
+    @GetMapping("/cookRestaurant/{username:.+}")
+    public Long findCookRestaurantId(@PathVariable final String username){
+        return kitchenService.findCookRestaurantId(username);
+    }
+
+    @GetMapping("/waiterRestaurant/{username:.+}")
+    public Long findWaiterRestaurantId(@PathVariable final String username){
+        return kitchenService.findWaiterRestaurantId(username);
+    }
+
     //ALLOW COOK TO MODIFY ORDER TIME OR END ORDER
     //PUT
 
