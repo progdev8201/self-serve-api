@@ -34,7 +34,7 @@ config:
       path: "\\src\\main\\resources\\img\\"
 
 front-end:
-  url : "http://localhost:3000/"
+  url : "http://localhost:3000"
 
 security:
   jwt:

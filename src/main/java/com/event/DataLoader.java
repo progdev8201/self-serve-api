@@ -86,6 +86,7 @@ public class DataLoader implements CommandLineRunner {
 
         restaurantRepository.save(restaurant);
         Bill bill = new Bill();
+        bill.setBillStatus(BillStatus.PROGRESS);
         bill.setOrderItems(new ArrayList<>());
         OrderItem orderItem;
         Menu menuDiner = createMenu("Diner", MenuType.FOOD);

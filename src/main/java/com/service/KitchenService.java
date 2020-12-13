@@ -62,19 +62,20 @@ public class KitchenService {
     @Autowired
     private DTOUtils dtoUtils;
 
-    private final String restaurantTableIdPrefix = "start?restaurantTableId=";
+    private final String restaurantTableIdPrefix = "/start?restaurantTableId=";
 
     private final String QR_CODE_FILE_TYPE = "QR Code";
     private final String RESTAURANT_LOGO_FILE_TYPE = "LOGO";
 
     //PUBLIC METHODS
 
-    public OrderItemDTO changeOrderItemStatus(OrderItemDTO orderItemDTO) {
+
+    public OrderItemDTO updateOrderItem(OrderItemDTO orderItemDTO) {
         OrderItem orderItem = orderItemRepository.findById(orderItemDTO.getId()).get();
-
-        orderItem.setOrderStatus(ProgressStatus.READY);
-
-        return constructReturnValue(orderItemRepository.save(orderItem));
+        // on dois faire un mapping a la main , sinon , on va avoir detached entity exception
+        orderItem.setOrderStatus(orderItemDTO.getOrderStatus());
+        orderItem.setTempsDePreparation(orderItemDTO.getTempsDePreparation());
+        return dtoUtils.mapOrderItemToOrderItemDTO(orderItemRepository.save(orderItem));
     }
 
 
@@ -319,12 +320,6 @@ public class KitchenService {
         restaurant.setName(restaurantName);
         restaurant.setRestaurentTables(new ArrayList<>());
         return restaurant;
-    }
-
-    private OrderItemDTO constructReturnValue(OrderItem orderItem) {
-        OrderItemDTO returnValue = OrderItemToOrderItemDTO.instance.convert(orderItem);
-        returnValue.setProduct(dtoUtils.mapProductToProductDTO(orderItem.getProduct()));
-        return returnValue;
     }
 
     private void removeTableFromRestaurant(Long restaurantTableId, Restaurant restaurant, RestaurentTable restaurantTable) {

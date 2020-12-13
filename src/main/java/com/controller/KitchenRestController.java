@@ -46,30 +46,6 @@ public class KitchenRestController {
 
     //GET
 
-    //ALLOW SERVER AND COOK TO LIST REQUEST
-    @GetMapping("/request-all")
-    public List<Request> findAllRequests() {
-        List<Request> requestList = new ArrayList<>();
-        requestRepository.findAll().forEach(r -> {
-            if (r.getOrderItem().getOrderStatus() != ProgressStatus.READY)
-                requestList.add(r);
-        });
-
-        return requestList;
-    }
-
-    //ALLOW COOK TO LIST ORDERS
-    @GetMapping("/orders-all")
-    public List<Request> findAllOrders() {
-        List<Request> orderRequestList = new ArrayList<>();
-        requestRepository.findAll().forEach(r -> {
-            if (r.getRequestType() == RequestType.FOODREQUEST)
-                orderRequestList.add(r);
-        });
-
-        return orderRequestList;
-    }
-
     @GetMapping("/restaurantEmployers/{restaurantId}")
     public List<RestaurantEmployerDTO> findAllRestaurantEmployers(@PathVariable final Long restaurantId){
         return kitchenService.findAllRestaurantEmployers(restaurantId);
@@ -92,10 +68,9 @@ public class KitchenRestController {
 
     //ALLOW COOK TO MODIFY ORDER TIME OR END ORDER
     //PUT
-
-    @PutMapping("/edit-orderItem")
-    public void updateOrderItem(@RequestBody OrderItem orderItem) {
-        orderItemRepository.save(orderItem);
+    @PutMapping("/editOrderItem")
+    public void updateOrderItem(@RequestBody OrderItemDTO orderItemDTO) {
+        kitchenService.updateOrderItem(orderItemDTO);
     }
 
     @PutMapping("/updateRestaurantUser")
@@ -151,15 +126,6 @@ public class KitchenRestController {
         Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"), Long.class);
         kitchenService.deleteRestaurantTable(tableId, restaurantId);
         return new ResponseEntity(HttpStatus.OK);
-    }
-
-    @PostMapping("/changeOrderItemStatus")
-    public ResponseEntity<OrderItemDTO> changeOrderItemStatus(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        mapper.registerModule(new JavaTimeModule());
-        OrderItemDTO orderItemDTO = mapper.readValue(json.get("orderItemDTO"), OrderItemDTO.class);
-        return ResponseEntity.ok(kitchenService.changeOrderItemStatus(orderItemDTO));
     }
 
     @PostMapping("/getWaiterRequest")

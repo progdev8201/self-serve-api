@@ -3,13 +3,12 @@ package com.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.model.dto.*;
-import org.json.JSONException;
+import com.model.enums.BillStatus;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -21,11 +20,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 // TODO: all test should include assert arrange act as comments so its easier to understand code
 @SpringBootTest
 class BillControllerTests {
     @Autowired
-    BillController billController;
+    private BillController billController;
 
     @Test
     void contextLoads() {
@@ -56,15 +56,16 @@ class BillControllerTests {
         mapper.registerModule(new JavaTimeModule());
         BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
 
-        assertEquals(1,reponse.getOrderItems().get(0).getOption().size());
-        assertEquals("po de bacon po de bacon po de bacon",reponse.getOrderItems().get(0).getCommentaires());
-        assertEquals(1,reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
+        assertEquals(1, reponse.getOrderItems().get(0).getOption().size());
+        assertEquals("po de bacon po de bacon po de bacon", reponse.getOrderItems().get(0).getCommentaires());
+        assertEquals(1, reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
         assertEquals(29.99, reponse.getPrixTotal());
         assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
         assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
     }
+
     @Test
     public void testCreateMakeOrderWithOrderItemCheckItemPlus() throws Exception {
         MockMvc mvc = initMockMvc();
@@ -90,15 +91,16 @@ class BillControllerTests {
         mapper.registerModule(new JavaTimeModule());
         BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
 
-        assertEquals(1,reponse.getOrderItems().get(0).getOption().size());
-        assertEquals("po de bacon po de bacon po de bacon",reponse.getOrderItems().get(0).getCommentaires());
-        assertEquals(1,reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
+        assertEquals(1, reponse.getOrderItems().get(0).getOption().size());
+        assertEquals("po de bacon po de bacon po de bacon", reponse.getOrderItems().get(0).getCommentaires());
+        assertEquals(1, reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
         assertEquals(34.99, reponse.getPrixTotal());
         assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
         assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
     }
+
     @Test
     public void testCreateMakeOrderWithCheckItemAddOn() throws Exception {
         MockMvc mvc = initMockMvc();
@@ -124,15 +126,16 @@ class BillControllerTests {
         mapper.registerModule(new JavaTimeModule());
         BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
 
-        assertEquals(1,reponse.getOrderItems().get(0).getOption().size());
-        assertEquals("po de bacon po de bacon po de bacon",reponse.getOrderItems().get(0).getCommentaires());
-        assertEquals(1,reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
+        assertEquals(1, reponse.getOrderItems().get(0).getOption().size());
+        assertEquals("po de bacon po de bacon po de bacon", reponse.getOrderItems().get(0).getCommentaires());
+        assertEquals(1, reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
         assertEquals(32.49, reponse.getPrixTotal());
         assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
         assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
     }
+
     @Test
     public void initVoid() throws Exception {
         MockMvc mvc = initMockMvc();
@@ -145,9 +148,10 @@ class BillControllerTests {
                 andReturn();
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        BillDTO response = mapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
+        BillDTO response = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
         assertNotNull(response.getId());
     }
+
     @Test
     public void fetchBillByIdGetRightBill() throws Exception {
         MockMvc mvc = initMockMvc();
@@ -163,10 +167,33 @@ class BillControllerTests {
                 andReturn();
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        BillDTO response = mapper.readValue(result.getResponse().getContentAsString(),BillDTO.class);
-        assertEquals(1,response.getId());
+        BillDTO response = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
+        assertEquals(1, response.getId());
 
     }
+
+    @Test
+    public void findBillStatus() throws Exception {
+        // Arrange
+        MockMvc mvc = initMockMvc();
+        long billId = 1L;
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        // Act
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/order/billStatus/" + billId).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+
+        String status = mapper.readValue(result.getResponse().getContentAsString(), String.class);
+
+        // Assert
+        assertEquals(BillStatus.PROGRESS.toString(), status);
+    }
+
     @Test
     public void testCreateMakeOrderAddItemToBillByGuest() throws Exception {
         MockMvc mvc = initMockMvc();
@@ -214,9 +241,9 @@ class BillControllerTests {
         objectMapper.registerModule(new JavaTimeModule());
         reponse = objectMapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
 
-        assertEquals(1,reponse.getOrderItems().get(0).getOption().size());
-        assertEquals("po de bacon po de bacon po de bacon",reponse.getOrderItems().get(0).getCommentaires());
-        assertEquals(1,reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
+        assertEquals(1, reponse.getOrderItems().get(0).getOption().size());
+        assertEquals("po de bacon po de bacon po de bacon", reponse.getOrderItems().get(0).getCommentaires());
+        assertEquals(1, reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
         assertEquals(59.98, reponse.getPrixTotal());
         assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
@@ -317,9 +344,9 @@ class BillControllerTests {
         objectMapper.registerModule(new JavaTimeModule());
         BillDTO reponse = objectMapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
 
-        assertEquals(1,reponse.getOrderItems().get(0).getOption().size());
-        assertEquals("po de bacon po de bacon po de bacon",reponse.getOrderItems().get(0).getCommentaires());
-        assertEquals(1,reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
+        assertEquals(1, reponse.getOrderItems().get(0).getOption().size());
+        assertEquals("po de bacon po de bacon po de bacon", reponse.getOrderItems().get(0).getCommentaires());
+        assertEquals(1, reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
         assertEquals(29.99, reponse.getPrixTotal());
         assertEquals("le steak chico", reponse.getOrderItems().get(0).getProduct().getName());
@@ -402,6 +429,7 @@ class BillControllerTests {
         billDTO.setOrderItems(orderItemDTOList);
         return billDTO;
     }
+
     private BillDTO initBillDTOCheckItemPlusPrice() {
         BillDTO billDTO = initBillDTO();
         CheckItemDTO checkItemDTO = new CheckItemDTO();
