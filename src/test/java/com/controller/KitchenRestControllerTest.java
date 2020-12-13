@@ -389,7 +389,7 @@ class KitchenRestControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        MvcResult result = mvc.perform(get("/rest/kitchen/restaurantEmployees/" + restaurantId)
+        MvcResult result = mvc.perform(get("/rest/kitchen/restaurantEmployers/" + restaurantId)
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
