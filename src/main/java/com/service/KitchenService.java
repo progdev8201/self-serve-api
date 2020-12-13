@@ -132,8 +132,6 @@ public class KitchenService {
     }
 
     public RestaurantEmployerDTO findRestaurantEmployer(String username) {
-        System.out.println("my username");
-        System.out.println(employerRepository.findEmployerByUsername(username).get().getRestaurant().getOwner().getUsername());
         return new RestaurantEmployerDTO(employerRepository.findEmployerByUsername(username).get());
     }
 
