@@ -29,14 +29,4 @@ public class Employer extends Guest {
     public void setRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
     }
-
-    @Override
-    public String toString() {
-        return "Employer{" +
-                "restaurant=" + restaurant +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", role='" + role + '\'' +
-                '}';
-    }
 }
