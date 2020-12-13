@@ -9,12 +9,6 @@ import com.model.dto.OrderItemDTO;
 import com.model.dto.RestaurantDTO;
 import com.model.dto.RestaurantEmployerDTO;
 import com.model.dto.RestaurentTableDTO;
-import com.model.entity.OrderItem;
-import com.model.entity.Request;
-import com.model.enums.ProgressStatus;
-import com.model.enums.RequestType;
-import com.repository.OrderItemRepository;
-import com.repository.RequestRepository;
 import com.service.KitchenService;
 import com.service.RestaurentTableService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,19 +18,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("rest/kitchen")
 public class KitchenRestController {
-
-    @Autowired
-    private RequestRepository requestRepository;
-
-    @Autowired
-    private OrderItemRepository orderItemRepository;
 
     @Autowired
     private RestaurentTableService restaurentTableService;
@@ -47,22 +34,22 @@ public class KitchenRestController {
     //GET
 
     @GetMapping("/restaurantEmployers/{restaurantId}")
-    public List<RestaurantEmployerDTO> findAllRestaurantEmployers(@PathVariable final Long restaurantId){
+    public List<RestaurantEmployerDTO> findAllRestaurantEmployers(@PathVariable final Long restaurantId) {
         return kitchenService.findAllRestaurantEmployers(restaurantId);
     }
 
     @GetMapping("/restaurantEmployer/{username}")
-    public RestaurantEmployerDTO findRestaurantEmployer(@PathVariable final String username){
+    public RestaurantEmployerDTO findRestaurantEmployer(@PathVariable final String username) {
         return kitchenService.findRestaurantEmployer(username);
     }
 
     @GetMapping("/findRestaurantByRestaurantTableId/{tableID}")
-    public ResponseEntity<RestaurantDTO> findRestaurantByRestaurantTableId(@PathVariable long tableID){
+    public ResponseEntity<RestaurantDTO> findRestaurantByRestaurantTableId(@PathVariable long tableID) {
         return ResponseEntity.ok(kitchenService.findRestaurantByRestaurantTableId(tableID));
     }
 
     @GetMapping("/employerRestaurant/{username:.+}")
-    public Long findEmployerRestaurantId(@PathVariable final String username){
+    public Long findEmployerRestaurantId(@PathVariable final String username) {
         return kitchenService.findEmployerRestaurantId(username);
     }
 
@@ -74,7 +61,7 @@ public class KitchenRestController {
     }
 
     @PutMapping("/updateRestaurantUser")
-    public ResponseEntity<String> updateRestaurantEmployee(@RequestBody final RestaurantEmployerDTO restaurantEmployerDTO){
+    public ResponseEntity<String> updateRestaurantEmployee(@RequestBody final RestaurantEmployerDTO restaurantEmployerDTO) {
         return kitchenService.updateRestaurantEmployee(restaurantEmployerDTO);
     }
 
@@ -109,8 +96,8 @@ public class KitchenRestController {
     }
 
     @PostMapping("/addTable/{restaurantId}/{tableAmount}")
-    public ResponseEntity<RestaurantDTO> addRestaurantTable(@PathVariable long restaurantId,@PathVariable int tableAmount) throws IOException, WriterException {
-        return ResponseEntity.ok(kitchenService.addRestaurantTable(restaurantId,tableAmount));
+    public ResponseEntity<RestaurantDTO> addRestaurantTable(@PathVariable long restaurantId, @PathVariable int tableAmount) throws IOException, WriterException {
+        return ResponseEntity.ok(kitchenService.addRestaurantTable(restaurantId, tableAmount));
     }
 
     @PostMapping("/modifierNomTable")
@@ -149,7 +136,7 @@ public class KitchenRestController {
     }
 
     @PostMapping("/addUserToRestaurant")
-    public ResponseEntity<String> addUserToRestaurant(@RequestBody final RestaurantEmployerDTO restaurantEmployerDTO){
+    public ResponseEntity<String> addUserToRestaurant(@RequestBody final RestaurantEmployerDTO restaurantEmployerDTO) {
         return kitchenService.addUserToRestaurant(restaurantEmployerDTO);
     }
 
