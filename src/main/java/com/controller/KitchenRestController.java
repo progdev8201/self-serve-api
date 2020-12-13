@@ -45,31 +45,6 @@ public class KitchenRestController {
 
     //GET
 
-    //ALLOW SERVER AND COOK TO LIST REQUEST
-    @GetMapping("/request-all")
-    public List<Request> findAllRequests() {
-        List<Request> requestList = new ArrayList<>();
-        requestRepository.findAll().forEach(r -> {
-            if (r.getOrderItem().getOrderStatus() != ProgressStatus.READY)
-                requestList.add(r);
-        });
-
-        return requestList;
-    }
-
-    //ALLOW COOK TO LIST ORDERS
-    @GetMapping("/orders-all")
-    public List<Request> findAllOrders() {
-        List<Request> orderRequestList = new ArrayList<>();
-        requestRepository.findAll().forEach(r -> {
-            if (r.getRequestType() == RequestType.FOODREQUEST)
-                orderRequestList.add(r);
-        });
-
-        return orderRequestList;
-    }
-
-
     //ALLOW COOK TO MODIFY ORDER TIME OR END ORDER
 
     //PUT
