@@ -24,8 +24,6 @@ public class BillController {
 
     @GetMapping("/billStatus/{billId}")
     public BillStatus findBillStatus(@PathVariable final Long billId){
-        System.out.println("this is my status");
-        System.out.println(clientService.findBillStatus(billId).toString());
         return clientService.findBillStatus(billId);
     }
 
