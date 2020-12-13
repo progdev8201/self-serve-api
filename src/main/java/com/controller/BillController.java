@@ -7,6 +7,7 @@ import com.model.dto.BillDTO;
 import com.model.dto.JwtResponse;
 import com.model.dto.LoginForm;
 import com.model.dto.ProductDTO;
+import com.model.enums.BillStatus;
 import com.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,12 @@ import java.util.Map;
 public class BillController {
 
     @Autowired
-    ClientService clientService;
+    private ClientService clientService;
+
+    @GetMapping("/billStatus/{billId}")
+    public BillStatus findBillStatus(@PathVariable final Long billId){
+        return clientService.findBillStatus(billId);
+    }
 
     @PostMapping("/makeOrder")
     public ResponseEntity<BillDTO> makeOrder(@RequestBody Map<String, String> json) throws JsonProcessingException {

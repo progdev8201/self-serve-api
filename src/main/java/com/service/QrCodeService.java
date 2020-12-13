@@ -6,6 +6,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -33,15 +34,12 @@ public class QrCodeService {
     private final String DIR = "src/main/resources/qrfolder/";
     private final String ext = ".png";
     private final String LOGO = "src/main/resources/img/iserveqrlogo.png";
-    private final String CONTENT = "http://i-serve.ca/start?restaurantTableId=";
+    private final String suffix = "/start?restaurantTableId=";
+    @Value("${front-end.url}")
+    private String link;
     private final int WIDTH = 600;
     private final int HEIGHT = 600;
     private final float DELTA_PERCENTAGE_LIMIT = .5f;
-
-    public static void main(String[] args) {
-        QrCodeService qrCodeService = new QrCodeService();
-        qrCodeService.downloadQrCode(5);
-    }
 
     public ResponseEntity<Resource> downloadQrCode(@NotNull int tableId) {
         // Create new configuration that specifies the error correction
@@ -55,7 +53,7 @@ public class QrCodeService {
         try {
 
             // Create a qr code with the url as content and a size of WxH px
-            bitMatrix = writer.encode(CONTENT + tableId, BarcodeFormat.QR_CODE, WIDTH, HEIGHT, hints);
+            bitMatrix = writer.encode(link + suffix + tableId, BarcodeFormat.QR_CODE, WIDTH, HEIGHT, hints);
 
             // Load QR image
             BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
@@ -86,13 +84,11 @@ public class QrCodeService {
             // (deltaHeight / 2). Background: Left/Right and Top/Bottom must be
             // the same space for the logo to be centered
             g.drawImage(overly, (int) Math.round(deltaWidth / 2), (int) Math.round(deltaHeight / 2), null);
-            g.setFont(new Font("Purisa", Font.PLAIN, 50));
-            g.drawString("Most relationships seem soeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee transitory", 0, 0);
 
             // Write combined image as PNG to OutputStream
             ImageIO.write(combined, "png", os);
             // Store Image
-            Files.copy(new ByteArrayInputStream(os.toByteArray()), Paths.get(DIR + "fileqrcode" + ext), StandardCopyOption.REPLACE_EXISTING);
+//            Files.copy(new ByteArrayInputStream(os.toByteArray()), Paths.get(DIR + "fileqrcode" + ext), StandardCopyOption.REPLACE_EXISTING);
 
         } catch (Exception e) {
             e.printStackTrace();

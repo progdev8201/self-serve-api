@@ -33,8 +33,6 @@ import java.util.stream.Stream;
 public class ClientService {
     private BillRepository billRepository;
     private GuestRepository guestRepository;
-    private MenuRepository menuRepository;
-    private OrderItemRepository orderItemRepository;
     private ProductRepository productRepository;
     private RestaurantRepository restaurantRepository;
 
@@ -46,11 +44,9 @@ public class ClientService {
     private static final int DOUBLE_SCALE_PLACES = 2;
 
     @Autowired
-    public ClientService(BillRepository billRepository, GuestRepository guestRepository, MenuRepository menuRepository, OrderItemRepository orderItemRepository, ProductRepository productRepository, RestaurantRepository restaurantRepository, RestaurentTableService restaurentTableService, RestaurentTableRepository restaurentTableRepository, DTOUtils dtoUtils) {
+    public ClientService(BillRepository billRepository, GuestRepository guestRepository, ProductRepository productRepository, RestaurantRepository restaurantRepository, RestaurentTableService restaurentTableService, RestaurentTableRepository restaurentTableRepository, DTOUtils dtoUtils) {
         this.billRepository = billRepository;
         this.guestRepository = guestRepository;
-        this.menuRepository = menuRepository;
-        this.orderItemRepository = orderItemRepository;
         this.productRepository = productRepository;
         this.restaurantRepository = restaurantRepository;
         this.restaurentTableService = restaurentTableService;
@@ -64,6 +60,10 @@ public class ClientService {
         Bill bill = new Bill();
         billRepository.save(bill);
         return BillToBillDTO.instance.convert(bill);
+    }
+
+    public BillStatus findBillStatus(Long id){
+        return billRepository.findById(id).get().getBillStatus();
     }
 
     public boolean makePayment(Long billId) {
