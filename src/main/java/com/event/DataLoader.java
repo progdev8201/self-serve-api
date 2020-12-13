@@ -187,8 +187,8 @@ public class DataLoader implements CommandLineRunner {
         // add waiter and cook to restaurant
         RestaurantEmployerDTO waiter = new RestaurantEmployerDTO(null,"waiter@mail.com","123456",restaurant.getId(),RoleName.ROLE_WAITER.toString());
         RestaurantEmployerDTO cook = new RestaurantEmployerDTO(null,"cook@mail.com","123456",restaurant.getId(),RoleName.ROLE_COOK.toString());
-//        kitchenService.addUserToRestaurant(cook);
-//        kitchenService.addUserToRestaurant(waiter);
+        kitchenService.addUserToRestaurant(cook);
+        kitchenService.addUserToRestaurant(waiter);
 
         restaurant.setBill(new ArrayList<>());
         restaurant.setName("le resto chico");
