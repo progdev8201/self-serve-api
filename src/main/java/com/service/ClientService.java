@@ -10,6 +10,7 @@ import com.model.dto.OptionDTO;
 import com.model.dto.ProductDTO;
 import com.model.entity.*;
 import com.model.enums.BillStatus;
+import com.model.enums.MenuType;
 import com.model.enums.ProgressStatus;
 import com.repository.*;
 import com.service.Util.DTOUtils;
@@ -194,7 +195,7 @@ public class ClientService {
     private OrderItem createOrderItemFromProduct(ProductDTO productToAdd, String commentaire, Product product) {
         OrderItem orderItem = ProductToOrderItems.instance.convert(product);
         orderItem.setProduct(product);
-        orderItem.setOrderStatus(ProgressStatus.PROGRESS);
+        setProgressStatus(product, orderItem);
 
         Date dateCommandeFini = setDatePreparation(product.getTempsDePreparation());
 
@@ -205,6 +206,13 @@ public class ClientService {
         orderItem.setOption(new ArrayList<>());
         orderItem.setCheckItems(setUpCheckItems(productToAdd.getCheckItems()));
         return orderItem;
+    }
+
+    private void setProgressStatus(Product product, OrderItem orderItem) {
+        orderItem.setOrderStatus(ProgressStatus.PROGRESS);
+        if(product.getMenuType()== MenuType.WAITERREQUEST || product.getMenuType()== MenuType.WAITERCALL){
+            orderItem.setOrderStatus(ProgressStatus.READY);
+        }
     }
 
     private Date setDatePreparation(int tempsPrepatarion) {
