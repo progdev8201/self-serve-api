@@ -22,12 +22,4 @@ public class Cook extends Employer {
     public Cook() {
     }
 
-    @Override
-    public String toString() {
-        return "Cook{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", role='" + role + '\'' +
-                '}';
-    }
 }
