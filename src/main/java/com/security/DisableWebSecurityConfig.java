@@ -43,6 +43,8 @@ public class DisableWebSecurityConfig extends WebSecurityConfigurerAdapter imple
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.headers().frameOptions().disable();
+
         http.cors().and().csrf().disable()
 
                 // Permit all registration or authentication requests

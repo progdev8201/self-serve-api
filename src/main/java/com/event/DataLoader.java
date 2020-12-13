@@ -2,6 +2,7 @@ package com.event;
 
 import com.google.zxing.WriterException;
 import com.model.dto.RestaurantDTO;
+import com.model.dto.RestaurantEmployerDTO;
 import com.model.dto.SignUpForm;
 import com.model.entity.*;
 import com.model.enums.*;
@@ -42,30 +43,30 @@ public class DataLoader implements CommandLineRunner {
 */
 
     @Autowired
-    GuestRepository guestRepository;
+    private GuestRepository guestRepository;
 
     @Autowired
-    RestaurantRepository restaurantRepository;
+    private RestaurantRepository restaurantRepository;
 
     @Autowired
-    ProductRepository productRepository;
+    private ProductRepository productRepository;
 
     @Autowired
     private AdminRepository adminRepository;
 
     @Autowired
-    OwnerRepository ownerRepository;
+    private OwnerRepository ownerRepository;
 
     @Autowired
     private KitchenService kitchenService;
 
 
     @Autowired
-    ResourceLoader resourceLoader;
+    private ResourceLoader resourceLoader;
 
 
     @Autowired
-    AuthentificationService authentificationService;
+    private AuthentificationService authentificationService;
 
     @Autowired
     private StripeService stripeService;
@@ -172,22 +173,24 @@ public class DataLoader implements CommandLineRunner {
             LOGGER.info("Creating default client and guest");
             SignUpForm client = new SignUpForm("client@mail.com", "123456", "5147887884", "client");
             SignUpForm guest = new SignUpForm("guest@mail.com", "123456", "5147887884", "guest");
-            SignUpForm waiter = new SignUpForm("waiter@mail.com", "123456", "5147887884", "waiter");
-            SignUpForm cook = new SignUpForm("cook@mail.com", "123456", "5147887884", "cook");
             SignUpForm owner = new SignUpForm("owner@mail.com", "123456", "5147887884", "owner");
             SignUpForm admin = new SignUpForm("admin", "123456", "5147887884", "admin");
-
 
             authentificationService.registerUser(client);
             authentificationService.registerUser(guest);
             authentificationService.registerUser(owner);
-            authentificationService.registerUser(cook);
-            authentificationService.registerUser(waiter);
             authentificationService.registerUser(admin);
         }
 
         RestaurantDTO restaurantDTO = kitchenService.createRestaurant("owner@mail.com", "le monde chico", 5);
         restaurant = restaurantRepository.findById(restaurantDTO.getId()).get();
+
+        // add waiter and cook to restaurant
+        RestaurantEmployerDTO waiter = new RestaurantEmployerDTO(null,"waiter@mail.com","123456",restaurant.getId(),RoleName.ROLE_WAITER.toString());
+        RestaurantEmployerDTO cook = new RestaurantEmployerDTO(null,"cook@mail.com","123456",restaurant.getId(),RoleName.ROLE_COOK.toString());
+        kitchenService.addUserToRestaurant(cook);
+        kitchenService.addUserToRestaurant(waiter);
+
         restaurant.setBill(new ArrayList<>());
         restaurant.setName("le resto chico");
         restaurant.setImgFile(getImgFile("download.jpg"));

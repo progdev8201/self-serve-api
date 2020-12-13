@@ -1,10 +1,13 @@
 package com.service;
 
-import com.mapping.*;
-import com.model.dto.*;
-import com.model.entity.*;
+import com.model.dto.MenuDTO;
+import com.model.dto.RestaurantSelectionDTO;
+import com.model.entity.Menu;
+import com.model.entity.Restaurant;
 import com.model.enums.MenuType;
-import com.repository.*;
+import com.repository.MenuRepository;
+import com.repository.OwnerRepository;
+import com.repository.RestaurantRepository;
 import com.service.Util.DTOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,22 +25,13 @@ public class MenuService {
     private MenuRepository menuRepository;
 
     @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
     private OwnerRepository ownerRepository;
-
-    @Autowired
-    private OrderItemRepository orderItemRepository;
-
-    @Autowired
-    private ProductService productService;
 
     @Autowired
     private RestaurantRepository restaurantRepository;
 
     @Autowired
-    DTOUtils dtoUtils;
+    private DTOUtils dtoUtils;
 
 
     public List<MenuDTO> findFoodMenuForRestaurants(Long id) {

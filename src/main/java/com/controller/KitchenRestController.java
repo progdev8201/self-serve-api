@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.zxing.WriterException;
 import com.model.dto.OrderItemDTO;
 import com.model.dto.RestaurantDTO;
+import com.model.dto.RestaurantEmployerDTO;
 import com.model.dto.RestaurentTableDTO;
 import com.model.entity.OrderItem;
 import com.model.entity.Request;
@@ -32,10 +33,10 @@ import java.util.Map;
 public class KitchenRestController {
 
     @Autowired
-    RequestRepository requestRepository;
+    private RequestRepository requestRepository;
 
     @Autowired
-    OrderItemRepository orderItemRepository;
+    private OrderItemRepository orderItemRepository;
 
     @Autowired
     private RestaurentTableService restaurentTableService;
@@ -45,15 +46,40 @@ public class KitchenRestController {
 
     //GET
 
-    //ALLOW COOK TO MODIFY ORDER TIME OR END ORDER
+    @GetMapping("/restaurantEmployers/{restaurantId}")
+    public List<RestaurantEmployerDTO> findAllRestaurantEmployers(@PathVariable final Long restaurantId){
+        return kitchenService.findAllRestaurantEmployers(restaurantId);
+    }
 
+    @GetMapping("/restaurantEmployer/{username}")
+    public RestaurantEmployerDTO findRestaurantEmployer(@PathVariable final String username){
+        return kitchenService.findRestaurantEmployer(username);
+    }
+
+    @GetMapping("/findRestaurantByRestaurantTableId/{tableID}")
+    public ResponseEntity<RestaurantDTO> findRestaurantByRestaurantTableId(@PathVariable long tableID){
+        return ResponseEntity.ok(kitchenService.findRestaurantByRestaurantTableId(tableID));
+    }
+
+    @GetMapping("/employerRestaurant/{username:.+}")
+    public Long findEmployerRestaurantId(@PathVariable final String username){
+        return kitchenService.findEmployerRestaurantId(username);
+    }
+
+    //ALLOW COOK TO MODIFY ORDER TIME OR END ORDER
     //PUT
     @PutMapping("/editOrderItem")
     public void updateOrderItem(@RequestBody OrderItemDTO orderItemDTO) {
         kitchenService.updateOrderItem(orderItemDTO);
     }
 
+    @PutMapping("/updateRestaurantUser")
+    public ResponseEntity<String> updateRestaurantEmployee(@RequestBody final RestaurantEmployerDTO restaurantEmployerDTO){
+        return kitchenService.updateRestaurantEmployee(restaurantEmployerDTO);
+    }
+
     //POST
+
     @PostMapping("/findAllTables")
     public ResponseEntity<List<RestaurentTableDTO>> findAllTables(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long restaurentId = new ObjectMapper().readValue(json.get("restaurentId"), Long.class);
@@ -122,10 +148,9 @@ public class KitchenRestController {
         return ResponseEntity.ok(kitchenService.changeOrderItem(orderItemId, tempsAjoute));
     }
 
-    @GetMapping("/findRestaurantByRestaurantTableId/{tableID}")
-    public ResponseEntity<RestaurantDTO> findRestaurantByRestaurantTableId(@PathVariable long tableID){
-        return ResponseEntity.ok(kitchenService.findRestaurantByRestaurantTableId(tableID));
+    @PostMapping("/addUserToRestaurant")
+    public ResponseEntity<String> addUserToRestaurant(@RequestBody final RestaurantEmployerDTO restaurantEmployerDTO){
+        return kitchenService.addUserToRestaurant(restaurantEmployerDTO);
     }
-
 
 }
