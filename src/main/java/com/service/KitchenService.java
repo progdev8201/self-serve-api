@@ -132,6 +132,8 @@ public class KitchenService {
     }
 
     public RestaurantEmployerDTO findRestaurantEmployer(String username) {
+        System.out.println("my username");
+        System.out.println(employerRepository.findEmployerByUsername(username).get().getRestaurant().getOwner().getUsername());
         return new RestaurantEmployerDTO(employerRepository.findEmployerByUsername(username).get());
     }
 
@@ -237,7 +239,7 @@ public class KitchenService {
     private void addCookToRestaurant(RestaurantEmployerDTO restaurantEmployerDTO) {
         restaurantRepository.findById(restaurantEmployerDTO.getRestaurantId()).ifPresent(restaurant -> {
             Cook cook = new Cook(restaurantEmployerDTO);
-            cook.setPassword(encoder.encode(cook.getPassword()));
+            cook.setPassword(encoder.encode(restaurantEmployerDTO.getPassword()));
             cook.setRestaurant(restaurant);
             employerRepository.save(cook);
         });
@@ -246,7 +248,7 @@ public class KitchenService {
     private void addWaiterToRestaurant(RestaurantEmployerDTO restaurantEmployerDTO) {
         restaurantRepository.findById(restaurantEmployerDTO.getRestaurantId()).ifPresent(restaurant -> {
             Waiter waiter = new Waiter(restaurantEmployerDTO);
-            waiter.setPassword(encoder.encode(waiter.getPassword()));
+            waiter.setPassword(encoder.encode(restaurantEmployerDTO.getPassword()));
             waiter.setRestaurant(restaurant);
             employerRepository.save(waiter);
         });

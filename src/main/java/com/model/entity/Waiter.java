@@ -17,7 +17,7 @@ public class Waiter extends Employer {
     }
 
     public Waiter(RestaurantEmployerDTO employer){
-        super(employer.getUsername(), employer.getUsername(), employer.getRole().toString(),null);
+        super(employer.getUsername(), employer.getPassword(), employer.getRole().toString(),null);
     }
 
     public Waiter() {
