@@ -23,12 +23,4 @@ public class Waiter extends Employer {
     public Waiter() {
     }
 
-    @Override
-    public String toString() {
-        return "Waiter{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", role='" + role + '\'' +
-                '}';
-    }
 }
