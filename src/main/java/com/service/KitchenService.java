@@ -8,7 +8,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.mapping.OrderItemToOrderItemDTO;
 import com.model.dto.OrderItemDTO;
 import com.model.dto.RestaurantDTO;
-import com.model.dto.RestaurantUserDto;
+import com.model.dto.RestaurantEmployerDTO;
 import com.model.entity.*;
 import com.model.enums.MenuType;
 import com.model.enums.ProgressStatus;
@@ -23,7 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -43,13 +42,7 @@ public class KitchenService {
     private RestaurentTableRepository restaurentTableRepository;
 
     @Autowired
-    private CookRepository cookRepository;
-
-    @Autowired
-    private WaiterRepository waiterRepository;
-
-    @Autowired
-    private AdminRepository adminRepository;
+    private EmployerRepository employerRepository;
 
     @Autowired
     private RestaurantRepository restaurantRepository;
@@ -95,49 +88,50 @@ public class KitchenService {
         return dtoUtils.mapRestaurantToRestaurantDTO(savedRestaurant);
     }
 
-    public ResponseEntity<String> addUserToRestaurant(RestaurantUserDto restaurantUserDto) {
-        if (adminRepository.existsByUsername(restaurantUserDto.getUsername()))
+    public ResponseEntity<String> addUserToRestaurant(RestaurantEmployerDTO restaurantEmployerDTO) {
+        if (employerRepository.existsByUsername(restaurantEmployerDTO.getUsername()))
             return ResponseEntity.badRequest().body("Username already exist");
 
+        if (employerRepository.findAllByRestaurant_Id(restaurantEmployerDTO.getRestaurantId()).size() == 2)
+            return ResponseEntity.badRequest().body("There is already two employer assigned");
 
-        if (restaurantUserDto.getRole().equals(RoleName.ROLE_COOK)) {
-            addCookToRestaurant(restaurantUserDto);
+        if (restaurantEmployerDTO.getRole().equals(RoleName.ROLE_COOK.toString())) {
+            addCookToRestaurant(restaurantEmployerDTO);
             return ResponseEntity.ok().build();
-        } else if (restaurantUserDto.getRole().equals(RoleName.ROLE_WAITER)) {
-            addWaiterToRestaurant(restaurantUserDto);
+        } else if (restaurantEmployerDTO.getRole().equals(RoleName.ROLE_WAITER.toString())) {
+            addWaiterToRestaurant(restaurantEmployerDTO);
             return ResponseEntity.ok().build();
         }
 
-        return ResponseEntity.badRequest().body("The role attributed does not exist!");
+        return ResponseEntity.badRequest().body("The role " + restaurantEmployerDTO.getRole() + " does not exist!");
     }
 
-    public ResponseEntity<String> updateRestaurantEmployee(RestaurantUserDto restaurantUserDto) {
-        Admin admin = adminRepository.findById(restaurantUserDto.getId()).get();
+    public ResponseEntity<String> updateRestaurantEmployee(RestaurantEmployerDTO restaurantEmployer) {
+        Employer employer = employerRepository.findById(restaurantEmployer.getId()).get();
 
-        if (!admin.getUsername().equals(restaurantUserDto.getUsername())){
-            if (adminRepository.existsByUsername(restaurantUserDto.getUsername()))
-                return ResponseEntity.badRequest().body("Username already exist");
+        if (isUsernameTaken(restaurantEmployer, employer))
+            return ResponseEntity.badRequest().body("Username already exist");
+
+        if (!restaurantEmployer.getRole().equals(RoleName.ROLE_COOK.toString()) && !restaurantEmployer.getRole().equals(RoleName.ROLE_WAITER.toString())) {
+            return ResponseEntity.badRequest().body("The role " + restaurantEmployer.getRole() + " does not exist!");
         }
 
-        if (restaurantUserDto.getRole().equals(RoleName.ROLE_COOK)) {
-            updateRestaurantCook(restaurantUserDto);
-            return ResponseEntity.ok().build();
-        } else if (restaurantUserDto.getRole().equals(RoleName.ROLE_WAITER)) {
-            updateRestaurantWaiter(restaurantUserDto);
-            return ResponseEntity.ok().build();
-        }
+        updateRestaurantEmployer(restaurantEmployer);
 
-        return ResponseEntity.badRequest().body("The role attributed does not exist");
+        return ResponseEntity.ok().build();
     }
 
-    public List<RestaurantUserDto> findRestaurantEmployees(Long restaurantId) {
-        List<RestaurantUserDto> restaurantUserDtos = new ArrayList<>();
+    public List<RestaurantEmployerDTO> findAllRestaurantEmployers(Long restaurantId) {
+        List<RestaurantEmployerDTO> restaurantEmployerDTOS = employerRepository.findAllByRestaurant_Id(restaurantId)
+                .stream()
+                .map(RestaurantEmployerDTO::new)
+                .collect(Collectors.toList());
 
-        cookRepository.findCookByRestaurant_Id(restaurantId).ifPresent(cook -> restaurantUserDtos.add(new RestaurantUserDto(cook)));
+        return restaurantEmployerDTOS;
+    }
 
-        waiterRepository.findWaiterByRestaurant_Id(restaurantId).ifPresent(waiter -> restaurantUserDtos.add(new RestaurantUserDto(waiter)));
-
-        return restaurantUserDtos;
+    public RestaurantEmployerDTO findRestaurantEmployer(String username) {
+        return new RestaurantEmployerDTO(employerRepository.findEmployerByUsername(username).get());
     }
 
     public RestaurantDTO uploadLogo(MultipartFile file, long restaurantId) throws IOException {
@@ -221,48 +215,39 @@ public class KitchenService {
         return returnValue;
     }
 
-    public Long findCookRestaurantId(String username) {
-        return cookRepository.findCookByUsername(username).get().getRestaurant().getId();
-    }
-
-    public Long findWaiterRestaurantId(String username) {
-        System.out.println("My id");
-        System.out.println(waiterRepository.findWaiterByUsername(username).get().getRestaurant().getId());
-        return waiterRepository.findWaiterByUsername(username).get().getRestaurant().getId();
+    public Long findEmployerRestaurantId(String username) {
+        return employerRepository.findEmployerByUsername(username).get().getRestaurant().getId();
     }
 
     //PRIVATE METHODS
-    private void updateRestaurantWaiter(RestaurantUserDto restaurantUserDto) {
-        waiterRepository.findById(restaurantUserDto.getId()).ifPresent(waiter -> {
-            waiter.setUsername(restaurantUserDto.getUsername());
-            waiter.setPassword(encoder.encode(restaurantUserDto.getPassword()));
-            waiterRepository.save(waiter);
+
+    private boolean isUsernameTaken(RestaurantEmployerDTO restaurantEmployer, Employer employer) {
+        return !employer.getUsername().equals(restaurantEmployer.getUsername()) && employerRepository.existsByUsername(restaurantEmployer.getUsername());
+    }
+
+    private void updateRestaurantEmployer(RestaurantEmployerDTO restaurantEmployerDTO) {
+        employerRepository.findById(restaurantEmployerDTO.getId()).ifPresent(employer -> {
+            employer.setUsername(restaurantEmployerDTO.getUsername());
+            employer.setPassword(encoder.encode(restaurantEmployerDTO.getPassword()));
+            employerRepository.save(employer);
         });
     }
 
-    private void updateRestaurantCook(RestaurantUserDto restaurantUserDto) {
-        cookRepository.findById(restaurantUserDto.getId()).ifPresent(cook -> {
-            cook.setUsername(restaurantUserDto.getUsername());
-            cook.setPassword(encoder.encode(restaurantUserDto.getPassword()));
-            cookRepository.save(cook);
-        });
-    }
-
-    private void addCookToRestaurant(RestaurantUserDto restaurantUserDto) {
-        restaurantRepository.findById(restaurantUserDto.getRestaurantId()).ifPresent(restaurant -> {
-            Cook cook = new Cook(restaurantUserDto);
+    private void addCookToRestaurant(RestaurantEmployerDTO restaurantEmployerDTO) {
+        restaurantRepository.findById(restaurantEmployerDTO.getRestaurantId()).ifPresent(restaurant -> {
+            Cook cook = new Cook(restaurantEmployerDTO);
             cook.setPassword(encoder.encode(cook.getPassword()));
             cook.setRestaurant(restaurant);
-            cookRepository.save(cook);
+            employerRepository.save(cook);
         });
     }
 
-    private void addWaiterToRestaurant(RestaurantUserDto restaurantUserDto) {
-        restaurantRepository.findById(restaurantUserDto.getRestaurantId()).ifPresent(restaurant -> {
-            Waiter waiter = new Waiter(restaurantUserDto);
+    private void addWaiterToRestaurant(RestaurantEmployerDTO restaurantEmployerDTO) {
+        restaurantRepository.findById(restaurantEmployerDTO.getRestaurantId()).ifPresent(restaurant -> {
+            Waiter waiter = new Waiter(restaurantEmployerDTO);
             waiter.setPassword(encoder.encode(waiter.getPassword()));
             waiter.setRestaurant(restaurant);
-            waiterRepository.save(waiter);
+            employerRepository.save(waiter);
         });
     }
 

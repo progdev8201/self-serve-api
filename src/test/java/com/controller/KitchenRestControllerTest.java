@@ -7,22 +7,16 @@ import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.model.dto.*;
-import com.model.entity.OrderItem;
+import com.model.entity.Cook;
 import com.model.enums.OrderStatus;
 import com.model.enums.ProgressStatus;
 import com.model.enums.RoleName;
 import com.service.ClientService;
-import org.h2.store.fs.FileUtils;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -32,8 +26,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,10 +33,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.http.MediaType.ALL;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -377,8 +367,8 @@ class KitchenRestControllerTest {
     @Test
     public void updateRestaurantEmployeeCookTest() throws Exception{
         // Arrange
-        RestaurantUserDto cook = new RestaurantUserDto(6L,"newCookMail@mail.com","ibawe",2L, RoleName.ROLE_COOK);
-        RestaurantUserDto waiter = new RestaurantUserDto(5L,"newWaiterMail@mail.com","ibawe",2L, RoleName.ROLE_WAITER);
+        RestaurantEmployerDTO cook = new RestaurantEmployerDTO(5L,"newCookMail@mail.com","ibawe",2L, RoleName.ROLE_COOK.toString());
+        RestaurantEmployerDTO waiter = new RestaurantEmployerDTO(6L,"newWaiterMail@mail.com","ibawe",2L, RoleName.ROLE_WAITER.toString());
         MockMvc mvc = initMockMvc();
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
@@ -406,18 +396,22 @@ class KitchenRestControllerTest {
                 .andReturn();
 
 
-        List<RestaurantUserDto> restaurantUserDtos = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<RestaurantUserDto>>() {});
+        List<RestaurantEmployerDTO> restaurantEmployerDTOS = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<RestaurantEmployerDTO>>() {});
+
+        RestaurantEmployerDTO cookResponse = restaurantEmployerDTOS.get(0).getRole().equals(RoleName.ROLE_COOK.toString()) ? restaurantEmployerDTOS.get(0) : restaurantEmployerDTOS.get(1);
+        RestaurantEmployerDTO waiterResponse = restaurantEmployerDTOS.get(0).getRole().equals(RoleName.ROLE_COOK.toString()) ? restaurantEmployerDTOS.get(1) : restaurantEmployerDTOS.get(0);
+
 
         // Assert
-        assertEquals(cook.getId(),restaurantUserDtos.get(0).getId());
-        assertEquals(cook.getUsername(),restaurantUserDtos.get(0).getUsername());
-        assertEquals(cook.getRestaurantId(),restaurantUserDtos.get(0).getRestaurantId());
-        assertEquals(cook.getRole(),restaurantUserDtos.get(0).getRole());
+        assertEquals(cook.getId(), cookResponse.getId());
+        assertEquals(cook.getUsername(), cookResponse.getUsername());
+        assertEquals(cook.getRestaurantId(), cookResponse.getRestaurantId());
+        assertEquals(cook.getRole(), cookResponse.getRole());
 
-        assertEquals(waiter.getId(),restaurantUserDtos.get(1).getId());
-        assertEquals(waiter.getUsername(),restaurantUserDtos.get(1).getUsername());
-        assertEquals(waiter.getRestaurantId(),restaurantUserDtos.get(1).getRestaurantId());
-        assertEquals(waiter.getRole(),restaurantUserDtos.get(1).getRole());
+        assertEquals(waiter.getId(), waiterResponse.getId());
+        assertEquals(waiter.getUsername(), waiterResponse.getUsername());
+        assertEquals(waiter.getRestaurantId(), waiterResponse.getRestaurantId());
+        assertEquals(waiter.getRole(), waiterResponse.getRole());
     }
 
     //todo find out why is there a 406 error

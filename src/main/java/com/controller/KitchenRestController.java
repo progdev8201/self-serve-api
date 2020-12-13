@@ -7,7 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.zxing.WriterException;
 import com.model.dto.OrderItemDTO;
 import com.model.dto.RestaurantDTO;
-import com.model.dto.RestaurantUserDto;
+import com.model.dto.RestaurantEmployerDTO;
 import com.model.dto.RestaurentTableDTO;
 import com.model.entity.OrderItem;
 import com.model.entity.Request;
@@ -70,9 +70,14 @@ public class KitchenRestController {
         return orderRequestList;
     }
 
-    @GetMapping("/restaurantEmployees/{restaurantId}")
-    public List<RestaurantUserDto> findRestaurantEmployees(@PathVariable final Long restaurantId){
-        return kitchenService.findRestaurantEmployees(restaurantId);
+    @GetMapping("/restaurantEmployers/{restaurantId}")
+    public List<RestaurantEmployerDTO> findAllRestaurantEmployers(@PathVariable final Long restaurantId){
+        return kitchenService.findAllRestaurantEmployers(restaurantId);
+    }
+
+    @GetMapping("/restaurantEmployer/{username}")
+    public RestaurantEmployerDTO findRestaurantEmployer(@PathVariable final String username){
+        return kitchenService.findRestaurantEmployer(username);
     }
 
     @GetMapping("/findRestaurantByRestaurantTableId/{tableID}")
@@ -80,14 +85,9 @@ public class KitchenRestController {
         return ResponseEntity.ok(kitchenService.findRestaurantByRestaurantTableId(tableID));
     }
 
-    @GetMapping("/cookRestaurant/{username:.+}")
-    public Long findCookRestaurantId(@PathVariable final String username){
-        return kitchenService.findCookRestaurantId(username);
-    }
-
-    @GetMapping("/waiterRestaurant/{username:.+}")
-    public Long findWaiterRestaurantId(@PathVariable final String username){
-        return kitchenService.findWaiterRestaurantId(username);
+    @GetMapping("/employerRestaurant/{username:.+}")
+    public Long findEmployerRestaurantId(@PathVariable final String username){
+        return kitchenService.findEmployerRestaurantId(username);
     }
 
     //ALLOW COOK TO MODIFY ORDER TIME OR END ORDER
@@ -99,8 +99,8 @@ public class KitchenRestController {
     }
 
     @PutMapping("/updateRestaurantUser")
-    public ResponseEntity<String> updateRestaurantEmployee(@RequestBody final RestaurantUserDto restaurantUserDto){
-        return kitchenService.updateRestaurantEmployee(restaurantUserDto);
+    public ResponseEntity<String> updateRestaurantEmployee(@RequestBody final RestaurantEmployerDTO restaurantEmployerDTO){
+        return kitchenService.updateRestaurantEmployee(restaurantEmployerDTO);
     }
 
     //POST
@@ -183,8 +183,8 @@ public class KitchenRestController {
     }
 
     @PostMapping("/addUserToRestaurant")
-    public ResponseEntity<String> addUserToRestaurant(@RequestBody final RestaurantUserDto restaurantUserDto){
-        return kitchenService.addUserToRestaurant(restaurantUserDto);
+    public ResponseEntity<String> addUserToRestaurant(@RequestBody final RestaurantEmployerDTO restaurantEmployerDTO){
+        return kitchenService.addUserToRestaurant(restaurantEmployerDTO);
     }
 
 }

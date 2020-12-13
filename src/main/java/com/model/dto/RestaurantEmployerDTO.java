@@ -1,48 +1,41 @@
 package com.model.dto;
 
-import com.model.entity.Cook;
-import com.model.entity.Waiter;
+import com.model.entity.Employer;
 import com.model.enums.RoleName;
 
 import java.io.Serializable;
 
-public class RestaurantUserDto implements Serializable {
+public class RestaurantEmployerDTO implements Serializable {
     private Long id;
     private String username;
     private String password;
     private Long restaurantId;
-    private RoleName role;
+    private String role;
 
-    public RestaurantUserDto() {
+    public RestaurantEmployerDTO() {
     }
 
-    public RestaurantUserDto(Long id, String username, String password, Long restaurantId, RoleName role) {
+    public RestaurantEmployerDTO(Long id, String username, String password, Long restaurantId, String role) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.restaurantId = restaurantId;
         this.role = role;
     }
-     public RestaurantUserDto(Cook cook) {
-        this.id = cook.getId();
-        this.username = cook.getUsername();
-        this.password = cook.getPassword();
-        this.restaurantId = cook.getRestaurant().getId();
-        this.role = RoleName.ROLE_COOK;
-    }
-     public RestaurantUserDto(Waiter waiter) {
-        this.id = waiter.getId();
-        this.username = waiter.getUsername();
-        this.password = waiter.getPassword();
-        this.restaurantId = waiter.getRestaurant().getId();
-        this.role = RoleName.ROLE_WAITER;
+
+    public RestaurantEmployerDTO(Employer employer){
+        this.id = employer.getId();
+        this.username = employer.getUsername();
+        this.password = employer.getPassword();
+        this.restaurantId = employer.getRestaurant().getId();
+        this.role = employer.getRole();
     }
 
-    public RoleName getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(RoleName role) {
+    public void setRole(String role) {
         this.role = role;
     }
 
@@ -80,7 +73,7 @@ public class RestaurantUserDto implements Serializable {
 
     @Override
     public String toString() {
-        return "RestaurantUserDto{" +
+        return "RestaurantEmployerDTO{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
