@@ -48,9 +48,9 @@ public class KitchenRestController {
     //ALLOW COOK TO MODIFY ORDER TIME OR END ORDER
 
     //PUT
-    @PutMapping("/edit-orderItem")
-    public void updateOrderItem(@RequestBody OrderItem orderItem) {
-        orderItemRepository.save(orderItem);
+    @PutMapping("/editOrderItem")
+    public void updateOrderItem(@RequestBody OrderItemDTO orderItemDTO) {
+        kitchenService.updateOrderItem(orderItemDTO);
     }
 
     //POST
@@ -100,15 +100,6 @@ public class KitchenRestController {
         Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"), Long.class);
         kitchenService.deleteRestaurantTable(tableId, restaurantId);
         return new ResponseEntity(HttpStatus.OK);
-    }
-
-    @PostMapping("/changeOrderItemStatus")
-    public ResponseEntity<OrderItemDTO> changeOrderItemStatus(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        mapper.registerModule(new JavaTimeModule());
-        OrderItemDTO orderItemDTO = mapper.readValue(json.get("orderItemDTO"), OrderItemDTO.class);
-        return ResponseEntity.ok(kitchenService.changeOrderItemStatus(orderItemDTO));
     }
 
     @PostMapping("/getWaiterRequest")

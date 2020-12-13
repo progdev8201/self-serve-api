@@ -59,12 +59,13 @@ public class KitchenService {
 
     //PUBLIC METHODS
 
-    public OrderItemDTO changeOrderItemStatus(OrderItemDTO orderItemDTO) {
+
+    public OrderItemDTO updateOrderItem(OrderItemDTO orderItemDTO) {
         OrderItem orderItem = orderItemRepository.findById(orderItemDTO.getId()).get();
-
-        orderItem.setOrderStatus(ProgressStatus.READY);
-
-        return constructReturnValue(orderItemRepository.save(orderItem));
+        // on dois faire un mapping a la main , sinon , on va avoir detached entity exception
+        orderItem.setOrderStatus(orderItemDTO.getOrderStatus());
+        orderItem.setTempsDePreparation(orderItemDTO.getTempsDePreparation());
+        return dtoUtils.mapOrderItemToOrderItemDTO(orderItemRepository.save(orderItem));
     }
 
 
@@ -77,6 +78,7 @@ public class KitchenService {
 
         return dtoUtils.mapRestaurantToRestaurantDTO(savedRestaurant);
     }
+
 
     public RestaurantDTO uploadLogo(MultipartFile file, long restaurantId) throws IOException {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
@@ -229,12 +231,6 @@ public class KitchenService {
         restaurant.setName(restaurantName);
         restaurant.setRestaurentTables(new ArrayList<>());
         return restaurant;
-    }
-
-    private OrderItemDTO constructReturnValue(OrderItem orderItem) {
-        OrderItemDTO returnValue = OrderItemToOrderItemDTO.instance.convert(orderItem);
-        returnValue.setProduct(dtoUtils.mapProductToProductDTO(orderItem.getProduct()));
-        return returnValue;
     }
 
     private void removeTableFromRestaurant(Long restaurantTableId, Restaurant restaurant, RestaurentTable restaurantTable) {
