@@ -300,8 +300,8 @@ class KitchenRestControllerTest {
     @Test
     public void updateRestaurantEmployeeCookTest() throws Exception{
         // Arrange
-        RestaurantEmployerDTO cook = new RestaurantEmployerDTO(5L,"newCookMail@mail.com","ibawe",2L, RoleName.ROLE_COOK.toString());
-        RestaurantEmployerDTO waiter = new RestaurantEmployerDTO(6L,"newWaiterMail@mail.com","ibawe",2L, RoleName.ROLE_WAITER.toString());
+        RestaurantEmployerDTO cook = new RestaurantEmployerDTO(5L,"newCookMail@mail.com","ibawe",2L, RoleName.ROLE_COOK.toString(),"owner@mail.com");
+        RestaurantEmployerDTO waiter = new RestaurantEmployerDTO(6L,"newWaiterMail@mail.com","ibawe",2L, RoleName.ROLE_WAITER.toString(),"owner@mail.com");
         MockMvc mvc = initMockMvc();
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());

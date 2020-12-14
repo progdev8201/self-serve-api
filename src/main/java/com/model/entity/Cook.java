@@ -16,7 +16,7 @@ public class Cook extends Employer {
     }
 
     public Cook(RestaurantEmployerDTO employer){
-        super(employer.getUsername(), employer.getUsername(), employer.getRole().toString(),null);
+        super(employer.getUsername(), employer.getPassword(), employer.getRole().toString(),null);
     }
 
     public Cook() {

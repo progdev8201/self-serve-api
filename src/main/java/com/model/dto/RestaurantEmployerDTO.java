@@ -11,16 +11,18 @@ public class RestaurantEmployerDTO implements Serializable {
     private String password;
     private Long restaurantId;
     private String role;
+    private String ownerUsername;
 
     public RestaurantEmployerDTO() {
     }
 
-    public RestaurantEmployerDTO(Long id, String username, String password, Long restaurantId, String role) {
+    public RestaurantEmployerDTO(Long id, String username, String password, Long restaurantId, String role,String ownerUsername) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.restaurantId = restaurantId;
         this.role = role;
+        this.ownerUsername = ownerUsername;
     }
 
     public RestaurantEmployerDTO(Employer employer){
@@ -29,6 +31,15 @@ public class RestaurantEmployerDTO implements Serializable {
         this.password = employer.getPassword();
         this.restaurantId = employer.getRestaurant().getId();
         this.role = employer.getRole();
+        this.ownerUsername = employer.getRestaurant().getOwner().getUsername();
+    }
+
+    public String getOwnerUsername() {
+        return ownerUsername;
+    }
+
+    public void setOwnerUsername(String ownerUsername) {
+        this.ownerUsername = ownerUsername;
     }
 
     public String getRole() {
