@@ -5,7 +5,10 @@ import com.model.dto.RestaurantDTO;
 import com.model.dto.RestaurantEmployerDTO;
 import com.model.dto.SignUpForm;
 import com.model.entity.*;
-import com.model.enums.*;
+import com.model.enums.BillStatus;
+import com.model.enums.MenuType;
+import com.model.enums.ProgressStatus;
+import com.model.enums.RoleName;
 import com.repository.*;
 import com.service.AuthentificationService;
 import com.service.KitchenService;
@@ -76,11 +79,13 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        createAccount();
+        stripeService.initApplePay();
+
+        if (restaurantRepository.findAll().isEmpty())
+            createAccount();
     }
 
     private void createAccount() throws IOException, WriterException, StripeException {
-        stripeService.initApplePay();
         //create restaurant
         Restaurant restaurant = new Restaurant();
 
@@ -97,14 +102,14 @@ public class DataLoader implements CommandLineRunner {
         //create product list
         List<Product> productList = new ArrayList<>();
 
-        Product product = createProduct( MenuType.FOOD, "download.jpg", menuDejeuner);
+        Product product = createProduct(MenuType.FOOD, "download.jpg", menuDejeuner);
         orderItem = createOrderItem(ProgressStatus.READY, MenuType.FOOD, product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
         productList.add(product);
         bill.getOrderItems().add(orderItem);
 
-        product = createProduct( MenuType.FOOD, "download.jpg", menuDejeuner);
+        product = createProduct(MenuType.FOOD, "download.jpg", menuDejeuner);
         orderItem = createOrderItem(ProgressStatus.READY, MenuType.FOOD, product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
@@ -112,56 +117,56 @@ public class DataLoader implements CommandLineRunner {
         bill.getOrderItems().add(orderItem);
 
 
-        product = createProduct( MenuType.FOOD, "download.jpg", menuDejeuner);
+        product = createProduct(MenuType.FOOD, "download.jpg", menuDejeuner);
         orderItem = createOrderItem(ProgressStatus.PROGRESS, MenuType.WAITERREQUEST, product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
         productList.add(product);
         bill.getOrderItems().add(orderItem);
 
-        product = createProduct( MenuType.FOOD, "download.jpg", menuDiner);
+        product = createProduct(MenuType.FOOD, "download.jpg", menuDiner);
         orderItem = createOrderItem(ProgressStatus.PROGRESS, MenuType.WAITERREQUEST, product);
         orderItem.setBill(bill);
         product.getOrderItems().add(orderItem);
         productList.add(product);
         bill.getOrderItems().add(orderItem);
 
-        product = createProduct( MenuType.FOOD, "download.jpg", menuDiner);
+        product = createProduct(MenuType.FOOD, "download.jpg", menuDiner);
         productList.add(product);
 
-        product = createProduct( MenuType.FOOD, "download.jpg", menuDiner);
+        product = createProduct(MenuType.FOOD, "download.jpg", menuDiner);
         productList.add(product);
 
-        product = createProduct( MenuType.FOOD, "download.jpg", menuSouper);
+        product = createProduct(MenuType.FOOD, "download.jpg", menuSouper);
         productList.add(product);
 
-        product = createProduct( MenuType.FOOD, "download.jpg", menuSouper);
+        product = createProduct(MenuType.FOOD, "download.jpg", menuSouper);
         productList.add(product);
 
-        product = createProduct( MenuType.FOOD, "download.jpg", menuSouper);
+        product = createProduct(MenuType.FOOD, "download.jpg", menuSouper);
         productList.add(product);
 
-        product = createProduct( MenuType.WAITERREQUEST, "fork.png", menuRequest);
+        product = createProduct(MenuType.WAITERREQUEST, "fork.png", menuRequest);
         product.setName("FORK");
         productList.add(product);
 
-        product = createProduct( MenuType.WAITERREQUEST, "knife.png", menuRequest);
+        product = createProduct(MenuType.WAITERREQUEST, "knife.png", menuRequest);
         product.setName("KNIFE");
         productList.add(product);
 
-        product = createProduct( MenuType.WAITERREQUEST, "salt.png", menuRequest);
+        product = createProduct(MenuType.WAITERREQUEST, "salt.png", menuRequest);
         product.setName("SALT");
         productList.add(product);
 
-        product = createProduct( MenuType.WAITERREQUEST, "sauce.png", menuRequest);
+        product = createProduct(MenuType.WAITERREQUEST, "sauce.png", menuRequest);
         product.setName("SAUCE");
         productList.add(product);
 
-        product = createProduct( MenuType.WAITERREQUEST, "sugar.png", menuRequest);
+        product = createProduct(MenuType.WAITERREQUEST, "sugar.png", menuRequest);
         product.setName("SUGAR");
         productList.add(product);
 
-        product = createProduct( MenuType.WAITERCALL, "sugar.png", menuRequest);
+        product = createProduct(MenuType.WAITERCALL, "sugar.png", menuRequest);
         product.setName("CALL WAITER");
         productList.add(product);
 
@@ -186,8 +191,8 @@ public class DataLoader implements CommandLineRunner {
         restaurant = restaurantRepository.findById(restaurantDTO.getId()).get();
 
         // add waiter and cook to restaurant
-        RestaurantEmployerDTO waiter = new RestaurantEmployerDTO(null,"waiter@mail.com","123456",restaurant.getId(),RoleName.ROLE_WAITER.toString(),"owner@mail.com");
-        RestaurantEmployerDTO cook = new RestaurantEmployerDTO(null,"cook@mail.com","123456",restaurant.getId(),RoleName.ROLE_COOK.toString(),"owner@mail.com");
+        RestaurantEmployerDTO waiter = new RestaurantEmployerDTO(null, "waiter@mail.com", "123456", restaurant.getId(), RoleName.ROLE_WAITER.toString(), "owner@mail.com");
+        RestaurantEmployerDTO cook = new RestaurantEmployerDTO(null, "cook@mail.com", "123456", restaurant.getId(), RoleName.ROLE_COOK.toString(), "owner@mail.com");
         kitchenService.addUserToRestaurant(cook);
         kitchenService.addUserToRestaurant(waiter);
 
@@ -218,8 +223,8 @@ public class DataLoader implements CommandLineRunner {
         //restaurant + menu pour ajout/delete de produit
 
         restaurant = new Restaurant();
-        Menu menuSupp = createMenu("Dejeuner",MenuType.FOOD);
-        product = createProduct( null, "download.jpg",menuSupp);
+        Menu menuSupp = createMenu("Dejeuner", MenuType.FOOD);
+        product = createProduct(null, "download.jpg", menuSupp);
         restaurant.setMenus(Collections.singletonList(menuSupp));
         restaurantRepository.save(restaurant);
         System.out.println("APPLICATION IS READY!!!");
