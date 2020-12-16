@@ -258,8 +258,8 @@ public class DataLoader implements CommandLineRunner {
         productCheckItem.setPrix(5);
         product.getCheckItems().add(productCheckItem);
         CheckItem productCheckItem2 = new CheckItem();
-        productCheckItem.setName("Miel");
-        productCheckItem.setPrix(10);
+        productCheckItem2.setName("Miel");
+        productCheckItem2.setPrix(10);
         product.getCheckItems().add(productCheckItem2);
         Option option = new Option();
         option.setName("Cuisson");
