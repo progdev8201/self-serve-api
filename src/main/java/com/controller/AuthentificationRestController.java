@@ -9,6 +9,7 @@ import com.service.AuthentificationService;
 import com.stripe.exception.StripeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,8 +31,9 @@ public class AuthentificationRestController {
         return authentificationService.registerUser(signUpForm);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
     @PostMapping("/fetchOwner")
-    public ResponseEntity<OwnerDTO> registerStripeAccpunt(@RequestBody OwnerDTO ownerDTO) throws StripeException {
+    public ResponseEntity<OwnerDTO> registerStripeAccount(@RequestBody OwnerDTO ownerDTO) throws StripeException {
        return authentificationService.fetchOwner(ownerDTO);
     }
 }

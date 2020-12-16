@@ -9,6 +9,7 @@ import com.repository.ProductRepository;
 import com.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,38 +23,36 @@ import java.util.Map;
 public class ProductController {
 
     @Autowired
-    ProductRepository productRepository;
-
-    @Autowired
-    MenuRepository menuRepository;
-
-    @Autowired
-    ProductService productService;
-
+    private ProductService productService;
 
     //GET MAPPING
 
+    //todo cette methode nest pas utiliser dans le front end mais elle est teste, devrait-ton l'enlever?
     @GetMapping("/{id}")
     public ProductDTO find(@PathVariable Long id) {
         return productService.find(id);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_GUEST') || hasAuthority('ROLE_CLIENT') || hasAuthority('ROLE_OWNER') || hasAuthority('ROLE_ADMIN')")
     @GetMapping("/menu/{id}")
     public List<ProductDTO> findAllProductFromMenu(@PathVariable Long id) {
         return productService.findAllProductFromMenu(id);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_GUEST') || hasAuthority('ROLE_CLIENT')")
     @GetMapping("/findWaiterRequestProducts/{id}")
     public MenuDTO findAllWaiterRequestProductFromMenu(@PathVariable Long id) {
         return productService.findMenuWaiterRequest(id);
     }
 
+    // todo cette methode est tester mais n'est pas utiliser dans le front end
     @GetMapping("/findMenuSpecial")
     public ResponseEntity<List<ProductDTO>> findMenuSpecials(@RequestBody Map<String, String> json) throws JsonProcessingException {
         MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menuDTO"), MenuDTO.class);
         return ResponseEntity.ok(productService.findMenuSpecials(menuDTO));
     }
 
+    // todo cette methode est tester mais n'est pas utiliser dans le front end
     @GetMapping("/findChoixDuChef")
     public ResponseEntity<List<ProductDTO>> findMenuChoixDuChef(@RequestBody Map<String, String> json) throws JsonProcessingException {
         MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menuDTO"), MenuDTO.class);
@@ -67,12 +66,13 @@ public class ProductController {
 
     //POST MAPPING
 
+    @PreAuthorize("hasAuthority('ROLE_OWNER') || hasAuthority('ROLE_ADMIN')")
     @PostMapping("/{menuId}")
     public ProductDTO create(@RequestBody ProductDTO productDTO, @PathVariable Long menuId) {
         return productService.create(productDTO, menuId);
     }
 
-
+    // todo cette methode est tester mais n'est pas utiliser dans le front end
     @PostMapping("/setMenuSpecial")
     public ResponseEntity<ProductDTO> setProductSpecial(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ProductDTO productDTO = new ObjectMapper().readValue(json.get("productDTO"), ProductDTO.class);
@@ -80,18 +80,21 @@ public class ProductController {
 
     }
 
+    // todo cette methode est tester mais n'est pas utiliser dans le front end
     @PostMapping("/deleteMenuType")
     public ResponseEntity<ProductDTO> removeMenuType(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ProductDTO productDTO = new ObjectMapper().readValue(json.get("productDTO"), ProductDTO.class);
         return ResponseEntity.ok(productService.removeMenuType(productDTO));
     }
 
+    // todo cette methode est tester mais n'est pas utiliser dans le front end
     @PostMapping("/setMenuChefChoice")
     public ResponseEntity<ProductDTO> setProductChefChoice(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ProductDTO productDTO = new ObjectMapper().readValue(json.get("productDTO"), ProductDTO.class);
         return ResponseEntity.ok(productService.setProductChefChoice(productDTO));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PostMapping("/image/{productId}")
     public ResponseEntity<?> saveProductImg(@RequestParam("file") MultipartFile file,@PathVariable long productId) throws IOException {
         return ResponseEntity.ok(productService.uploadFile(file, productId));
@@ -99,6 +102,7 @@ public class ProductController {
 
     //PUT MAPPING
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PutMapping
     public void update(@RequestBody ProductDTO productDTO) {
         productService.update(productDTO);
@@ -106,6 +110,7 @@ public class ProductController {
 
     // DELETE MAPPING
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         productService.delete(id);
