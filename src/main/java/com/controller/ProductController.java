@@ -48,18 +48,6 @@ public class ProductController {
         return productService.findMenuWaiterRequest(id);
     }
 
-    @GetMapping("/findMenuSpecial")
-    public ResponseEntity<List<ProductDTO>> findMenuSpecials(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menuDTO"), MenuDTO.class);
-        return ResponseEntity.ok(productService.findMenuSpecials(menuDTO));
-    }
-
-    @GetMapping("/findChoixDuChef")
-    public ResponseEntity<List<ProductDTO>> findMenuChoixDuChef(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menuDTO"), MenuDTO.class);
-        return ResponseEntity.ok(productService.findMenuChoixDuChef(menuDTO));
-    }
-
     @GetMapping("/getProductImg/{imgId}")
     public ResponseEntity<?> getImg(@PathVariable Long imgId) throws IOException {
         return ResponseEntity.ok(productService.returnImgAsByteArrayString(imgId));
@@ -73,23 +61,10 @@ public class ProductController {
     }
 
 
-    @PostMapping("/setMenuSpecial")
-    public ResponseEntity<ProductDTO> setProductSpecial(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        ProductDTO productDTO = new ObjectMapper().readValue(json.get("productDTO"), ProductDTO.class);
-        return ResponseEntity.ok(productService.setProductSpecial(productDTO));
-
-    }
-
     @PostMapping("/deleteMenuType")
     public ResponseEntity<ProductDTO> removeMenuType(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ProductDTO productDTO = new ObjectMapper().readValue(json.get("productDTO"), ProductDTO.class);
         return ResponseEntity.ok(productService.removeMenuType(productDTO));
-    }
-
-    @PostMapping("/setMenuChefChoice")
-    public ResponseEntity<ProductDTO> setProductChefChoice(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        ProductDTO productDTO = new ObjectMapper().readValue(json.get("productDTO"), ProductDTO.class);
-        return ResponseEntity.ok(productService.setProductChefChoice(productDTO));
     }
 
     @PostMapping("/image/{productId}")
