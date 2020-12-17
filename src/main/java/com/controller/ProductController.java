@@ -45,20 +45,6 @@ public class ProductController {
         return productService.findMenuWaiterRequest(id);
     }
 
-    // todo cette methode est tester mais n'est pas utiliser dans le front end
-    @GetMapping("/findMenuSpecial")
-    public ResponseEntity<List<ProductDTO>> findMenuSpecials(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menuDTO"), MenuDTO.class);
-        return ResponseEntity.ok(productService.findMenuSpecials(menuDTO));
-    }
-
-    // todo cette methode est tester mais n'est pas utiliser dans le front end
-    @GetMapping("/findChoixDuChef")
-    public ResponseEntity<List<ProductDTO>> findMenuChoixDuChef(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menuDTO"), MenuDTO.class);
-        return ResponseEntity.ok(productService.findMenuChoixDuChef(menuDTO));
-    }
-
     @GetMapping("/getProductImg/{imgId}")
     public ResponseEntity<?> getImg(@PathVariable Long imgId) throws IOException {
         return ResponseEntity.ok(productService.returnImgAsByteArrayString(imgId));
@@ -72,27 +58,12 @@ public class ProductController {
         return productService.create(productDTO, menuId);
     }
 
-    // todo cette methode est tester mais n'est pas utiliser dans le front end
-    @PostMapping("/setMenuSpecial")
-    public ResponseEntity<ProductDTO> setProductSpecial(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        ProductDTO productDTO = new ObjectMapper().readValue(json.get("productDTO"), ProductDTO.class);
-        return ResponseEntity.ok(productService.setProductSpecial(productDTO));
-
-    }
-
-    // todo cette methode est tester mais n'est pas utiliser dans le front end
     @PostMapping("/deleteMenuType")
     public ResponseEntity<ProductDTO> removeMenuType(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ProductDTO productDTO = new ObjectMapper().readValue(json.get("productDTO"), ProductDTO.class);
         return ResponseEntity.ok(productService.removeMenuType(productDTO));
     }
 
-    // todo cette methode est tester mais n'est pas utiliser dans le front end
-    @PostMapping("/setMenuChefChoice")
-    public ResponseEntity<ProductDTO> setProductChefChoice(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        ProductDTO productDTO = new ObjectMapper().readValue(json.get("productDTO"), ProductDTO.class);
-        return ResponseEntity.ok(productService.setProductChefChoice(productDTO));
-    }
 
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PostMapping("/image/{productId}")

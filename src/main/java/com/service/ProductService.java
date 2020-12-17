@@ -127,35 +127,6 @@ public class ProductService {
 
     }
 
-    //todo remove all if in filter
-
-    public List<ProductDTO> findMenuSpecials(MenuDTO menuDTO) {
-        Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getProducts().stream().filter(r ->
-                r.getMenuType() == MenuType.SPECIAL
-        ).collect(Collectors.toList());
-        return dtoUtils.mapProductListToProductDTOList(productList);
-
-    }
-
-    public List<ProductDTO> findMenuChoixDuChef(MenuDTO menuDTO) {
-        Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> productList = menu.getProducts().stream().filter(r ->
-                r.getMenuType() == MenuType.CHEFCHOICE
-        ).collect(Collectors.toList());
-        return dtoUtils.mapProductListToProductDTOList(productList);
-
-    }
-
-    // todo ici dans la methode product dto on set deja le product type alors pk le reset
-    public ProductDTO setProductSpecial(ProductDTO productDTO) {
-        Product product = productRepository.findById(productDTO.getId()).get();
-        product.setMenuType(MenuType.SPECIAL);
-        ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
-        return retour;
-    }
-
-    // todo mm chose qu'au dessus on set le product type deux
     // todo on save deux fois le produit ce qui n'est pas optimal
     public ProductDTO removeMenuType(ProductDTO productDTO) {
         Product product = productRepository.findById(productDTO.getId()).get();
@@ -164,15 +135,6 @@ public class ProductService {
         return retour;
     }
 
-    public ProductDTO setProductChefChoice(ProductDTO productDTO) {
-
-        Product product = productRepository.findById(productDTO.getId()).get();
-        product.setMenuType(MenuType.CHEFCHOICE);
-        ProductDTO retour = dtoUtils.mapProductToProductDTO(productRepository.save(product));
-
-        retour.setMenuType(product.getMenuType());
-        return retour;
-    }
 
     public ProductDTO uploadFile(MultipartFile file, long productId) throws IOException {
         Product product = productRepository.findById(productId).get();
