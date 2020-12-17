@@ -61,8 +61,8 @@ public class KitchenRestController {
     //PUT
     @PreAuthorize("hasAnyAuthority('ROLE_COOK','ROLE_WAITER')")
     @PutMapping("/editOrderItem")
-    public void updateOrderItem(@RequestBody OrderItemDTO orderItemDTO) {
-        kitchenService.updateOrderItem(orderItemDTO);
+    public OrderItemDTO updateOrderItem(@RequestBody OrderItemDTO orderItemDTO) {
+        return kitchenService.updateOrderItem(orderItemDTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
