@@ -14,6 +14,7 @@ import com.service.RestaurentTableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,11 +34,13 @@ public class KitchenRestController {
 
     //GET
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @GetMapping("/restaurantEmployers/{restaurantId}")
     public List<RestaurantEmployerDTO> findAllRestaurantEmployers(@PathVariable final Long restaurantId) {
         return kitchenService.findAllRestaurantEmployers(restaurantId);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN','ROLE_COOK','ROLE_WAITER')")
     @GetMapping("/restaurantEmployer/{username}")
     public RestaurantEmployerDTO findRestaurantEmployer(@PathVariable final String username) {
         return kitchenService.findRestaurantEmployer(username);
@@ -48,6 +51,7 @@ public class KitchenRestController {
         return ResponseEntity.ok(kitchenService.findRestaurantByRestaurantTableId(tableID));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN','ROLE_COOK','ROLE_WAITER')")
     @GetMapping("/employerRestaurant/{username:.+}")
     public Long findEmployerRestaurantId(@PathVariable final String username) {
         return kitchenService.findEmployerRestaurantId(username);
@@ -55,11 +59,13 @@ public class KitchenRestController {
 
     //ALLOW COOK TO MODIFY ORDER TIME OR END ORDER
     //PUT
+    @PreAuthorize("hasAnyAuthority('ROLE_COOK','ROLE_WAITER')")
     @PutMapping("/editOrderItem")
     public void updateOrderItem(@RequestBody OrderItemDTO orderItemDTO) {
         kitchenService.updateOrderItem(orderItemDTO);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PutMapping("/updateRestaurantUser")
     public ResponseEntity<String> updateRestaurantEmployee(@RequestBody final RestaurantEmployerDTO restaurantEmployerDTO) {
         return kitchenService.updateRestaurantEmployee(restaurantEmployerDTO);
@@ -67,12 +73,14 @@ public class KitchenRestController {
 
     //POST
 
+    @PreAuthorize("hasAnyAuthority('ROLE_WAITER','ROLE_COOK')")
     @PostMapping("/findAllTables")
     public ResponseEntity<List<RestaurentTableDTO>> findAllTables(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long restaurentId = new ObjectMapper().readValue(json.get("restaurentId"), Long.class);
         return ResponseEntity.ok(restaurentTableService.findAllForRestaurent(restaurentId));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PostMapping("/createRestaurant")
     public ResponseEntity<RestaurantDTO> createRestaurant(@RequestBody Map<String, String> json) throws IOException, WriterException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -83,11 +91,13 @@ public class KitchenRestController {
         return ResponseEntity.ok(kitchenService.createRestaurant(ownerUsername, restaurantName, nombreDeTable));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PostMapping("/logo/{restaurantId}")
     public ResponseEntity<?> saveProductImg(@RequestParam("file") MultipartFile file, @PathVariable long restaurantId) throws IOException {
         return ResponseEntity.ok(kitchenService.uploadLogo(file, restaurantId));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PostMapping("/deleteRestaurant")
     public ResponseEntity deleteRestaurant(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"), Long.class);
@@ -95,11 +105,13 @@ public class KitchenRestController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PostMapping("/addTable/{restaurantId}/{tableAmount}")
     public ResponseEntity<RestaurantDTO> addRestaurantTable(@PathVariable long restaurantId, @PathVariable int tableAmount) throws IOException, WriterException {
         return ResponseEntity.ok(kitchenService.addRestaurantTable(restaurantId, tableAmount));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PostMapping("/modifierNomTable")
     public ResponseEntity<RestaurantDTO> updateRestaurantName(@RequestBody Map<String, String> json) throws JsonProcessingException {
         String restaurantName = json.get("restaurantName");
@@ -107,6 +119,7 @@ public class KitchenRestController {
         return ResponseEntity.ok(kitchenService.modifierRestaurantName(restaurantName, restaurantId));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PostMapping("/deleteTable")
     public ResponseEntity deleteRestaurantTble(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long tableId = new ObjectMapper().readValue(json.get("restaurantTableId"), Long.class);
@@ -115,6 +128,7 @@ public class KitchenRestController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ROLE_WAITER')")
     @PostMapping("/getWaiterRequest")
     public ResponseEntity<List<OrderItemDTO>> getWaiterRequests(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
@@ -124,7 +138,7 @@ public class KitchenRestController {
         return ResponseEntity.ok(kitchenService.fetchWaiterRequest(restaurentId));
     }
 
-
+    @PreAuthorize("hasAuthority('ROLE_COOK')")
     @PostMapping("/changeOrderItemTime")
     public ResponseEntity<OrderItemDTO> changeOrderItemTime(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
@@ -135,6 +149,7 @@ public class KitchenRestController {
         return ResponseEntity.ok(kitchenService.changeOrderItem(orderItemId, tempsAjoute));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PostMapping("/addUserToRestaurant")
     public ResponseEntity<String> addUserToRestaurant(@RequestBody final RestaurantEmployerDTO restaurantEmployerDTO) {
         return kitchenService.addUserToRestaurant(restaurantEmployerDTO);
