@@ -20,12 +20,21 @@ public class OrderItemDTO {
 
     private List<OptionDTO> option;
 
-    private List <CheckItemDTO> checkItems;
+    private List<CheckItemDTO> checkItems;
+
+    private boolean isAssigned;
 
     private MenuType menuType;
 
     private String commentaires;
 
+    public boolean isAssigned() {
+        return isAssigned;
+    }
+
+    public void setAssigned(boolean assigned) {
+        isAssigned = assigned;
+    }
 
     public String getCommentaires() {
         return commentaires;

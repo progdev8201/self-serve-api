@@ -1,6 +1,8 @@
 package com.model.entity;
+
 import com.model.enums.MenuType;
 import com.model.enums.ProgressStatus;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -12,7 +14,7 @@ public class OrderItem implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Product product;
 
     @Enumerated(EnumType.STRING)
@@ -20,24 +22,25 @@ public class OrderItem implements Serializable {
     @Column(length = 60)
     private ProgressStatus orderStatus;
 
-    @ManyToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
-    private  Bill bill;
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Bill bill;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 60)
     private MenuType menuType;
 
-    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.MERGE})
-    private List <CheckItem> checkItems;
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
+    private List<CheckItem> checkItems;
 
+    private boolean isAssigned;
 
     private String commentaires;
 
     private double prix;
     //quand le plat doit etre pret
-    private LocalDateTime delaiDePreparation ;
+    private LocalDateTime delaiDePreparation;
 
-    @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Option> option;
 
     private int numeroTable;
@@ -51,6 +54,14 @@ public class OrderItem implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public boolean isAssigned() {
+        return isAssigned;
+    }
+
+    public void setAssigned(boolean assigned) {
+        isAssigned = assigned;
     }
 
     public Product getProduct() {
