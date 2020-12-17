@@ -24,7 +24,6 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @ConditionalOnProperty(name = "config.securite.active", havingValue = "false")
 public class DisableWebSecurityConfig extends WebSecurityConfigurerAdapter implements WebSecurityConfigInterface {
 
