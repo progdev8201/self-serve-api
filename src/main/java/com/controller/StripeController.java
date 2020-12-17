@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mapping.BillDTOToBill;
-import com.model.dto.*;
+import com.model.dto.BillDTO;
+import com.model.dto.SubscriptionRequestDTO;
 import com.model.dto.requests.*;
 import com.service.StripeService;
 import com.stripe.exception.StripeException;
@@ -23,7 +24,7 @@ import java.util.Map;
 public class StripeController {
 
     @Autowired
-    StripeService stripeService;
+    private StripeService stripeService;
 
     @PreAuthorize("hasAuthority('ROLE_OWNER')")
     @PostMapping("/createStripeAcccount")
@@ -33,16 +34,16 @@ public class StripeController {
 
     @PreAuthorize("hasAuthority('ROLE_OWNER')")
     @PostMapping("/saveAccountId")
-    public ResponseEntity<?> saveOwnerAccountId(@RequestBody Map<String, String> json){
-        String username= json.get("username");
+    public ResponseEntity<?> saveOwnerAccountId(@RequestBody Map<String, String> json) {
+        String username = json.get("username");
         stripeService.saveStripeAccountId(username);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_GUEST','ROLE_CLIENT')")
     @PostMapping("/getAccountId")
-    public ResponseEntity<StripeAccountIdDTO> getStripeAccountId(@RequestBody Map<String,String> json) throws JsonProcessingException {
-        Long menuId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
+    public ResponseEntity<StripeAccountIdDTO> getStripeAccountId(@RequestBody Map<String, String> json) throws JsonProcessingException {
+        Long menuId = new ObjectMapper().readValue(json.get("restaurantId"), Long.class);
         return ResponseEntity.ok(stripeService.getAccountId(menuId));
     }
 
@@ -52,7 +53,7 @@ public class StripeController {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         BillDTO billDTO = objectMapper.readValue(json.get("billDTO"), BillDTO.class);
-        String restaurentStripeAccount =json.get("restaurentStripeAccount");
+        String restaurentStripeAccount = json.get("restaurentStripeAccount");
         return ResponseEntity.ok(stripeService.processPayment(restaurentStripeAccount, BillDTOToBill.instance.convert(billDTO)));
     }
 
@@ -62,19 +63,19 @@ public class StripeController {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         BillDTO billDTO = objectMapper.readValue(json.get("billDTO"), BillDTO.class);
-        String restaurentStripeAccount =json.get("restaurentStripeAccount");
+        String restaurentStripeAccount = json.get("restaurentStripeAccount");
         return ResponseEntity.ok(stripeService.processRequestPayment(restaurentStripeAccount, BillDTOToBill.instance.convert(billDTO)));
     }
 
     @PreAuthorize("hasAuthority('ROLE_OWNER')")
     @GetMapping("/fetchSubscriptionProducts")
-    public ResponseEntity<List<StripeSubscriptionProductsDTO>> fetchSubscriptionProducts(){
+    public ResponseEntity<List<StripeSubscriptionProductsDTO>> fetchSubscriptionProducts() {
         return ResponseEntity.ok(stripeService.fetchSubscriptionProducts());
     }
 
     @PreAuthorize("hasAuthority('ROLE_OWNER')")
     @PostMapping("/fetchSubscriptionSession")
-    public ResponseEntity<StripeSessionCustomerIdDTO> processSubscriptionSession (@RequestBody Map <String ,String > json) throws JsonProcessingException, StripeException  {
+    public ResponseEntity<StripeSessionCustomerIdDTO> processSubscriptionSession(@RequestBody Map<String, String> json) throws JsonProcessingException, StripeException {
         String ownerEmail = json.get("ownerEmail");
         return ResponseEntity.ok(stripeService.createCheckoutSession(ownerEmail));
     }

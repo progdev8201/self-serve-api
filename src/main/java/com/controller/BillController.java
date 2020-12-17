@@ -11,6 +11,7 @@ import com.model.enums.BillStatus;
 import com.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -22,11 +23,13 @@ public class BillController {
     @Autowired
     private ClientService clientService;
 
+    @PreAuthorize("hasAnyAuthority('ROLE_GUEST','ROLE_CLIENT')")
     @GetMapping("/billStatus/{billId}")
     public BillStatus findBillStatus(@PathVariable final Long billId){
         return clientService.findBillStatus(billId);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_GUEST','ROLE_CLIENT')")
     @PostMapping("/makeOrder")
     public ResponseEntity<BillDTO> makeOrder(@RequestBody Map<String, String> json) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -38,17 +41,20 @@ public class BillController {
         return ResponseEntity.ok(clientService.makeOrder(productDTO,json.get("guestUsername"),billDTO.getId(),restaurentTableId,commentaire));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_GUEST','ROLE_CLIENT')")
     @PostMapping("/initBill")
     public ResponseEntity<BillDTO> initBill() {
         return ResponseEntity.ok(clientService.initBill());
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_GUEST','ROLE_CLIENT','ROLE_OWNER')")
     @PostMapping("/makePayment")
     public ResponseEntity<Boolean> makePayment(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long billId = new ObjectMapper().readValue(json.get("billId"), Long.class);
         return ResponseEntity.ok(clientService.makePayment(billId));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_GUEST','ROLE_CLIENT')")
     @PostMapping("/getBill")
     public ResponseEntity<BillDTO> getBill(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long billId = new ObjectMapper().readValue(json.get("billId"), Long.class);
