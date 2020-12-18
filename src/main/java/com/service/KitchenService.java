@@ -5,7 +5,6 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.mapping.OrderItemToOrderItemDTO;
 import com.model.dto.OrderItemDTO;
 import com.model.dto.RestaurantDTO;
 import com.model.dto.RestaurantEmployerDTO;
@@ -75,6 +74,7 @@ public class KitchenService {
         // on dois faire un mapping a la main , sinon , on va avoir detached entity exception
         orderItem.setOrderStatus(orderItemDTO.getOrderStatus());
         orderItem.setTempsDePreparation(orderItemDTO.getTempsDePreparation());
+        orderItem.setSelected(orderItemDTO.isSelected());
         return dtoUtils.mapOrderItemToOrderItemDTO(orderItemRepository.save(orderItem));
     }
 

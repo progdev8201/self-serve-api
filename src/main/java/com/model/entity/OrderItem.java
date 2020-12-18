@@ -32,7 +32,7 @@ public class OrderItem implements Serializable {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
     private List<CheckItem> checkItems;
 
-    private boolean isAssigned;
+    private boolean selected;
 
     private String commentaires;
 
@@ -56,12 +56,12 @@ public class OrderItem implements Serializable {
         this.id = id;
     }
 
-    public boolean isAssigned() {
-        return isAssigned;
+    public boolean isSelected() {
+        return selected;
     }
 
-    public void setAssigned(boolean assigned) {
-        isAssigned = assigned;
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 
     public Product getProduct() {

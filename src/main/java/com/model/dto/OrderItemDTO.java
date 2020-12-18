@@ -22,18 +22,18 @@ public class OrderItemDTO {
 
     private List<CheckItemDTO> checkItems;
 
-    private boolean isAssigned;
+    private boolean selected;
 
     private MenuType menuType;
 
     private String commentaires;
 
-    public boolean isAssigned() {
-        return isAssigned;
+    public boolean isSelected() {
+        return selected;
     }
 
-    public void setAssigned(boolean assigned) {
-        isAssigned = assigned;
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 
     public String getCommentaires() {
@@ -128,6 +128,11 @@ public class OrderItemDTO {
                 ", prix=" + prix +
                 ", delaiDePreparation=" + delaiDePreparation +
                 ", option=" + option +
+                ", checkItems=" + checkItems +
+                ", isAssigned=" + selected +
+                ", menuType=" + menuType +
+                ", commentaires='" + commentaires + '\'' +
+                ", tempsDePreparation=" + tempsDePreparation +
                 '}';
     }
 }
