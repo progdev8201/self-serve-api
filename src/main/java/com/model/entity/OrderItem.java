@@ -18,7 +18,6 @@ public class OrderItem implements Serializable {
     private Product product;
 
     @Enumerated(EnumType.STRING)
-    //@NaturalId
     @Column(length = 60)
     private ProgressStatus orderStatus;
 
