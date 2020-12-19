@@ -73,14 +73,14 @@ class ProductControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         MenuDTO menuDTO = mapper.readValue(result.getResponse().getContentAsString(), MenuDTO.class);
-        assertEquals(6, menuDTO.getProducts().size());
+        assertEquals(7, menuDTO.getProducts().size());
     }
 
     @Test
     public void deleteProduct() throws Exception {
         MockMvc mvc = initMockMvc();
 
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.delete("/product/{id}", "16").
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.delete("/product/{id}", "17").
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
