@@ -210,7 +210,7 @@ public class ClientService {
 
     private void setProgressStatus(Product product, OrderItem orderItem) {
         orderItem.setOrderStatus(ProgressStatus.PROGRESS);
-        if(product.getMenuType()== MenuType.WAITERREQUEST || product.getMenuType()== MenuType.WAITERCALL){
+        if(product.getMenuType()== MenuType.WAITERREQUEST || product.getMenuType()== MenuType.WAITERCALL ||product.getMenuType()== MenuType.TERMINALREQUEST){
             orderItem.setOrderStatus(ProgressStatus.READY);
         }
     }
