@@ -59,6 +59,9 @@ public class KitchenService {
     private PasswordEncoder encoder;
 
     @Autowired
+    ClientService clientService;
+
+    @Autowired
     private DTOUtils dtoUtils;
 
     private final String restaurantTableIdPrefix = "/start?restaurantTableId=";
@@ -75,6 +78,9 @@ public class KitchenService {
         orderItem.setOrderStatus(orderItemDTO.getOrderStatus());
         orderItem.setTempsDePreparation(orderItemDTO.getTempsDePreparation());
         orderItem.setSelected(orderItemDTO.isSelected());
+        if(orderItem.getMenuType() == MenuType.TERMINALREQUEST){
+            clientService.makePayment(orderItem.getBill().getId());
+        }
         return dtoUtils.mapOrderItemToOrderItemDTO(orderItemRepository.save(orderItem));
     }
 

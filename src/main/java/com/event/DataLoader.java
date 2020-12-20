@@ -46,19 +46,10 @@ public class DataLoader implements CommandLineRunner {
 */
 
     @Autowired
-    private GuestRepository guestRepository;
-
-    @Autowired
     private RestaurantRepository restaurantRepository;
 
     @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
     private AdminRepository adminRepository;
-
-    @Autowired
-    private OwnerRepository ownerRepository;
 
     @Autowired
     private KitchenService kitchenService;
@@ -168,6 +159,10 @@ public class DataLoader implements CommandLineRunner {
 
         product = createProduct(MenuType.WAITERCALL, "sugar.png", menuRequest);
         product.setName("CALL WAITER");
+        productList.add(product);
+
+        product = createProduct(MenuType.TERMINALREQUEST, "sugar.png", menuRequest);
+        product.setName("Request Terminal");
         productList.add(product);
 
 
