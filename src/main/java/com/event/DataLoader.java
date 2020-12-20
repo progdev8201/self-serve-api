@@ -12,6 +12,7 @@ import com.model.enums.RoleName;
 import com.repository.*;
 import com.service.AuthentificationService;
 import com.service.KitchenService;
+import com.service.MenuCreationService;
 import com.service.StripeService;
 import com.stripe.exception.StripeException;
 import org.apache.commons.io.IOUtils;
@@ -58,6 +59,8 @@ public class DataLoader implements CommandLineRunner {
     @Autowired
     private ResourceLoader resourceLoader;
 
+    @Autowired
+    MenuCreationService menuCreationService;
 
     @Autowired
     private AuthentificationService authentificationService;
@@ -84,86 +87,26 @@ public class DataLoader implements CommandLineRunner {
         Bill bill = new Bill();
         bill.setBillStatus(BillStatus.PROGRESS);
         bill.setOrderItems(new ArrayList<>());
-        OrderItem orderItem;
+        Menu menuRequest;
+
         Menu menuDiner = createMenu("Diner", MenuType.FOOD);
         Menu menuSouper = createMenu("Souper", MenuType.FOOD);
         Menu menuDejeuner = createMenu("Dejeuner", MenuType.FOOD);
-        Menu menuRequest = createMenu("request", MenuType.WAITERREQUEST);
         //todo trop long pour rien mieux de faire un loop
-        //create product list
-        List<Product> productList = new ArrayList<>();
 
-        Product product = createProduct(MenuType.FOOD, "download.jpg", menuDejeuner);
-        orderItem = createOrderItem(ProgressStatus.READY, MenuType.FOOD, product);
-        orderItem.setBill(bill);
-        product.getOrderItems().add(orderItem);
-        productList.add(product);
-        bill.getOrderItems().add(orderItem);
+        for (int i =0;i<3;i++){
+            menuCreationService.createProduct(MenuType.FOOD, "download.jpg", 29.99 +i, 30+i, "Steak chico dejeuner " +i, menuDejeuner);
+        }
 
-        product = createProduct(MenuType.FOOD, "download.jpg", menuDejeuner);
-        orderItem = createOrderItem(ProgressStatus.READY, MenuType.FOOD, product);
-        orderItem.setBill(bill);
-        product.getOrderItems().add(orderItem);
-        productList.add(product);
-        bill.getOrderItems().add(orderItem);
+        for (int i =0;i<3;i++){
+            menuCreationService.createProduct(MenuType.FOOD, "download.jpg", 29.99 +i, 30+i, "Steak chico diner " +i, menuDiner);
+        }
 
+        for (int i =0;i<3;i++){
+            menuCreationService.createProduct(MenuType.FOOD, "download.jpg", 29.99 +i, 30+i, "Steak chico souper " +i, menuSouper);
+        }
 
-        product = createProduct(MenuType.FOOD, "download.jpg", menuDejeuner);
-        orderItem = createOrderItem(ProgressStatus.PROGRESS, MenuType.WAITERREQUEST, product);
-        orderItem.setBill(bill);
-        product.getOrderItems().add(orderItem);
-        productList.add(product);
-        bill.getOrderItems().add(orderItem);
-
-        product = createProduct(MenuType.FOOD, "download.jpg", menuDiner);
-        orderItem = createOrderItem(ProgressStatus.PROGRESS, MenuType.WAITERREQUEST, product);
-        orderItem.setBill(bill);
-        product.getOrderItems().add(orderItem);
-        productList.add(product);
-        bill.getOrderItems().add(orderItem);
-
-        product = createProduct(MenuType.FOOD, "download.jpg", menuDiner);
-        productList.add(product);
-
-        product = createProduct(MenuType.FOOD, "download.jpg", menuDiner);
-        productList.add(product);
-
-        product = createProduct(MenuType.FOOD, "download.jpg", menuSouper);
-        productList.add(product);
-
-        product = createProduct(MenuType.FOOD, "download.jpg", menuSouper);
-        productList.add(product);
-
-        product = createProduct(MenuType.FOOD, "download.jpg", menuSouper);
-        productList.add(product);
-
-        product = createProduct(MenuType.WAITERREQUEST, "fork.png", menuRequest);
-        product.setName("FORK");
-        productList.add(product);
-
-        product = createProduct(MenuType.WAITERREQUEST, "knife.png", menuRequest);
-        product.setName("KNIFE");
-        productList.add(product);
-
-        product = createProduct(MenuType.WAITERREQUEST, "salt.png", menuRequest);
-        product.setName("SALT");
-        productList.add(product);
-
-        product = createProduct(MenuType.WAITERREQUEST, "sauce.png", menuRequest);
-        product.setName("SAUCE");
-        productList.add(product);
-
-        product = createProduct(MenuType.WAITERREQUEST, "sugar.png", menuRequest);
-        product.setName("SUGAR");
-        productList.add(product);
-
-        product = createProduct(MenuType.WAITERCALL, "sugar.png", menuRequest);
-        product.setName("CALL WAITER");
-        productList.add(product);
-
-        product = createProduct(MenuType.TERMINALREQUEST, "sugar.png", menuRequest);
-        product.setName("Request Terminal");
-        productList.add(product);
+        menuRequest =menuCreationService.createMenuRequest();
 
 
         if (adminRepository.findAll().size() == 0) {
@@ -194,12 +137,7 @@ public class DataLoader implements CommandLineRunner {
         restaurant.setBill(new ArrayList<>());
         restaurant.setName("le resto chico");
         restaurant.setImgFile(getImgFile("download.jpg"));
-        /*
-        for (Product x : productList) {
-            x.setMenu(restaurant.getMenus());
-        }
-        restaurant.getMenus().setProducts(productList);
-        */
+
         restaurant.getBill().add(bill);
         List<Menu> allMenus = new ArrayList<>();
         allMenus.add(menuDejeuner);
@@ -219,7 +157,7 @@ public class DataLoader implements CommandLineRunner {
 
         restaurant = new Restaurant();
         Menu menuSupp = createMenu("Dejeuner", MenuType.FOOD);
-        product = createProduct(null, "download.jpg", menuSupp);
+        createProduct(null, "download.jpg", menuSupp);
         restaurant.setMenus(Collections.singletonList(menuSupp));
         restaurantRepository.save(restaurant);
         System.out.println("APPLICATION IS READY!!!");
