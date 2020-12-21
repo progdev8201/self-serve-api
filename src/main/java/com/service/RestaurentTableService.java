@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -38,15 +39,13 @@ public class RestaurentTableService {
         if (!restaurantOwnerShipValidator.hasCookWaiterRight(restaurentId))
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
-
         Restaurant restaurant = restaurantRepository.findById(restaurentId).get();
-        List<RestaurentTableDTO> restaurentTableDTOS = new ArrayList<>();
-        restaurant.getRestaurentTables().forEach(restaurentTable -> {
-            restaurentTableDTOS.add(dtoUtils.mapRestaurantTableToRestaurantTableDTO(restaurentTable));
-        });
-        return ResponseEntity.ok(restaurentTableDTOS);
-    }
 
+        return ResponseEntity.ok(restaurant.getRestaurentTables()
+                .stream()
+                .map(dtoUtils::mapRestaurantTableToRestaurantTableDTO)
+                .collect(Collectors.toList()));
+    }
 
 
     public void deleteBillFromTable(Bill bill) {
