@@ -79,6 +79,8 @@ public class MenuService {
 
         restaurantRepository.save(restaurant);
 
+        MenuDTO menuDTO = (MenuDTO) createMenu(2L,"sd",MenuType.FOOD).getBody();
+
         return ResponseEntity.ok().build();
     }
 
@@ -89,9 +91,11 @@ public class MenuService {
 
         Restaurant restaurant = restaurantRepository.findById(restoId).get();
 
-        if (findMenuInRestaurantByName(menuName, restaurant) != null) {
-            return new ResponseEntity<String>("Fail -> Menu with same name already exists", HttpStatus.BAD_REQUEST);
-        }
+        if (findMenuInRestaurantByName(menuName, restaurant) != null)
+            return ResponseEntity.badRequest().body("Fail -> Menu with same name already exists");
+
+        if (menuType.equals(MenuType.WAITERREQUEST) && isMenuWaiterRequestAlreadyExisting(restaurant))
+            return ResponseEntity.badRequest().body("Fail -> Menu with WAITERREQUEST type already exists");
 
         Menu menu = new Menu();
         menu.setName(menuName);
@@ -103,12 +107,19 @@ public class MenuService {
         return ResponseEntity.ok(dtoUtils.mapMenuToMenuDTO(menu));
     }
 
-    public MenuDTO updateMenu(Long menuId, String menuName, MenuType menuType) {
+    public ResponseEntity<?> updateMenu(Long menuId, String menuName, MenuType menuType) {
         Menu menu = menuRepository.findById(menuId).get();
+
+        if (findMenuInRestaurantByName(menuName, menu.getRestaurant()) != null)
+            return ResponseEntity.badRequest().body("Fail -> Menu with same name already exists");
+
+        if (menu.getMenuType().equals(MenuType.WAITERREQUEST) && !menuType.equals(MenuType.WAITERREQUEST))
+            return ResponseEntity.badRequest().body("Fail -> You cannot update menu type of menu of type waiter request");
+
         menu.setName(menuName);
         menu.setMenuType(menuType);
-        menu = menuRepository.save(menu);
-        return dtoUtils.mapMenuToMenuDTO(menuRepository.save(menu));
+
+        return ResponseEntity.ok(dtoUtils.mapMenuToMenuDTO(menuRepository.save(menu)));
     }
 
     private Menu findMenuInRestaurantByName(String menuName, Restaurant restaurant) {
@@ -116,6 +127,10 @@ public class MenuService {
                 .stream()
                 .filter(x -> x.getName().contentEquals(menuName))
                 .findFirst().orElse(null);
+    }
+
+    private boolean isMenuWaiterRequestAlreadyExisting(Restaurant restaurant){
+        return restaurant.getMenus().stream().anyMatch(menu -> menu.getMenuType().equals(MenuType.WAITERREQUEST));
     }
 
     public List<RestaurantSelectionDTO> findAllRestaurantName(String ownerUsername) {

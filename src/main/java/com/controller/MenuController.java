@@ -50,8 +50,7 @@ public class MenuController {
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PutMapping("/updateMenu")
     public ResponseEntity<?> updateMenu(@RequestBody MenuRequestDTO menuRequestDTO) {
-        MenuDTO menuDTO =menuService.updateMenu(menuRequestDTO.getMenuId(), menuRequestDTO.getMenuName(), menuRequestDTO.getMenuType());
-        return ResponseEntity.ok(menuDTO);
+        return menuService.updateMenu(menuRequestDTO.getMenuId(), menuRequestDTO.getMenuName(), menuRequestDTO.getMenuType());
     }
 
     // Get

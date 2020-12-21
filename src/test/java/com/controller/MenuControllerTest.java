@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.model.dto.*;
 import com.model.entity.Menu;
+import com.model.enums.MenuType;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -58,6 +59,7 @@ public class MenuControllerTest {
         JSONObject sendObj = new JSONObject();
         sendObj.put("restaurantId", "1");
         sendObj.put("menuName", "le menu bien bon");
+        sendObj.put("menuType", MenuType.FOOD);
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/menu/createMenu").
                 content(sendObj.toString()).
@@ -79,6 +81,7 @@ public class MenuControllerTest {
         JSONObject sendObj = new JSONObject();
         sendObj.put("restaurantId", "1");
         sendObj.put("menuName", "le menu bien bon bon");
+        sendObj.put("menuType", MenuType.FOOD);
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/menu/createMenu").
                 content(sendObj.toString()).
