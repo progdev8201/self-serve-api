@@ -4,12 +4,12 @@ import com.model.dto.RestaurentTableDTO;
 import com.model.entity.Bill;
 import com.model.entity.Restaurant;
 import com.model.entity.RestaurentTable;
-import com.repository.BillRepository;
 import com.repository.RestaurantRepository;
 import com.repository.RestaurentTableRepository;
 import com.service.Util.DTOUtils;
-import com.service.validator.RestaurantOwnerShip;
+import com.service.validator.RestaurantOwnerShipValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,12 +31,12 @@ public class RestaurentTableService {
     private DTOUtils dtoUtils;
 
     @Autowired
-    private RestaurantOwnerShip restaurantOwnerShip;
+    private RestaurantOwnerShipValidator restaurantOwnerShipValidator;
 
 
     public ResponseEntity<List<RestaurentTableDTO>> findAllForRestaurent(Long restaurentId) {
-        if (!restaurantOwnerShip.hasCookWaiterRight(restaurentId))
-            return ResponseEntity.badRequest().build();
+        if (!restaurantOwnerShipValidator.hasCookWaiterRight(restaurentId))
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
 
         Restaurant restaurant = restaurantRepository.findById(restaurentId).get();

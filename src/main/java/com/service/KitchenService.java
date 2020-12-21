@@ -15,9 +15,10 @@ import com.model.enums.RoleName;
 import com.repository.*;
 import com.service.Util.DTOUtils;
 import com.service.Util.ImgFileUtils;
-import com.service.validator.RestaurantOwnerShip;
+import com.service.validator.RestaurantOwnerShipValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -63,7 +64,7 @@ public class KitchenService {
     private ClientService clientService;
 
     @Autowired
-    private RestaurantOwnerShip restaurantOwnerShip;
+    private RestaurantOwnerShipValidator restaurantOwnerShipValidator;
 
     @Autowired
     private DTOUtils dtoUtils;
@@ -100,11 +101,8 @@ public class KitchenService {
     }
 
     public ResponseEntity<String> addUserToRestaurant(RestaurantEmployerDTO restaurantEmployerDTO) {
-        if (employerRepository.existsByUsername(restaurantEmployerDTO.getUsername()))
-            return ResponseEntity.badRequest().body("Username already exist");
-
-        if (employerRepository.findAllByRestaurant_Id(restaurantEmployerDTO.getRestaurantId()).size() == 2)
-            return ResponseEntity.badRequest().body("There is already two employer assigned");
+        ResponseEntity<String> FORBIDDEN = canAddRestaurant(restaurantEmployerDTO);
+        if (FORBIDDEN != null) return FORBIDDEN;
 
         if (restaurantEmployerDTO.getRole().equals(RoleName.ROLE_COOK.toString())) {
             addCookToRestaurant(restaurantEmployerDTO);
@@ -133,8 +131,8 @@ public class KitchenService {
     }
 
     public ResponseEntity<List<RestaurantEmployerDTO>> findAllRestaurantEmployers(Long restaurantId) {
-        if (!restaurantOwnerShip.hasOwnerRight(restaurantId))
-            return ResponseEntity.badRequest().build();
+        if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId) && !restaurantOwnerShipValidator.isAdminConnected())
+            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         List<RestaurantEmployerDTO> restaurantEmployerDTOS = employerRepository.findAllByRestaurant_Id(restaurantId)
                 .stream()
@@ -148,17 +146,23 @@ public class KitchenService {
         return new RestaurantEmployerDTO(employerRepository.findEmployerByUsername(username).get());
     }
 
-    public RestaurantDTO uploadLogo(MultipartFile file, long restaurantId) throws IOException {
+    public ResponseEntity<RestaurantDTO> uploadLogo(MultipartFile file, long restaurantId) throws IOException {
+        if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId) && !restaurantOwnerShipValidator.isAdminConnected())
+            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
 
         ImgFile img = ImgFileUtils.createImgFile(file, StringUtils.cleanPath(file.getOriginalFilename()), RESTAURANT_LOGO_FILE_TYPE);
 
         restaurant.setImgFile(imgFileRepository.save(img));
 
-        return dtoUtils.mapRestaurantToRestaurantDTO(restaurantRepository.save(restaurant));
+        return ResponseEntity.ok(dtoUtils.mapRestaurantToRestaurantDTO(restaurantRepository.save(restaurant)));
     }
 
-    public void deleteRestaurantTable(Long restaurantTableId, Long restaurantId) {
+    public ResponseEntity deleteRestaurantTable(Long restaurantTableId, Long restaurantId) {
+        if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId) && !restaurantOwnerShipValidator.isAdminConnected())
+            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
         // find restaurant then remove table then save restaurant then delete restaurant table
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
 
@@ -167,9 +171,14 @@ public class KitchenService {
         restaurentTable.ifPresent(restaurantTable -> {
             removeTableFromRestaurant(restaurantTableId, restaurant, restaurantTable);
         });
+
+        return ResponseEntity.ok().build();
     }
 
-    public void deleteRestaurant(Long restaurantId) {
+    public ResponseEntity<?> deleteRestaurant(Long restaurantId) {
+        if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId) && !restaurantOwnerShipValidator.isAdminConnected())
+            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
         //delete parent first
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
 
@@ -180,23 +189,31 @@ public class KitchenService {
         owner.setRestaurantList(restaurants);
 
         ownerRepository.save(owner);
+
+        return ResponseEntity.ok().build();
     }
 
-    public RestaurantDTO addRestaurantTable(Long restaurantId, int tableNumber) throws IOException, WriterException {
+    public ResponseEntity<RestaurantDTO> addRestaurantTable(Long restaurantId, int tableNumber) throws IOException, WriterException {
+        if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId) && !restaurantOwnerShipValidator.isAdminConnected())
+            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
         if (!isTableNumberAlreadyInRestaurant(tableNumber, restaurant)) {
             restaurant.getRestaurentTables().add(createTable(tableNumber, restaurant));
             restaurant = restaurantRepository.save(restaurant);
         }
 
-        return dtoUtils.mapRestaurantToRestaurantDTO(restaurant);
+        return ResponseEntity.ok(dtoUtils.mapRestaurantToRestaurantDTO(restaurant));
     }
 
-    public RestaurantDTO modifierRestaurantName(String restaurantName, Long restaurantId) {
+    public ResponseEntity<RestaurantDTO> modifierRestaurantName(String restaurantName, Long restaurantId) {
+        if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId) && !restaurantOwnerShipValidator.isAdminConnected())
+            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
         restaurant.setName(restaurantName);
         restaurant = restaurantRepository.save(restaurant);
-        return dtoUtils.mapRestaurantToRestaurantDTO(restaurant);
+        return ResponseEntity.ok(dtoUtils.mapRestaurantToRestaurantDTO(restaurant));
     }
 
     public OrderItemDTO changeOrderItem(Long orderItemId, int tempsAjoute) {
@@ -211,29 +228,42 @@ public class KitchenService {
         return dtoUtils.mapRestaurantToRestaurantDTO(restaurentTable.getRestaurant());
     }
 
-    public List<OrderItemDTO> fetchWaiterRequest(Long restaurantId) {
+    public ResponseEntity<List<OrderItemDTO>> fetchWaiterRequest(Long restaurantId) {
+        if (!restaurantOwnerShipValidator.hasCookWaiterRight(restaurantId))
+            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
-        List<OrderItem> orderItemList = new ArrayList<>();
-        List<OrderItemDTO> returnValue = new ArrayList<>();
+        List<OrderItemDTO> orderItemList = new ArrayList<>();
 
         restaurant.getBill().forEach(bill -> {
-            orderItemList.addAll(bill.getOrderItems().stream().filter(orderItem ->
-                    isOrderItemToFetch(orderItem))
+            orderItemList.addAll(bill.getOrderItems()
+                    .stream()
+                    .filter(orderItem -> isOrderItemToFetch(orderItem))
+                    .map(dtoUtils::mapOrderItemToOrderItemDTO)
                     .collect(Collectors.toList()));
         });
 
-        orderItemList.forEach(orderItem -> {
-            returnValue.add(dtoUtils.mapOrderItemToOrderItemDTO(orderItem));
-        });
-
-        return returnValue;
+        return ResponseEntity.ok(orderItemList);
     }
 
     public Long findEmployerRestaurantId(String username) {
         return employerRepository.findEmployerByUsername(username).get().getRestaurant().getId();
     }
 
+
     //PRIVATE METHODS
+    private ResponseEntity<String> canAddRestaurant(RestaurantEmployerDTO restaurantEmployerDTO) {
+        if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantEmployerDTO.getRestaurantId()) && !restaurantOwnerShipValidator.isAdminConnected())
+            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        if (employerRepository.existsByUsername(restaurantEmployerDTO.getUsername()))
+            return ResponseEntity.badRequest().body("Username already exist");
+
+        if (employerRepository.findAllByRestaurant_Id(restaurantEmployerDTO.getRestaurantId()).size() == 2)
+            return ResponseEntity.badRequest().body("There is already two employer assigned");
+
+        return null;
+    }
 
     private boolean isUsernameTaken(RestaurantEmployerDTO restaurantEmployer, Employer employer) {
         return !employer.getUsername().equals(restaurantEmployer.getUsername()) && employerRepository.existsByUsername(restaurantEmployer.getUsername());
@@ -300,11 +330,7 @@ public class KitchenService {
     }
 
     private Restaurant findRestaurantInOwnerList(String restaurantName, Owner owner) {
-        Restaurant savedRestaurant = owner.getRestaurantList().stream().filter(resto -> {
-            if (resto.getName().contentEquals(restaurantName))
-                return true;
-            return false;
-        }).findFirst().get();
+        Restaurant savedRestaurant = owner.getRestaurantList().stream().filter(resto -> resto.getName().contentEquals(restaurantName)).findFirst().get();
         return savedRestaurant;
     }
 
@@ -315,7 +341,6 @@ public class KitchenService {
             owner.setRestaurantList(new ArrayList<>());
         }
         restaurant.setOwner(owner);
-
 
         owner.getRestaurantList().add(restaurant);
         owner = ownerRepository.save(owner);

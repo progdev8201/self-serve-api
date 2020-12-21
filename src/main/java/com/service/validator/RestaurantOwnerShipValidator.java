@@ -2,6 +2,7 @@ package com.service.validator;
 
 import com.model.entity.Employer;
 import com.model.entity.Owner;
+import com.repository.AdminRepository;
 import com.repository.EmployerRepository;
 import com.repository.OwnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +11,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RestaurantOwnerShip {
+public class RestaurantOwnerShipValidator {
 
     @Autowired
     private OwnerRepository ownerRepository;
 
     @Autowired
     private EmployerRepository employerRepository;
+
+    @Autowired
+    private AdminRepository adminRepository;
 
     public boolean hasOwnerRight(Long restauranId){
         Authentication authentication = getAuthentication();
@@ -29,6 +33,17 @@ public class RestaurantOwnerShip {
         Owner owner = ownerRepository.findById(ownerId).get();
 
         return owner.getRestaurantList().stream().anyMatch(restaurant -> restauranId.equals(restaurant.getId()));
+    }
+
+    public boolean isAdminConnected(){
+        Authentication authentication = getAuthentication();
+
+        if (authentication == null)
+            return true;
+
+        Long adminId =  Long.parseLong((String) getAuthentication().getPrincipal());
+
+        return adminRepository.existsById(adminId);
     }
 
     public boolean hasCookWaiterRight(Long restaurantId){

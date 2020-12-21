@@ -36,16 +36,13 @@ public class MenuController {
     @PostMapping("/getAllMenu")
     public ResponseEntity<List<MenuDTO>> getAllMenu(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
-        return ResponseEntity.ok(menuService.findAllMenuForRestaurants(restaurantId));
+        return menuService.findAllMenuForRestaurants(restaurantId);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PostMapping("/createMenu")
     public ResponseEntity<?> createMenu(@RequestBody MenuRequestDTO menuRequestDTO) {
-        MenuDTO menuDTO =menuService.createMenu(menuRequestDTO.getRestaurantId(), menuRequestDTO.getMenuName(), menuRequestDTO.getMenuType());
-        if(Objects.isNull(menuDTO))
-            return new ResponseEntity<String>("Fail -> Menu with same name already exists", HttpStatus.BAD_REQUEST);
-        return ResponseEntity.ok(menuDTO);
+        return menuService.createMenu(menuRequestDTO.getRestaurantId(), menuRequestDTO.getMenuName(), menuRequestDTO.getMenuType());
     }
 
     // Put
@@ -70,7 +67,6 @@ public class MenuController {
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @DeleteMapping("/deleteMenu/{restaurantId}/{menuId}")
     public ResponseEntity<?> deleteMenu(@PathVariable("restaurantId") Long restaurantId, @PathVariable("menuId") Long menuId) {
-        menuService.deleteMenuFromRestaurantList(restaurantId, menuId);
-        return ResponseEntity.ok().build();
+        return menuService.deleteMenuFromRestaurantList(restaurantId, menuId);
     }
 }
