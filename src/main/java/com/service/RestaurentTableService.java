@@ -8,7 +8,9 @@ import com.repository.BillRepository;
 import com.repository.RestaurantRepository;
 import com.repository.RestaurentTableRepository;
 import com.service.Util.DTOUtils;
+import com.service.validator.RestaurantOwnerShip;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,31 +22,37 @@ import java.util.List;
 public class RestaurentTableService {
 
     @Autowired
-    RestaurentTableRepository restaurentTableRepository;
+    private RestaurentTableRepository restaurentTableRepository;
 
     @Autowired
-    RestaurantRepository restaurantRepository;
+    private RestaurantRepository restaurantRepository;
 
     @Autowired
-    BillRepository billRepository;
+    private DTOUtils dtoUtils;
 
     @Autowired
-    DTOUtils dtoUtils;
+    private RestaurantOwnerShip restaurantOwnerShip;
 
 
-    public List<RestaurentTableDTO> findAllForRestaurent(Long restaurentId) {
+    public ResponseEntity<List<RestaurentTableDTO>> findAllForRestaurent(Long restaurentId) {
+        if (!restaurantOwnerShip.hasCookWaiterRight(restaurentId))
+            return ResponseEntity.badRequest().build();
+
+
         Restaurant restaurant = restaurantRepository.findById(restaurentId).get();
         List<RestaurentTableDTO> restaurentTableDTOS = new ArrayList<>();
         restaurant.getRestaurentTables().forEach(restaurentTable -> {
             restaurentTableDTOS.add(dtoUtils.mapRestaurantTableToRestaurantTableDTO(restaurentTable));
         });
-        return restaurentTableDTOS;
+        return ResponseEntity.ok(restaurentTableDTOS);
     }
+
+
 
     public void deleteBillFromTable(Bill bill) {
         RestaurentTable restaurentTable = bill.getRestaurentTable();
-        if(restaurentTable.getBills().remove(bill)){
-            restaurentTable =restaurentTableRepository.save(restaurentTable);
+        if (restaurentTable.getBills().remove(bill)) {
+            restaurentTable = restaurentTableRepository.save(restaurentTable);
         }
     }
 

@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,7 +38,7 @@ public class KitchenRestController {
 
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @GetMapping("/restaurantEmployers/{restaurantId}")
-    public List<RestaurantEmployerDTO> findAllRestaurantEmployers(@PathVariable final Long restaurantId) {
+    public ResponseEntity<List<RestaurantEmployerDTO>> findAllRestaurantEmployers(@PathVariable final Long restaurantId) {
         return kitchenService.findAllRestaurantEmployers(restaurantId);
     }
 
@@ -77,7 +79,7 @@ public class KitchenRestController {
     @PostMapping("/findAllTables")
     public ResponseEntity<List<RestaurentTableDTO>> findAllTables(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long restaurentId = new ObjectMapper().readValue(json.get("restaurentId"), Long.class);
-        return ResponseEntity.ok(restaurentTableService.findAllForRestaurent(restaurentId));
+        return restaurentTableService.findAllForRestaurent(restaurentId);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")

@@ -15,6 +15,7 @@ import com.model.enums.RoleName;
 import com.repository.*;
 import com.service.Util.DTOUtils;
 import com.service.Util.ImgFileUtils;
+import com.service.validator.RestaurantOwnerShip;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -59,7 +60,10 @@ public class KitchenService {
     private PasswordEncoder encoder;
 
     @Autowired
-    ClientService clientService;
+    private ClientService clientService;
+
+    @Autowired
+    private RestaurantOwnerShip restaurantOwnerShip;
 
     @Autowired
     private DTOUtils dtoUtils;
@@ -128,13 +132,16 @@ public class KitchenService {
         return ResponseEntity.ok().build();
     }
 
-    public List<RestaurantEmployerDTO> findAllRestaurantEmployers(Long restaurantId) {
+    public ResponseEntity<List<RestaurantEmployerDTO>> findAllRestaurantEmployers(Long restaurantId) {
+        if (!restaurantOwnerShip.hasOwnerRight(restaurantId))
+            return ResponseEntity.badRequest().build();
+
         List<RestaurantEmployerDTO> restaurantEmployerDTOS = employerRepository.findAllByRestaurant_Id(restaurantId)
                 .stream()
                 .map(RestaurantEmployerDTO::new)
                 .collect(Collectors.toList());
 
-        return restaurantEmployerDTOS;
+        return ResponseEntity.ok(restaurantEmployerDTOS);
     }
 
     public RestaurantEmployerDTO findRestaurantEmployer(String username) {
