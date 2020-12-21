@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,7 +38,7 @@ public class KitchenRestController {
 
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @GetMapping("/restaurantEmployers/{restaurantId}")
-    public List<RestaurantEmployerDTO> findAllRestaurantEmployers(@PathVariable final Long restaurantId) {
+    public ResponseEntity<List<RestaurantEmployerDTO>> findAllRestaurantEmployers(@PathVariable final Long restaurantId) {
         return kitchenService.findAllRestaurantEmployers(restaurantId);
     }
 
@@ -77,7 +79,7 @@ public class KitchenRestController {
     @PostMapping("/findAllTables")
     public ResponseEntity<List<RestaurentTableDTO>> findAllTables(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long restaurentId = new ObjectMapper().readValue(json.get("restaurentId"), Long.class);
-        return ResponseEntity.ok(restaurentTableService.findAllForRestaurent(restaurentId));
+        return restaurentTableService.findAllForRestaurent(restaurentId);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
@@ -101,14 +103,13 @@ public class KitchenRestController {
     @PostMapping("/deleteRestaurant")
     public ResponseEntity deleteRestaurant(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"), Long.class);
-        kitchenService.deleteRestaurant(restaurantId);
-        return new ResponseEntity(HttpStatus.OK);
+        return kitchenService.deleteRestaurant(restaurantId);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PostMapping("/addTable/{restaurantId}/{tableAmount}")
     public ResponseEntity<RestaurantDTO> addRestaurantTable(@PathVariable long restaurantId, @PathVariable int tableAmount) throws IOException, WriterException {
-        return ResponseEntity.ok(kitchenService.addRestaurantTable(restaurantId, tableAmount));
+        return kitchenService.addRestaurantTable(restaurantId, tableAmount);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
@@ -116,16 +117,15 @@ public class KitchenRestController {
     public ResponseEntity<RestaurantDTO> updateRestaurantName(@RequestBody Map<String, String> json) throws JsonProcessingException {
         String restaurantName = json.get("restaurantName");
         Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"), Long.class);
-        return ResponseEntity.ok(kitchenService.modifierRestaurantName(restaurantName, restaurantId));
+        return kitchenService.modifierRestaurantName(restaurantName, restaurantId);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PostMapping("/deleteTable")
-    public ResponseEntity deleteRestaurantTble(@RequestBody Map<String, String> json) throws JsonProcessingException {
+    public ResponseEntity deleteRestaurantTable(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long tableId = new ObjectMapper().readValue(json.get("restaurantTableId"), Long.class);
         Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"), Long.class);
-        kitchenService.deleteRestaurantTable(tableId, restaurantId);
-        return new ResponseEntity(HttpStatus.OK);
+        return kitchenService.deleteRestaurantTable(tableId, restaurantId);
     }
 
     @PreAuthorize("hasAuthority('ROLE_WAITER')")
@@ -135,7 +135,7 @@ public class KitchenRestController {
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.registerModule(new JavaTimeModule());
         Long restaurentId = mapper.readValue(json.get("restaurentId"), Long.class);
-        return ResponseEntity.ok(kitchenService.fetchWaiterRequest(restaurentId));
+        return kitchenService.fetchWaiterRequest(restaurentId);
     }
 
     @PreAuthorize("hasAuthority('ROLE_COOK')")
