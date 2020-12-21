@@ -2,6 +2,7 @@ package com.service.validator;
 
 import com.model.entity.Employer;
 import com.model.entity.Owner;
+import com.model.enums.RoleName;
 import com.repository.AdminRepository;
 import com.repository.EmployerRepository;
 import com.repository.OwnerRepository;
@@ -43,7 +44,7 @@ public class RestaurantOwnerShipValidator {
 
         Long adminId =  Long.parseLong((String) getAuthentication().getPrincipal());
 
-        return adminRepository.existsById(adminId);
+        return adminRepository.findById(adminId).get().getRole().equals(RoleName.ROLE_ADMIN.toString());
     }
 
     public boolean hasCookWaiterRight(Long restaurantId){
