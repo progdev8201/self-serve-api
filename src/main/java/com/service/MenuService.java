@@ -10,6 +10,7 @@ import com.repository.OwnerRepository;
 import com.repository.RestaurantRepository;
 import com.service.Util.DTOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,14 +52,22 @@ public class MenuService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteMenuFromRestaurantList(Long restaurantId, Long menuId) {
+    public ResponseEntity deleteMenuFromRestaurantList(Long restaurantId, Long menuId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
+
         Menu menuToRemove = restaurant.getMenus()
                 .stream()
                 .filter(menu -> menu.getId() == menuId)
                 .findFirst().get();
+
+        if (menuToRemove.getMenuType().equals(MenuType.WAITERREQUEST))
+            return ResponseEntity.badRequest().body("Menu of type WAITERREQUEST is not deletable");
+
         restaurant.getMenus().remove(menuToRemove);
+
         restaurantRepository.save(restaurant);
+
+        return ResponseEntity.ok().build();
     }
 
 
