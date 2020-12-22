@@ -6,10 +6,14 @@ import com.model.dto.MenuDTO;
 import com.model.dto.RateDTO;
 import com.model.entity.Product;
 import com.model.entity.Rate;
+import com.repository.ProductRepository;
+import com.repository.RateRepository;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,7 +22,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // TODO: all test should include assert arrange act as comments so its easier to understand code
 @SpringBootTest
@@ -27,6 +34,13 @@ class RateControllerTest {
 
     @Autowired
     RateController rateController;
+
+    @MockBean
+    RateRepository rateRepository;
+
+    @MockBean
+    ProductRepository productRepository;
+
     @Test
     public void testCreateRateResponseNonNull() throws Exception {
         MockMvc mvc = initMockMvc();
@@ -38,6 +52,8 @@ class RateControllerTest {
         Product product = new Product();
         product.setName("le steak chico");
         product.setPrix(29.99);
+        Mockito.when(rateRepository.save(any(Rate.class))).thenReturn(rate);
+        Mockito.when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(new Product()));
         ObjectMapper objectMapper =new ObjectMapper();
 
 

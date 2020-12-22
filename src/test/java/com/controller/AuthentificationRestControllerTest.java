@@ -2,17 +2,25 @@ package com.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.model.dto.*;
+import com.model.entity.Owner;
+import com.repository.AdminRepository;
+import com.repository.OwnerRepository;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -24,6 +32,11 @@ public class AuthentificationRestControllerTest {
     @Autowired
     private AuthentificationRestController authentificationRestController;
 
+    @MockBean
+    OwnerRepository ownerRepository;
+
+    @MockBean
+    AdminRepository adminRepository;
     @Test
     public void authenticateUserTest_ValidRequest() throws Exception {
         // Arrange
@@ -32,6 +45,12 @@ public class AuthentificationRestControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
 
         LoginForm loginForm = new LoginForm("owner@mail.com", "123456");
+        Owner owner = new Owner();
+        owner.setUsername(loginForm.getUsername());
+        owner.setPassword("$2a$10$igyuxw9wD3EC5xbbTf9tJu.AXtCGD1WZePedxNuF3sOYsFmofIEeG");
+        owner.setRole("Admin");
+        owner.setId(1L);
+        Mockito.when(adminRepository.findByUsername(any(String.class))).thenReturn(Optional.of(owner));
 
         // Act
 
@@ -96,6 +115,8 @@ public class AuthentificationRestControllerTest {
 
         SignUpForm signUpForm = new SignUpForm("owner@mail.com", "test", "5147889578", "client");
 
+
+        Mockito.when(adminRepository.existsByUsername(anyString())).thenReturn(true);
         // Act && Assert
 
         mvc.perform(post("/auth/signup")
@@ -134,6 +155,10 @@ public class AuthentificationRestControllerTest {
 
         OwnerDTO ownerDTO = new OwnerDTO(5l, "owner@mail.com", null, new ArrayList<>(), new TreeSet<RoleDTO>(), null, null, null, null);
 
+        Owner owner = new Owner();
+        owner.setUsername(ownerDTO.getUsername());
+
+        Mockito.when(ownerRepository.findByUsername(any(String.class))).thenReturn(Optional.of(owner));
         // Act
 
         MvcResult result = mvc.perform(post("/auth/fetchOwner")

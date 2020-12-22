@@ -128,15 +128,6 @@ public class KitchenRestController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_WAITER')")
-    @PostMapping("/getWaiterRequest")
-    public ResponseEntity<List<OrderItemDTO>> getWaiterRequests(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        mapper.registerModule(new JavaTimeModule());
-        Long restaurentId = mapper.readValue(json.get("restaurentId"), Long.class);
-        return ResponseEntity.ok(kitchenService.fetchWaiterRequest(restaurentId));
-    }
 
     @PreAuthorize("hasAuthority('ROLE_COOK')")
     @PostMapping("/changeOrderItemTime")
