@@ -2,7 +2,10 @@ package com.service;
 
 import com.model.dto.MenuDTO;
 import com.model.dto.ProductDTO;
-import com.model.entity.*;
+import com.model.entity.Bill;
+import com.model.entity.Menu;
+import com.model.entity.Product;
+import com.model.entity.Restaurant;
 import com.model.enums.MenuType;
 import com.repository.*;
 import com.service.Util.DTOUtils;
@@ -11,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -64,7 +68,7 @@ public class ProductService {
         Restaurant restaurant = restaurantRepository.findById(id).get();
         return restaurant.getMenus()
                 .stream()
-                .filter(menu -> menu.getMenuType()==MenuType.WAITERREQUEST)
+                .filter(menu -> menu.getMenuType() == MenuType.WAITERREQUEST)
                 .map(menu -> dtoUtils.mapMenuToMenuDTO(menu))
                 .collect(Collectors.toList()).get(0);
     }
@@ -74,7 +78,7 @@ public class ProductService {
     public ProductDTO create(ProductDTO productDTO, Long menuId) {
         // convert product dto to a product
         Product product = DTOUtils.mapProductDTOToProduct(productDTO, imgFileRepository);
-        Menu menu =menuRepository.findById(menuId).get();
+        Menu menu = menuRepository.findById(menuId).get();
         product = linkMenuAndProduct(product, menu);
 
         return DTOUtils.mapProductToProductDTO(product);
@@ -84,16 +88,16 @@ public class ProductService {
         finalProduct.setMenu(menu);
         finalProduct.setMenuType(menu.getMenuType());
         menu.getProducts().add(finalProduct);
-        menu =menuRepository.save(menu);
+        menu = menuRepository.save(menu);
         //on retourne le dernier produit qu'on a save
-        return menu.getProducts().get(menu.getProducts().size()-1);
+        return menu.getProducts().get(menu.getProducts().size() - 1);
     }
 
     public void update(ProductDTO productDTO) {
         productRepository.save(DTOUtils.mapProductDTOToProduct(productDTO, imgFileRepository));
     }
 
-    public void delete(Long id) {
+    public ResponseEntity delete(Long id) {
         // find one product
         Product product = productRepository.findById(id).get();
 
@@ -102,6 +106,13 @@ public class ProductService {
 
         // find product to remove
         Product productToRemove = menu.getProducts().stream().filter(product1 -> product1.getId() == id).findFirst().get();
+
+        // todo jai rajouter ce if parce que dans les test le produit menu type trouver est null, ce qui ne fait pas sens, alors jatt le nouveau data loader pour enlever
+        if (productToRemove.getMenuType() != null) {
+        //validate product type
+            if (productToRemove.getMenuType().equals(MenuType.WAITERCALL) || productToRemove.getMenuType().equals(MenuType.TERMINALREQUEST))
+                return ResponseEntity.badRequest().body("Fail -> Product of type waiter call and terminal request cannot be deleted");
+        }
 
         // remove product
         menu.getProducts().remove(productToRemove);
@@ -125,6 +136,7 @@ public class ProductService {
         // delete product
         productRepository.delete(product);
 
+        return ResponseEntity.ok().build();
     }
 
     // todo on save deux fois le produit ce qui n'est pas optimal

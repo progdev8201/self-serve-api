@@ -6,9 +6,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.model.dto.*;
 import com.model.entity.Menu;
 import com.model.entity.Restaurant;
-import com.model.enums.MenuType;
 import com.repository.RestaurantRepository;
 import com.service.MenuCreationService;
+import com.model.enums.MenuType;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -72,6 +73,7 @@ public class MenuControllerTest {
         JSONObject sendObj = new JSONObject();
         sendObj.put("restaurantId", "1");
         sendObj.put("menuName", "le menu bien bon");
+        sendObj.put("menuType", MenuType.FOOD);
 
         Mockito.when(restaurantRepository.findById(any(Long.class))).thenReturn(initRestaurant());
         Mockito.when(restaurantRepository.save(any(Restaurant.class))).thenAnswer(new Answer() {

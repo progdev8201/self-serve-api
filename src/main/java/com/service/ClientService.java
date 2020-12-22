@@ -35,12 +35,9 @@ public class ClientService {
     private GuestRepository guestRepository;
     private ProductRepository productRepository;
     private RestaurantRepository restaurantRepository;
-
     private RestaurentTableService restaurentTableService;
-
     private RestaurentTableRepository restaurentTableRepository;
-
-    DTOUtils dtoUtils;
+    private DTOUtils dtoUtils;
     private static final int DOUBLE_SCALE_PLACES = 2;
 
     @Autowired
