@@ -35,7 +35,7 @@ public class RestaurantOwnerShipValidator {
 
         Owner owner = ownerRepository.findById(ownerId).orElse(null);
         if (Objects.nonNull(owner)) {
-            owner.getRestaurantList().stream().anyMatch(restaurant -> restauranId.equals(restaurant.getId()));
+           return owner.getRestaurantList().stream().anyMatch(restaurant -> restauranId.equals(restaurant.getId()));
         }
         return false;
     }
