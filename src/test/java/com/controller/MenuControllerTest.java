@@ -77,6 +77,7 @@ public class MenuControllerTest {
         JSONObject sendObj = new JSONObject();
         sendObj.put("restaurantId", "1");
         sendObj.put("menuName", "le menu bien bon bon");
+        sendObj.put("menuType", "FOOD");
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/menu/createMenu").
                 content(sendObj.toString()).
