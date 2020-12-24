@@ -70,6 +70,25 @@ public class MenuCreationService {
         return product;
     }
 
+    public Menu createMenu(String nom, MenuType menuType) {
+        Menu menuRequest = new Menu();
+        menuRequest.setProducts(new ArrayList<>());
+        menuRequest.setName(nom);
+        menuRequest.setMenuType(menuType);
+        return menuRequest;
+    }
+
+    public ImgFile getImgFile(String fileToCopy) throws IOException {
+        String pathDansProjet = fileBasePath + fileToCopy;
+        Path currentRelativePath = Paths.get("");
+        String absolutePath = currentRelativePath.toAbsolutePath().toString();
+        InputStream is = resourceLoader.getResource(
+                "classpath:img/" + fileToCopy).getInputStream();
+        ImgFile img = new ImgFile();
+        img.setData(IOUtils.toByteArray(is));
+        return img;
+    }
+
     private CheckItem createCheckItem(String name, int prix) {
         CheckItem productCheckItem = new CheckItem();
         productCheckItem.setName(name);
@@ -85,17 +104,6 @@ public class MenuCreationService {
         return option;
     }
 
-    private ImgFile getImgFile(String fileToCopy) throws IOException {
-        String pathDansProjet = fileBasePath + fileToCopy;
-        Path currentRelativePath = Paths.get("");
-        String absolutePath = currentRelativePath.toAbsolutePath().toString();
-        InputStream is = resourceLoader.getResource(
-                "classpath:img/" + fileToCopy).getInputStream();
-        ImgFile img = new ImgFile();
-        img.setData(IOUtils.toByteArray(is));
-        return img;
-    }
-
     public OrderItem createOrderItem(ProgressStatus progressStatus, MenuType menuType, Product product) {
         OrderItem orderItem = new OrderItem();
         orderItem.setOrderStatus(progressStatus);
@@ -104,14 +112,6 @@ public class MenuCreationService {
         orderItem.setTempsDePreparation(new Date(System.currentTimeMillis()));
         product.getOrderItems().add(orderItem);
         return orderItem;
-    }
-
-    private Menu createMenu(String nom, MenuType menuType) {
-        Menu menuRequest = new Menu();
-        menuRequest.setProducts(new ArrayList<>());
-        menuRequest.setName(nom);
-        menuRequest.setMenuType(menuType);
-        return menuRequest;
     }
 
 }

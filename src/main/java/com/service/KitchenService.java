@@ -70,6 +70,9 @@ public class KitchenService {
     @Autowired
     private DTOUtils dtoUtils;
 
+    @Autowired
+    MenuCreationService menuCreationService;
+
     private final String restaurantTableIdPrefix = "/start?restaurantTableId=";
 
     private final String QR_CODE_FILE_TYPE = "QR Code";
@@ -304,12 +307,15 @@ public class KitchenService {
 
     private Restaurant initRestaurant(String restaurantName, int nombreDeTable) throws WriterException, IOException {
         Restaurant restaurant = initRestaurant(restaurantName);
-
+        initMenus(restaurant);
         createTables(nombreDeTable, restaurant);
 
         return restaurant;
     }
 
+    private void initMenus(Restaurant restaurant) throws IOException {
+        restaurant.getMenus().add(menuCreationService.createMenuRequest());
+    }
     private RestaurentTable createTable(int tableNumber, Restaurant restaurant) throws WriterException, IOException {
         RestaurentTable restaurentTable = new RestaurentTable();
         restaurentTable.setTableNumber(tableNumber);
@@ -358,6 +364,7 @@ public class KitchenService {
         Restaurant restaurant = new Restaurant();
         restaurant.setName(restaurantName);
         restaurant.setRestaurentTables(new ArrayList<>());
+        restaurant.setMenus(new ArrayList<>());
         return restaurant;
     }
 

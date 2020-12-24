@@ -37,7 +37,7 @@ class ProductControllerTest {
     @Test
     public void findAllProductFromMenu() throws Exception {
         MockMvc mvc = initMockMvc();
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/product/menu/{id}", "1").
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/product/menu/{id}", "2").
                 contentType(MediaType.APPLICATION_JSON).
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
@@ -45,7 +45,7 @@ class ProductControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         List<ProductDTO> productDTOS = mapper.readValue(result.getResponse().getContentAsString(), List.class);
-        assertEquals(3, productDTOS.size());
+        assertEquals(4, productDTOS.size());
     }
 
     @Test
