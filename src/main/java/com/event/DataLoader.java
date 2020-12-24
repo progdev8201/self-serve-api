@@ -34,7 +34,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @Order(3)
-@Profile("!test & !prod")
+@Profile("!prod")
 @Component
 @Transactional
 public class DataLoader implements CommandLineRunner {

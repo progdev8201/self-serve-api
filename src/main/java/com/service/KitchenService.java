@@ -229,6 +229,24 @@ public class KitchenService {
         return dtoUtils.mapRestaurantToRestaurantDTO(restaurentTable.getRestaurant());
     }
 
+    public List<OrderItemDTO> fetchWaiterRequest(Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
+        List<OrderItem> orderItemList = new ArrayList<>();
+        List<OrderItemDTO> returnValue = new ArrayList<>();
+
+        restaurant.getBill().forEach(bill -> {
+            orderItemList.addAll(bill.getOrderItems().stream().filter(orderItem ->
+                    isOrderItemToFetch(orderItem))
+                    .collect(Collectors.toList()));
+        });
+
+        orderItemList.forEach(orderItem -> {
+            returnValue.add(dtoUtils.mapOrderItemToOrderItemDTO(orderItem));
+        });
+
+        return returnValue;
+    }
+
     public Long findEmployerRestaurantId(String username) {
         return employerRepository.findEmployerByUsername(username).get().getRestaurant().getId();
     }
