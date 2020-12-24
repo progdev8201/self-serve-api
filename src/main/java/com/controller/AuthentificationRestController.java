@@ -33,7 +33,7 @@ public class AuthentificationRestController {
 
     @PreAuthorize("hasAuthority('ROLE_OWNER')")
     @PostMapping("/fetchOwner")
-    public ResponseEntity<OwnerDTO> registerStripeAccount(@RequestBody OwnerDTO ownerDTO) {
+    public ResponseEntity<OwnerDTO> fetchOwner(@RequestBody OwnerDTO ownerDTO) {
        return authentificationService.fetchOwner(ownerDTO);
     }
 }
