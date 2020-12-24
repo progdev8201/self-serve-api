@@ -27,7 +27,7 @@ public class MenuControllerTest {
 
 
     @Test
-    public void testFindAllMenuForRestaurant() throws Exception {
+    public void testFindAllMenuFoodForRestaurant() throws Exception {
         MockMvc mvc = initMockMvc();
         LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
 
@@ -45,6 +45,26 @@ public class MenuControllerTest {
         mapper.registerModule(new JavaTimeModule());
         List<MenuDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<MenuDTO>>(){});
         assertEquals(3, reponse.size());
+    }
+    @Test
+    public void testFindAllMenuForRestaurant() throws Exception {
+        MockMvc mvc = initMockMvc();
+        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
+
+
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("restaurantId", "2");
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/menu/getAllMenu").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        List<MenuDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<MenuDTO>>(){});
+        assertEquals(4, reponse.size());
     }
     @Test
     public void testCreateMenu() throws Exception {
@@ -68,6 +88,7 @@ public class MenuControllerTest {
         MenuDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), MenuDTO.class);
         assertEquals("le menu bien bon",reponse.getName());
     }
+
     @Test
     public void testCreateWithSameNameTwiceBadRequest() throws Exception {
         MockMvc mvc = initMockMvc();
