@@ -79,6 +79,12 @@ public class ClientService {
         Bill bill = billRepository.findById(billId).get();
         return dtoUtils.mapBillToBillDTOWithOrderItems(bill);
     }
+    /*On update juste le bill status pck cest juste ca on a besoin live*/
+    public BillDTO updateBill(BillDTO billDTO) {
+        Bill bill = billRepository.findById(billDTO.getId()).get();
+        bill.setBillStatus(billDTO.getBillStatus());
+        return dtoUtils.mapBillToBillDTOWithOrderItems(billRepository.save(bill));
+    }
 
     public BillDTO makeOrder(ProductDTO productToAdd, String guestUsername, Long billId, Long restaurentTableId, String commentaire) {
         //init orders
