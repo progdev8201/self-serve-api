@@ -1,13 +1,10 @@
 package com.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.model.dto.*;
-import com.model.entity.Menu;
 import com.model.enums.MenuType;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +16,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,7 +27,7 @@ public class MenuControllerTest {
 
 
     @Test
-    public void testFindAllMenuForRestaurant() throws Exception {
+    public void testFindAllMenuFoodForRestaurant() throws Exception {
         MockMvc mvc = initMockMvc();
         LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
 
@@ -49,6 +45,26 @@ public class MenuControllerTest {
         mapper.registerModule(new JavaTimeModule());
         List<MenuDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<MenuDTO>>(){});
         assertEquals(3, reponse.size());
+    }
+    @Test
+    public void testFindAllMenuForRestaurant() throws Exception {
+        MockMvc mvc = initMockMvc();
+        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
+
+
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("restaurantId", "2");
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/menu/getAllMenu").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        List<MenuDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<MenuDTO>>(){});
+        assertEquals(4, reponse.size());
     }
     @Test
     public void testCreateMenu() throws Exception {
@@ -72,6 +88,7 @@ public class MenuControllerTest {
         MenuDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), MenuDTO.class);
         assertEquals("le menu bien bon",reponse.getName());
     }
+
     @Test
     public void testCreateWithSameNameTwiceBadRequest() throws Exception {
         MockMvc mvc = initMockMvc();
@@ -81,7 +98,7 @@ public class MenuControllerTest {
         JSONObject sendObj = new JSONObject();
         sendObj.put("restaurantId", "1");
         sendObj.put("menuName", "le menu bien bon bon");
-        sendObj.put("menuType", MenuType.FOOD);
+        sendObj.put("menuType", "FOOD");
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/menu/createMenu").
                 content(sendObj.toString()).

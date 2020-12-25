@@ -209,30 +209,6 @@ class KitchenRestControllerTest {
     }
 
     @Test
-    public void testWaiterRequestFetchOrderItems() throws Exception {
-        MockMvc mvc;
-        mvc = initMockMvc();
-
-        JSONObject sendObj = new JSONObject();
-        sendObj.put("restaurentId", 2);
-
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/getWaiterRequest").
-                content(sendObj.toString()).
-                contentType(APPLICATION_JSON).
-                accept(APPLICATION_JSON)).
-                andExpect(status().isOk()).
-                andReturn();
-
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-
-        List<OrderItemDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), ArrayList.class);
-
-        assertEquals(4, reponse.size());
-    }
-
-    @Test
     public void testAjouteTempsAjoute5Min() throws Exception {
         MockMvc mvc;
         mvc = initMockMvc();
