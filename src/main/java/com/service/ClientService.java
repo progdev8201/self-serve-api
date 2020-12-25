@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,7 +60,7 @@ public class ClientService {
         return BillToBillDTO.instance.convert(bill);
     }
 
-    public BillStatus findBillStatus(Long id){
+    public BillStatus findBillStatus(Long id) {
         return billRepository.findById(id).get().getBillStatus();
     }
 
@@ -92,6 +93,20 @@ public class ClientService {
         return dtoUtils.mapBillToBillDTOWithOrderItems(bill);
     }
 
+    public List<BillDTO> findAllPaidBillsByRestaurant(BillStatus billStatus, Long restaurantId) {
+        return billRepository.findAllByBillStatusAndRestaurant_Id(billStatus, restaurantId)
+                .stream()
+                .map(dtoUtils::mapBillToBillDTOWithOrderItems)
+                .collect(Collectors.toList());
+    }
+
+    public List<BillDTO> findAllPaidBillsByRestaurantBetweenDates(LocalDate begin, LocalDate end, BillStatus billStatus, Long restaurantId) {
+        return billRepository.findAllByDateBetweenAndBillStatusAndRestaurant_Id(begin, end, billStatus, restaurantId)
+                .stream()
+                .map(dtoUtils::mapBillToBillDTOWithOrderItems)
+                .collect(Collectors.toList());
+    }
+
     // PRIVATE METHODS
 
     private void addBillToValues(Long restaurantTableId, Bill bill, List<OrderItem> orderItemList) {
@@ -102,8 +117,6 @@ public class ClientService {
         Restaurant restaurant = restaurentTable.getRestaurant();
 
         addBillToValues(orderItemList, restaurentTable, restaurant, bill);
-
-
     }
 
     private void addBillToValues(List<OrderItem> orderItemList, RestaurentTable restaurentTable, Restaurant restaurant, Bill bill) {
@@ -207,7 +220,7 @@ public class ClientService {
 
     private void setProgressStatus(Product product, OrderItem orderItem) {
         orderItem.setOrderStatus(ProgressStatus.PROGRESS);
-        if(product.getMenuType()== MenuType.WAITERREQUEST || product.getMenuType()== MenuType.WAITERCALL ||product.getMenuType()== MenuType.TERMINALREQUEST){
+        if (product.getMenuType() == MenuType.WAITERREQUEST || product.getMenuType() == MenuType.WAITERCALL || product.getMenuType() == MenuType.TERMINALREQUEST) {
             orderItem.setOrderStatus(ProgressStatus.READY);
         }
     }
