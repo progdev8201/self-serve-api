@@ -135,7 +135,7 @@ public class KitchenRestController {
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.registerModule(new JavaTimeModule());
         Long restaurentId = mapper.readValue(json.get("restaurentId"), Long.class);
-        return kitchenService.fetchWaiterRequest(restaurentId);
+        return ResponseEntity.ok(kitchenService.fetchWaiterRequest(restaurentId));
     }
 
     @PreAuthorize("hasAuthority('ROLE_COOK')")

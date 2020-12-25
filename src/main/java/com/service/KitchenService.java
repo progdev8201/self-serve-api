@@ -70,6 +70,9 @@ public class KitchenService {
     @Autowired
     private DTOUtils dtoUtils;
 
+    @Autowired
+    MenuCreationService menuCreationService;
+
     private final String restaurantTableIdPrefix = "/start?restaurantTableId=";
 
     private final String QR_CODE_FILE_TYPE = "QR Code";
@@ -84,7 +87,7 @@ public class KitchenService {
         orderItem.setOrderStatus(orderItemDTO.getOrderStatus());
         orderItem.setTempsDePreparation(orderItemDTO.getTempsDePreparation());
         orderItem.setSelected(orderItemDTO.isSelected());
-        if(orderItem.getMenuType() == MenuType.TERMINALREQUEST){
+        if (orderItem.getMenuType() == MenuType.TERMINALREQUEST) {
             clientService.makePayment(orderItem.getBill().getId());
         }
         return dtoUtils.mapOrderItemToOrderItemDTO(orderItemRepository.save(orderItem));
@@ -133,7 +136,7 @@ public class KitchenService {
 
     public ResponseEntity<List<RestaurantEmployerDTO>> findAllRestaurantEmployers(Long restaurantId) {
         if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId) && !restaurantOwnerShipValidator.isAdminConnected())
-            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         List<RestaurantEmployerDTO> restaurantEmployerDTOS = employerRepository.findAllByRestaurant_Id(restaurantId)
                 .stream()
@@ -149,7 +152,7 @@ public class KitchenService {
 
     public ResponseEntity<RestaurantDTO> uploadLogo(MultipartFile file, long restaurantId) throws IOException {
         if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId) && !restaurantOwnerShipValidator.isAdminConnected())
-            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
 
@@ -162,7 +165,7 @@ public class KitchenService {
 
     public ResponseEntity deleteRestaurantTable(Long restaurantTableId, Long restaurantId) {
         if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId) && !restaurantOwnerShipValidator.isAdminConnected())
-            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         // find restaurant then remove table then save restaurant then delete restaurant table
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
@@ -178,7 +181,7 @@ public class KitchenService {
 
     public ResponseEntity<?> deleteRestaurant(Long restaurantId) {
         if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId) && !restaurantOwnerShipValidator.isAdminConnected())
-            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         //delete parent first
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
@@ -196,7 +199,7 @@ public class KitchenService {
 
     public ResponseEntity<RestaurantDTO> addRestaurantTable(Long restaurantId, int tableNumber) throws IOException, WriterException {
         if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId) && !restaurantOwnerShipValidator.isAdminConnected())
-            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
         if (!isTableNumberAlreadyInRestaurant(tableNumber, restaurant)) {
@@ -209,7 +212,7 @@ public class KitchenService {
 
     public ResponseEntity<RestaurantDTO> modifierRestaurantName(String restaurantName, Long restaurantId) {
         if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId) && !restaurantOwnerShipValidator.isAdminConnected())
-            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
         restaurant.setName(restaurantName);
@@ -229,22 +232,13 @@ public class KitchenService {
         return dtoUtils.mapRestaurantToRestaurantDTO(restaurentTable.getRestaurant());
     }
 
-    public ResponseEntity<List<OrderItemDTO>> fetchWaiterRequest(Long restaurantId) {
-        if (!restaurantOwnerShipValidator.hasCookWaiterRight(restaurantId))
-            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-
+    public List<OrderItemDTO> fetchWaiterRequest(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
-        List<OrderItemDTO> orderItemList = new ArrayList<>();
 
-        restaurant.getBill().forEach(bill -> {
-            orderItemList.addAll(bill.getOrderItems()
-                    .stream()
-                    .filter(orderItem -> isOrderItemToFetch(orderItem))
-                    .map(dtoUtils::mapOrderItemToOrderItemDTO)
-                    .collect(Collectors.toList()));
-        });
-
-        return ResponseEntity.ok(orderItemList);
+        return restaurant.getBill().stream()
+                .flatMap(bill -> bill.getOrderItems().stream())
+                .map(dtoUtils::mapOrderItemToOrderItemDTO)
+                .collect(Collectors.toList());
     }
 
     public Long findEmployerRestaurantId(String username) {
@@ -255,7 +249,7 @@ public class KitchenService {
     //PRIVATE METHODS
     private ResponseEntity<String> canAddRestaurant(RestaurantEmployerDTO restaurantEmployerDTO) {
         if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantEmployerDTO.getRestaurantId()) && !restaurantOwnerShipValidator.isAdminConnected())
-            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         if (employerRepository.existsByUsername(restaurantEmployerDTO.getUsername()))
             return ResponseEntity.badRequest().body("Username already exist");
@@ -304,10 +298,14 @@ public class KitchenService {
 
     private Restaurant initRestaurant(String restaurantName, int nombreDeTable) throws WriterException, IOException {
         Restaurant restaurant = initRestaurant(restaurantName);
-
+        initMenus(restaurant);
         createTables(nombreDeTable, restaurant);
 
         return restaurant;
+    }
+
+    private void initMenus(Restaurant restaurant) throws IOException {
+        restaurant.getMenus().add(menuCreationService.createMenuRequest());
     }
 
     private RestaurentTable createTable(int tableNumber, Restaurant restaurant) throws WriterException, IOException {
@@ -358,6 +356,7 @@ public class KitchenService {
         Restaurant restaurant = new Restaurant();
         restaurant.setName(restaurantName);
         restaurant.setRestaurentTables(new ArrayList<>());
+        restaurant.setMenus(new ArrayList<>());
         return restaurant;
     }
 
