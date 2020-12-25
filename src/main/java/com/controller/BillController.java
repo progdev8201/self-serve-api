@@ -61,7 +61,7 @@ public class BillController {
         return ResponseEntity.ok(clientService.fetchBill(billId));
     }
     @PreAuthorize("hasAnyAuthority('ROLE_GUEST','ROLE_CLIENT')")
-    @PostMapping("/updateBills")
+    @PutMapping("/updateBills")
     public ResponseEntity<BillDTO> updateBills(@RequestBody BillDTO billDTO) throws JsonProcessingException {
         return ResponseEntity.ok(clientService.updateBill(billDTO));
     }
