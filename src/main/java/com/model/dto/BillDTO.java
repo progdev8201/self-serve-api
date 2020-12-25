@@ -29,7 +29,13 @@ public class BillDTO {
 
     private double prixTotal;
 
+    private double prix;
+
+    private double tips;
+
     private BillStatus billStatus;
+
+
 
 
     private RestaurantDTO restaurant;
@@ -44,6 +50,22 @@ public class BillDTO {
 
     public List<OrderItemDTO> getOrderItems() {
         return orderItems;
+    }
+
+    public double getPrix() {
+        return prix;
+    }
+
+    public void setPrix(double prix) {
+        this.prix = prix;
+    }
+
+    public double getTips() {
+        return tips;
+    }
+
+    public void setTips(double tips) {
+        this.tips = tips;
     }
 
     public void setOrderItems(List<OrderItemDTO> orderItems) {

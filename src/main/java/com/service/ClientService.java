@@ -59,7 +59,7 @@ public class ClientService {
         return BillToBillDTO.instance.convert(bill);
     }
 
-    public BillStatus findBillStatus(Long id){
+    public BillStatus findBillStatus(Long id) {
         return billRepository.findById(id).get().getBillStatus();
     }
 
@@ -79,6 +79,7 @@ public class ClientService {
         Bill bill = billRepository.findById(billId).get();
         return dtoUtils.mapBillToBillDTOWithOrderItems(bill);
     }
+
     /*On update juste le bill status pck cest juste ca on a besoin live*/
     public BillDTO updateBill(BillDTO billDTO) {
         Bill bill = billRepository.findById(billDTO.getId()).get();
@@ -157,7 +158,9 @@ public class ClientService {
 
         bill.setOrderCustomer(guest);
         bill.setOrderItems(initEmptyList(bill.getOrderItems()));
-        bill.setPrixTotal(bill.getPrixTotal() + calculerPriceBill(orderItemList));
+        bill.setPrix(roundDouble(bill.getPrix() + calculerPriceBill(orderItemList)));
+        bill.setTips(roundDouble(calculerTipsDeBase(bill.getPrix())));
+        bill.setPrixTotal(roundDouble(bill.getPrix()  + bill.getTips()));
         bill.setBillStatus(BillStatus.PROGRESS);
 
         addBillToValues(restaurantTableId, bill, orderItemList);
@@ -173,6 +176,10 @@ public class ClientService {
         linkOrderItemAndProduct(orderItems, product, orderItem);
 
         return orderItems;
+    }
+
+    private double calculerTipsDeBase(double prix) {
+        return (15 * prix)/100;
     }
 
     private OrderItem initOrderItem(ProductDTO productToAdd, String commentaire, Product product) {
@@ -213,7 +220,7 @@ public class ClientService {
 
     private void setProgressStatus(Product product, OrderItem orderItem) {
         orderItem.setOrderStatus(ProgressStatus.PROGRESS);
-        if(product.getMenuType()== MenuType.WAITERREQUEST || product.getMenuType()== MenuType.WAITERCALL ||product.getMenuType()== MenuType.TERMINALREQUEST){
+        if (product.getMenuType() == MenuType.WAITERREQUEST || product.getMenuType() == MenuType.WAITERCALL || product.getMenuType() == MenuType.TERMINALREQUEST) {
             orderItem.setOrderStatus(ProgressStatus.READY);
         }
     }

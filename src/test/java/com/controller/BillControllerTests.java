@@ -60,7 +60,9 @@ class BillControllerTests {
         assertEquals("po de bacon po de bacon po de bacon", reponse.getOrderItems().get(0).getCommentaires());
         assertEquals(1, reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
-        assertEquals(29.99, reponse.getPrixTotal());
+        assertEquals(29.99, reponse.getPrix());
+        assertEquals(4.50, reponse.getTips());
+        assertEquals(34.49, reponse.getPrixTotal());
         assertEquals("Steak chico dejeuner 0", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
         assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
@@ -95,7 +97,7 @@ class BillControllerTests {
         assertEquals("po de bacon po de bacon po de bacon", reponse.getOrderItems().get(0).getCommentaires());
         assertEquals(1, reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
-        assertEquals(34.99, reponse.getPrixTotal());
+        assertEquals(40.24, reponse.getPrixTotal());
         assertEquals("Steak chico dejeuner 0", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
         assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
@@ -130,7 +132,7 @@ class BillControllerTests {
         assertEquals("po de bacon po de bacon po de bacon", reponse.getOrderItems().get(0).getCommentaires());
         assertEquals(1, reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
-        assertEquals(32.49, reponse.getPrixTotal());
+        assertEquals(37.36, reponse.getPrixTotal());
         assertEquals("Steak chico dejeuner 0", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
         assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
@@ -245,7 +247,7 @@ class BillControllerTests {
         assertEquals("po de bacon po de bacon po de bacon", reponse.getOrderItems().get(0).getCommentaires());
         assertEquals(1, reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
-        assertEquals(59.98, reponse.getPrixTotal());
+        assertEquals(68.98, reponse.getPrixTotal());
         assertEquals("Steak chico dejeuner 0", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(2, reponse.getOrderItems().size());
         assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
@@ -348,7 +350,7 @@ class BillControllerTests {
         assertEquals("po de bacon po de bacon po de bacon", reponse.getOrderItems().get(0).getCommentaires());
         assertEquals(1, reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
-        assertEquals(29.99, reponse.getPrixTotal());
+        assertEquals(34.49, reponse.getPrixTotal());
         assertEquals("Steak chico dejeuner 0", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
         assertEquals("client@mail.com", reponse.getOrderCustomer().getUsername());

@@ -27,6 +27,10 @@ public class Bill implements Serializable {
 
     private double prixTotal;
 
+    private double prix;
+
+    private double tips;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 60)
     private BillStatus billStatus;
@@ -48,6 +52,22 @@ public class Bill implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public double getTips() {
+        return tips;
+    }
+
+    public void setTips(double tips) {
+        this.tips = tips;
+    }
+
+    public double getPrix() {
+        return prix;
+    }
+
+    public void setPrix(double prix) {
+        this.prix = prix;
     }
 
     public List<OrderItem> getOrderItems() {
