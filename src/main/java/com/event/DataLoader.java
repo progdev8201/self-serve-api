@@ -201,6 +201,7 @@ public class DataLoader implements CommandLineRunner {
         restaurant.getMenus().setProducts(productList);
         */
         restaurant.getBill().add(bill);
+        restaurant.getBill().add(new Bill());
         List<Menu> allMenus = new ArrayList<>();
         allMenus.add(menuDejeuner);
         allMenus.add(menuDiner);

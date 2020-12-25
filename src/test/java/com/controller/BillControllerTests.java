@@ -395,6 +395,29 @@ class BillControllerTests {
         assertTrue(mapper.readValue(result.getResponse().getContentAsString(), Boolean.class));
     }
 
+    @Test
+    public void testUpdateBill() throws Exception {
+        MockMvc mvc = initMockMvc();
+        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
+        String terminalRequestStatus= "TERMINALREQUEST";
+
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("id", 2L);
+        sendObj.put("billStatus", terminalRequestStatus);
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/updateBills").
+                content(sendObj.toString()).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
+
+        assertEquals(BillStatus.TERMINALREQUEST,reponse.getBillStatus());
+    }
+
 
     private BillDTO initBillDTO() {
         RestaurantDTO restaurantDTO = new RestaurantDTO();
