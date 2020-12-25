@@ -35,9 +35,6 @@ public class BillDTO {
 
     private BillStatus billStatus;
 
-
-
-
     private RestaurantDTO restaurant;
 
     public Long getId() {

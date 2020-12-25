@@ -84,6 +84,7 @@ public class ClientService {
     public BillDTO updateBill(BillDTO billDTO) {
         Bill bill = billRepository.findById(billDTO.getId()).get();
         bill.setBillStatus(billDTO.getBillStatus());
+        bill.setTips(billDTO.getTips());
         return dtoUtils.mapBillToBillDTOWithOrderItems(billRepository.save(bill));
     }
 

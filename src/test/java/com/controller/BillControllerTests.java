@@ -401,11 +401,13 @@ class BillControllerTests {
     public void testUpdateBill() throws Exception {
         MockMvc mvc = initMockMvc();
         LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
-        String terminalRequestStatus= "TERMINALREQUESTWATING";
+        String terminalRequestStatus = "TERMINALREQUESTWATING";
+        Double billTipsAdded = 5.25;
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("id", 2L);
         sendObj.put("billStatus", terminalRequestStatus);
+        sendObj.put("tips", billTipsAdded);
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.put("/order/updateBills").
                 content(sendObj.toString()).
@@ -417,7 +419,8 @@ class BillControllerTests {
         mapper.registerModule(new JavaTimeModule());
         BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
 
-        assertEquals(BillStatus.TERMINALREQUESTWATING,reponse.getBillStatus());
+        assertEquals(BillStatus.TERMINALREQUESTWATING, reponse.getBillStatus());
+        assertEquals(billTipsAdded, reponse.getTips());
     }
 
 
