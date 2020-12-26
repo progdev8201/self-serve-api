@@ -427,6 +427,58 @@ class BillControllerTests {
         assertEquals(BillStatus.TERMINALREQUESTWATING,reponse.getBillStatus());
     }
 
+    @Test
+    public void findAllPaidBillsByRestaurantTest() throws Exception {
+        // Arrange
+        MockMvc mvc = initMockMvc();
+        Long restaurantId = 2L;
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        // Act
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/order/getAllPaidBills/" + restaurantId).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+
+        List<BillDTO> billDTOList = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<BillDTO>>() {});
+
+        billDTOList.forEach(billDTO -> assertEquals(BillStatus.PAYED,billDTO.getBillStatus()));
+    }
+
+    @Test
+    public void findAllPaidBillsByRestaurantBetweenDatesTest() throws Exception {
+        // Arrange
+        MockMvc mvc = initMockMvc();
+
+        FindBillBetweenDateRequestDTO requestDTO = new FindBillBetweenDateRequestDTO();
+        requestDTO.setBegin(LocalDateTime.of(2020, 12, 12, 12, 12));
+        requestDTO.setEnd(LocalDateTime.now());
+        requestDTO.setRestaurantId(2L);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        // Act
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/getPaidBillsBetweenDates").
+                content(mapper.writeValueAsString(requestDTO)).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+
+        List<BillDTO> billDTOList = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<BillDTO>>() {});
+
+        billDTOList.forEach(billDTO -> {
+            assertTrue(billDTO.getDate().isAfter(requestDTO.getBegin()));
+            assertTrue(billDTO.getDate().isBefore(requestDTO.getEnd()));
+        });
+    }
+
 
     private BillDTO initBillDTO() {
         RestaurantDTO restaurantDTO = new RestaurantDTO();
