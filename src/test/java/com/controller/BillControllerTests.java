@@ -1,10 +1,17 @@
 package com.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.model.dto.*;
+import com.model.dto.requests.FindBillBetweenDateRequestDTO;
 import com.model.enums.BillStatus;
+import com.repository.BillRepository;
+import com.repository.RestaurantRepository;
 import org.json.JSONObject;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +22,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -156,7 +165,6 @@ class BillControllerTests {
     public void fetchBillByIdGetRightBill() throws Exception {
         MockMvc mvc = initMockMvc();
 
-
         JSONObject sendObj = new JSONObject();
         sendObj.put("billId", "1");
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/getBill").
@@ -165,11 +173,12 @@ class BillControllerTests {
                 accept(MediaType.APPLICATION_JSON)).
                 andExpect(status().isOk()).
                 andReturn();
+
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
+
         BillDTO response = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
         assertEquals(1, response.getId());
-
     }
 
     @Test
@@ -395,6 +404,57 @@ class BillControllerTests {
         assertTrue(mapper.readValue(result.getResponse().getContentAsString(), Boolean.class));
     }
 
+    @Test
+    public void findAllPaidBillsByRestaurantTest() throws Exception {
+        // Arrange
+        MockMvc mvc = initMockMvc();
+        Long restaurantId = 2L;
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        // Act
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.get("/order/getAllPaidBills/" + restaurantId).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+
+        List<BillDTO> billDTOList = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<BillDTO>>() {});
+
+        billDTOList.forEach(billDTO -> assertEquals(BillStatus.PAYED,billDTO.getBillStatus()));
+    }
+
+    @Test
+    public void findAllPaidBillsByRestaurantBetweenDatesTest() throws Exception {
+        // Arrange
+        MockMvc mvc = initMockMvc();
+
+        FindBillBetweenDateRequestDTO requestDTO = new FindBillBetweenDateRequestDTO();
+        requestDTO.setBegin(LocalDateTime.of(2020, 12, 12, 12, 12));
+        requestDTO.setEnd(LocalDateTime.now());
+        requestDTO.setRestaurantId(2L);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        // Act
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/getPaidBillsBetweenDates").
+                content(mapper.writeValueAsString(requestDTO)).
+                contentType(MediaType.APPLICATION_JSON).
+                accept(MediaType.APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+
+        List<BillDTO> billDTOList = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<BillDTO>>() {});
+
+        billDTOList.forEach(billDTO -> {
+            assertTrue(billDTO.getDate().isAfter(requestDTO.getBegin()));
+            assertTrue(billDTO.getDate().isBefore(requestDTO.getEnd()));
+        });
+    }
 
     private BillDTO initBillDTO() {
         RestaurantDTO restaurantDTO = new RestaurantDTO();

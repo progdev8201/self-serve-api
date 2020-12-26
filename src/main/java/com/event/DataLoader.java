@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Order(3)
@@ -87,6 +89,7 @@ public class DataLoader implements CommandLineRunner {
         Bill bill = new Bill();
         bill.setBillStatus(BillStatus.PROGRESS);
         bill.setOrderItems(new ArrayList<>());
+        bill.setDate(LocalDateTime.now());
         Menu menuRequest;
 
         Menu menuDiner = menuCreationService.createMenu("Diner", MenuType.FOOD);
@@ -96,13 +99,7 @@ public class DataLoader implements CommandLineRunner {
 
         for (int i =0;i<3;i++){
             menuCreationService.createProduct(MenuType.FOOD, "download.jpg", 29.99 +i, 30+i, "Steak chico dejeuner " +i, menuDejeuner);
-        }
-
-        for (int i =0;i<3;i++){
             menuCreationService.createProduct(MenuType.FOOD, "download.jpg", 29.99 +i, 30+i, "Steak chico diner " +i, menuDiner);
-        }
-
-        for (int i =0;i<3;i++){
             menuCreationService.createProduct(MenuType.FOOD, "download.jpg", 29.99 +i, 30+i, "Steak chico souper " +i, menuSouper);
         }
 
@@ -135,7 +132,12 @@ public class DataLoader implements CommandLineRunner {
         restaurant.setName("le resto chico");
         restaurant.setImgFile(menuCreationService.getImgFile("download.jpg"));
 
-        restaurant.getBill().add(bill);
+        bill.setRestaurant(restaurant);
+        Bill bill2 = createPayedBill(restaurant,LocalDateTime.of(2018,5,15,5,5));
+        Bill bill3 = createPayedBill(restaurant,LocalDateTime.now());
+
+        restaurant.getBill().addAll(Arrays.asList(bill,bill2,bill3));
+
         List<Menu> allMenus = new ArrayList<>();
         allMenus.add(menuDejeuner);
         allMenus.add(menuDiner);
@@ -159,5 +161,15 @@ public class DataLoader implements CommandLineRunner {
         restaurant.setMenus(Collections.singletonList(menuSupp));
         restaurantRepository.save(restaurant);
         System.out.println("APPLICATION IS READY!!!");
+    }
+
+    public Bill createPayedBill(Restaurant restaurant,LocalDateTime time){
+        Bill bill = new Bill();
+        bill.setBillStatus(BillStatus.PAYED);
+        bill.setOrderItems(new ArrayList<>());
+        bill.setRestaurant(restaurant);
+        bill.setDate(time);
+
+        return bill;
     }
 }

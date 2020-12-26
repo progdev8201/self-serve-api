@@ -8,6 +8,7 @@ import com.model.dto.BillDTO;
 import com.model.dto.CheckItemDTO;
 import com.model.dto.OptionDTO;
 import com.model.dto.ProductDTO;
+import com.model.dto.requests.FindBillBetweenDateRequestDTO;
 import com.model.entity.*;
 import com.model.enums.BillStatus;
 import com.model.enums.MenuType;
@@ -93,15 +94,23 @@ public class ClientService {
         return dtoUtils.mapBillToBillDTOWithOrderItems(bill);
     }
 
-    public List<BillDTO> findAllPaidBillsByRestaurant(BillStatus billStatus, Long restaurantId) {
-        return billRepository.findAllByBillStatusAndRestaurant_Id(billStatus, restaurantId)
+    public List<BillDTO> findAllPaidBillsByRestaurant(Long restaurantId) {
+        billRepository.findAllByBillStatusAndRestaurant_Id(BillStatus.PAYED, restaurantId)
+                .stream()
+                .map(dtoUtils::mapBillToBillDTOWithOrderItems)
+                .forEach(billDTO -> {
+                    System.out.println(billDTO.getId());
+                    System.out.println(billDTO.getBillStatus());
+                });
+
+        return billRepository.findAllByBillStatusAndRestaurant_Id(BillStatus.PAYED, restaurantId)
                 .stream()
                 .map(dtoUtils::mapBillToBillDTOWithOrderItems)
                 .collect(Collectors.toList());
     }
 
-    public List<BillDTO> findAllPaidBillsByRestaurantBetweenDates(LocalDate begin, LocalDate end, BillStatus billStatus, Long restaurantId) {
-        return billRepository.findAllByDateBetweenAndBillStatusAndRestaurant_Id(begin, end, billStatus, restaurantId)
+    public List<BillDTO> findAllPaidBillsByRestaurantBetweenDates(FindBillBetweenDateRequestDTO request) {
+        return billRepository.findAllByDateBetweenAndBillStatusAndRestaurant_Id(request.getBegin(), request.getEnd(), BillStatus.PAYED, request.getRestaurantId())
                 .stream()
                 .map(dtoUtils::mapBillToBillDTOWithOrderItems)
                 .collect(Collectors.toList());
@@ -166,6 +175,7 @@ public class ClientService {
         bill.setOrderItems(initEmptyList(bill.getOrderItems()));
         bill.setPrixTotal(bill.getPrixTotal() + calculerPriceBill(orderItemList));
         bill.setBillStatus(BillStatus.PROGRESS);
+        bill.setDate(LocalDateTime.now());
 
         addBillToValues(restaurantTableId, bill, orderItemList);
         return bill;

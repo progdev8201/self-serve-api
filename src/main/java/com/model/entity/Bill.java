@@ -98,17 +98,4 @@ public class Bill implements Serializable {
         this.orderCustomer = orderCustomer;
     }
 
-    @Override
-    public String toString() {
-        return "Bill{" +
-                "id=" + id +
-                ", orderItems=" + orderItems +
-                ", orderCustomer=" + orderCustomer +
-                ", restaurentTable=" + restaurentTable +
-                ", date=" + date +
-                ", prixTotal=" + prixTotal +
-                ", billStatus=" + billStatus +
-                ", restaurant=" + restaurant +
-                '}';
-    }
 }
