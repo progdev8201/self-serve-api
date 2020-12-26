@@ -136,7 +136,7 @@ public class DataLoader implements CommandLineRunner {
         Bill bill2 = createPayedBill(restaurant,LocalDateTime.of(2018,5,15,5,5));
         Bill bill3 = createPayedBill(restaurant,LocalDateTime.now());
 
-        restaurant.getBill().addAll(Arrays.asList(bill,bill2,bill3));
+        restaurant.getBill().addAll(Arrays.asList(bill,new Bill(),bill2,bill3));
 
         List<Menu> allMenus = new ArrayList<>();
         allMenus.add(menuDejeuner);

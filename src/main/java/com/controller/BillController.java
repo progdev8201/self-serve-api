@@ -87,5 +87,9 @@ public class BillController {
         Long billId = new ObjectMapper().readValue(json.get("billId"), Long.class);
         return ResponseEntity.ok(clientService.fetchBill(billId));
     }
-
+    @PreAuthorize("hasAnyAuthority('ROLE_GUEST','ROLE_CLIENT')")
+    @PutMapping("/updateBills")
+    public ResponseEntity<BillDTO> updateBills(@RequestBody BillDTO billDTO) throws JsonProcessingException {
+        return ResponseEntity.ok(clientService.updateBill(billDTO));
+    }
 }

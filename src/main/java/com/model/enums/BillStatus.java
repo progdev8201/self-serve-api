@@ -2,5 +2,6 @@ package com.model.enums;
 
 public enum BillStatus {
     PAYED,
-    PROGRESS
+    PROGRESS,
+    TERMINALREQUESTWATING
 }
