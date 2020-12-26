@@ -3,6 +3,7 @@ package com.model.dto;
 import com.model.enums.MenuType;
 import com.model.enums.ProgressStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -14,7 +15,7 @@ public class OrderItemDTO {
 
     private ProgressStatus orderStatus;
 
-    private double prix;
+    private BigDecimal prix;
 
     private LocalDateTime delaiDePreparation;
 
@@ -68,11 +69,11 @@ public class OrderItemDTO {
         this.orderStatus = orderStatus;
     }
 
-    public double getPrix() {
+    public BigDecimal getPrix() {
         return prix;
     }
 
-    public void setPrix(double prix) {
+    public void setPrix(BigDecimal prix) {
         this.prix = prix;
     }
 

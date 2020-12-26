@@ -5,6 +5,7 @@ import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,11 +26,11 @@ public class Bill implements Serializable {
 
     private LocalDateTime date;
 
-    private double prixTotal;
+    private BigDecimal prixTotal;
 
-    private double prix;
+    private BigDecimal prix;
 
-    private double tips;
+    private BigDecimal tips;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 60)
@@ -54,19 +55,19 @@ public class Bill implements Serializable {
         this.id = id;
     }
 
-    public double getTips() {
+    public BigDecimal getTips() {
         return tips;
     }
 
-    public void setTips(double tips) {
+    public void setTips(BigDecimal tips) {
         this.tips = tips;
     }
 
-    public double getPrix() {
+    public BigDecimal getPrix() {
         return prix;
     }
 
-    public void setPrix(double prix) {
+    public void setPrix(BigDecimal prix) {
         this.prix = prix;
     }
 
@@ -94,11 +95,11 @@ public class Bill implements Serializable {
         this.restaurant = restaurant;
     }
 
-    public double getPrixTotal() {
+    public BigDecimal getPrixTotal() {
         return prixTotal;
     }
 
-    public void setPrixTotal(double prixTotal) {
+    public void setPrixTotal(BigDecimal prixTotal) {
         this.prixTotal = prixTotal;
     }
 

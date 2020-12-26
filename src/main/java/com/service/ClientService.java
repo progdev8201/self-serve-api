@@ -159,9 +159,9 @@ public class ClientService {
 
         bill.setOrderCustomer(guest);
         bill.setOrderItems(initEmptyList(bill.getOrderItems()));
-        bill.setPrix(roundDouble(bill.getPrix() + calculerPriceBill(orderItemList)));
-        bill.setTips(roundDouble(calculerTipsDeBase(bill.getPrix())));
-        bill.setPrixTotal(roundDouble(bill.getPrix()  + bill.getTips()));
+        bill.setPrix(bill.getPrix().add( calculerPriceBill(orderItemList)).setScale(2,RoundingMode.UP));
+        bill.setTips(calculerTipsDeBase(bill.getPrix()).setScale(2,RoundingMode.UP));
+        bill.setPrixTotal(bill.getPrix().add(bill.getTips()).setScale(2,RoundingMode.UP));
         bill.setBillStatus(BillStatus.PROGRESS);
 
         addBillToValues(restaurantTableId, bill, orderItemList);
@@ -179,8 +179,8 @@ public class ClientService {
         return orderItems;
     }
 
-    private double calculerTipsDeBase(double prix) {
-        return (15 * prix)/100;
+    private BigDecimal calculerTipsDeBase(BigDecimal prix) {
+        return BigDecimal.valueOf((15 * prix.doubleValue())/100);
     }
 
     private OrderItem initOrderItem(ProductDTO productToAdd, String commentaire, Product product) {
@@ -196,11 +196,10 @@ public class ClientService {
         product.getOrderItems().addAll(orderItems);
     }
 
-    private double calculerPriceBill(List<OrderItem> orderItems) {
+    private BigDecimal calculerPriceBill(List<OrderItem> orderItems) {
         return orderItems.stream()
                 .map(OrderItem::getPrix)
-                .collect(Collectors.summarizingDouble(Double::doubleValue))
-                .getSum();
+                .reduce(BigDecimal.valueOf(0),BigDecimal::add);
     }
 
     private OrderItem createOrderItemFromProduct(ProductDTO productToAdd, String commentaire, Product product) {
@@ -246,6 +245,9 @@ public class ClientService {
         checkItemDTOS.forEach(checkItemDTO -> {
             CheckItem checkItem = CheckItemDTOCheckItem.instance.convert(checkItemDTO);
             checkItem.setId(null);
+            if(Objects.isNull(checkItem.getPrix())){
+                checkItem.setPrix(BigDecimal.valueOf(0));
+            }
             checkItemList.add(checkItem);
         });
         return checkItemList;
@@ -254,7 +256,7 @@ public class ClientService {
     private void addCheckItemToOrderItemPrice(OrderItem orderItem, List<CheckItem> checkItems) {
         checkItems.forEach(checkItem -> {
             if (checkItem.isActive()) {
-                orderItem.setPrix(roundDouble(orderItem.getPrix() + checkItem.getPrix()));
+                orderItem.setPrix(orderItem.getPrix().add(checkItem.getPrix()));
             }
         });
     }
@@ -267,7 +269,9 @@ public class ClientService {
         if (Objects.nonNull(billId)) {
             return billRepository.findById(billId).get();
         } else {
-            return billRepository.save(new Bill());
+            Bill bill = new Bill();
+            bill.setPrix(BigDecimal.valueOf(0));
+            return billRepository.save(bill);
         }
     }
 

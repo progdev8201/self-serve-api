@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -106,7 +107,7 @@ class ProductControllerTest {
                 andReturn();
         ProductDTO returnValue = objectMapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
         assertEquals("killua", returnValue.getName());
-        assertEquals(39.99, returnValue.getPrix());
+        assertEquals(BigDecimal.valueOf(39.99), returnValue.getPrix());
         assertEquals(1, productDTO.getCheckItems().size());
         assertEquals(1, productDTO.getOptions().size());
 
@@ -131,7 +132,7 @@ class ProductControllerTest {
 
     private ProductDTO initProductDTONoId() {
         ProductDTO productDTO = new ProductDTO();
-        productDTO.setPrix(39.99);
+        productDTO.setPrix(BigDecimal.valueOf(39.99));
         productDTO.setName("killua");
         productDTO.setCheckItems(new ArrayList<>());
         productDTO.getCheckItems().add(new CheckItemDTO());

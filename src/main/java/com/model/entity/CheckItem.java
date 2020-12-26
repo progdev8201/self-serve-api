@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Entity
 public class  CheckItem implements Serializable {
@@ -15,17 +16,17 @@ public class  CheckItem implements Serializable {
 
     private boolean isActive;
 
-    private double prix;
+    private BigDecimal prix;
 
 
     @ManyToOne
     private Option option;
 
-    public double getPrix() {
+    public BigDecimal getPrix() {
         return prix;
     }
 
-    public void setPrix(double prix) {
+    public void setPrix(BigDecimal prix) {
         this.prix = prix;
     }
 

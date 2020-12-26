@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -95,15 +96,15 @@ public class DataLoader implements CommandLineRunner {
         //todo trop long pour rien mieux de faire un loop
 
         for (int i =0;i<3;i++){
-            menuCreationService.createProduct(MenuType.FOOD, "download.jpg", 29.99 +i, 30+i, "Steak chico dejeuner " +i, menuDejeuner);
+            menuCreationService.createProduct(MenuType.FOOD, "download.jpg", BigDecimal.valueOf(29.99 +i), 30+i, "Steak chico dejeuner " +i, menuDejeuner);
         }
 
         for (int i =0;i<3;i++){
-            menuCreationService.createProduct(MenuType.FOOD, "download.jpg", 29.99 +i, 30+i, "Steak chico diner " +i, menuDiner);
+            menuCreationService.createProduct(MenuType.FOOD, "download.jpg", BigDecimal.valueOf(29.99 +i), 30+i, "Steak chico diner " +i, menuDiner);
         }
 
         for (int i =0;i<3;i++){
-            menuCreationService.createProduct(MenuType.FOOD, "download.jpg", 29.99 +i, 30+i, "Steak chico souper " +i, menuSouper);
+            menuCreationService.createProduct(MenuType.FOOD, "download.jpg", BigDecimal.valueOf(29.99 +i), 30+i, "Steak chico souper " +i, menuSouper);
         }
 
         if (adminRepository.findAll().size() == 0) {
@@ -156,7 +157,7 @@ public class DataLoader implements CommandLineRunner {
 
         restaurant = new Restaurant();
         Menu menuSupp = menuCreationService.createMenu("Dejeuner", MenuType.FOOD);
-        menuCreationService.createProduct(null, "download.jpg", 0 , 0, "Steak chico dejeuner " , menuSupp);
+        menuCreationService.createProduct(null, "download.jpg", BigDecimal.valueOf(0) , 0, "Steak chico dejeuner " , menuSupp);
         restaurant.setMenus(Collections.singletonList(menuSupp));
         restaurantRepository.save(restaurant);
         System.out.println("APPLICATION IS READY!!!");

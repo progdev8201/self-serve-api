@@ -12,6 +12,7 @@ import org.hibernate.annotations.NaturalId;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -27,11 +28,11 @@ public class BillDTO {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDateTime date;
 
-    private double prixTotal;
+    private BigDecimal prixTotal;
 
-    private double prix;
+    private BigDecimal prix;
 
-    private double tips;
+    private BigDecimal tips;
 
     private BillStatus billStatus;
 
@@ -49,19 +50,19 @@ public class BillDTO {
         return orderItems;
     }
 
-    public double getPrix() {
+    public BigDecimal getPrix() {
         return prix;
     }
 
-    public void setPrix(double prix) {
+    public void setPrix(BigDecimal prix) {
         this.prix = prix;
     }
 
-    public double getTips() {
+    public BigDecimal getTips() {
         return tips;
     }
 
-    public void setTips(double tips) {
+    public void setTips(BigDecimal tips) {
         this.tips = tips;
     }
 
@@ -85,11 +86,11 @@ public class BillDTO {
         this.date = date;
     }
 
-    public double getPrixTotal() {
+    public BigDecimal getPrixTotal() {
         return prixTotal;
     }
 
-    public void setPrixTotal(double prixTotal) {
+    public void setPrixTotal(BigDecimal prixTotal) {
         this.prixTotal = prixTotal;
     }
 
