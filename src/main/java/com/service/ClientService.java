@@ -103,16 +103,6 @@ public class ClientService {
         return dtoUtils.mapBillToBillDTOWithOrderItems(bill);
     }
 
-    public List<BillDTO> findAllPaidBillsByRestaurant(Long restaurantId) throws Exception {
-        if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId))
-            throw new Exception();
-
-        return billRepository.findAllByBillStatusAndRestaurant_Id(BillStatus.PAYED, restaurantId)
-                .stream()
-                .map(dtoUtils::mapBillToBillDTOWithOrderItems)
-                .collect(Collectors.toList());
-    }
-
     public List<BillDTO> findAllPaidBillsByRestaurantBetweenDates(FindBillBetweenDateRequestDTO request) throws Exception {
         if (!restaurantOwnerShipValidator.hasOwnerRight(request.getRestaurantId()))
             throw new Exception();

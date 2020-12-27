@@ -19,8 +19,6 @@ public class BillDTO {
 
     private GuestDTO orderCustomer;
 
-//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-//    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime date;
 
     private double prixTotal;

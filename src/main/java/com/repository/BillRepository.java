@@ -13,6 +13,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BillRepository extends JpaRepository<Bill, Long> {
-    List<Bill> findAllByBillStatusAndRestaurant_Id(BillStatus billStatus,Long restaurantId);
     List<Bill> findAllByDateBetweenAndBillStatusAndRestaurant_Id(LocalDateTime begin, LocalDateTime end, BillStatus billStatus, Long restaurantId);
 }

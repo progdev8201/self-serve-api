@@ -39,12 +39,6 @@ public class BillController {
         return clientService.findBillStatus(billId);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_OWNER')")
-    @GetMapping("/getAllPaidBills/{restaurantId}")
-    public List<BillDTO> findAllPaidBillsByRestaurant(@PathVariable final Long restaurantId) throws Exception {
-        return clientService.findAllPaidBillsByRestaurant(restaurantId);
-    }
-
     //
     // PostMapping
     //
