@@ -38,7 +38,7 @@ public class StripeSubscriptionLoader implements CommandLineRunner {
     }
 
     private List<StripeSubscriptionProducts> findSubscriptions() {
-        // Dine in plan premium
+        /*// Dine in plan premium
         StripeSubscriptionProducts stripeSubscriptionProducts = new StripeSubscriptionProducts();
         stripeSubscriptionProducts.setProductName("Dine in plan premium");
         stripeSubscriptionProducts.setProductPrice(200.00);
@@ -51,10 +51,16 @@ public class StripeSubscriptionLoader implements CommandLineRunner {
         stripeSubscriptionProducts2.setProductName("Dine in plan basic");
         stripeSubscriptionProducts2.setProductPrice(125.00);
         stripeSubscriptionProducts2.setProductDescription("No set up fee,Up to 2 restaurants,Up to 100 products,Up to 10 menus,E-mail support");
-        stripeSubscriptionProducts2.setPriceId("price_1HiTYKC5UoZOX4GRDOIONoDR");
+        stripeSubscriptionProducts2.setPriceId("price_1HiTYKC5UoZOX4GRDOIONoDR");*/
+
+        StripeSubscriptionProducts stripeSubscriptionProducts = new StripeSubscriptionProducts();
+        stripeSubscriptionProducts.setProductName("Dine in plan basic");
+        stripeSubscriptionProducts.setProductPrice(0);
+        stripeSubscriptionProducts.setProductDescription("No set up fee,Up to 2 restaurants,Up to 100 products,Up to 10 menus,E-mail support");
+        stripeSubscriptionProducts.setPriceId("prod_IeRmzuRT8ASMlp");
 
 
-        return Arrays.asList(stripeSubscriptionProducts, stripeSubscriptionProducts2);
+        return Arrays.asList(stripeSubscriptionProducts);
     }
 
     private List<StripeSubscriptionProducts> findMissingSubscriptions(List<StripeSubscriptionProducts> currentSubscriptionsProducts){
