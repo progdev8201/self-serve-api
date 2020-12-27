@@ -431,6 +431,8 @@ class BillControllerTests {
 
         assertEquals(BillStatus.TERMINALREQUESTWATING, reponse.getBillStatus());
         assertEquals(BigDecimal.valueOf(billTipsAdded), reponse.getTips());
+        assertEquals(BigDecimal.valueOf(billTipsAdded+10), reponse.getPrixTotal());
+
     }
 
     @Test

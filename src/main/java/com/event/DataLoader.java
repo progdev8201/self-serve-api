@@ -45,10 +45,6 @@ public class DataLoader implements CommandLineRunner {
     @Value("${config.styles.images.path}")
     private String fileBasePath;
 
-    /*@Value("${server.port}")
-    private String serverPort;
-*/
-
     @Autowired
     private RestaurantRepository restaurantRepository;
 
@@ -57,10 +53,6 @@ public class DataLoader implements CommandLineRunner {
 
     @Autowired
     private KitchenService kitchenService;
-
-
-    @Autowired
-    private ResourceLoader resourceLoader;
 
     @Autowired
     MenuCreationService menuCreationService;
@@ -137,7 +129,7 @@ public class DataLoader implements CommandLineRunner {
         Bill bill2 = createPayedBill(restaurant,LocalDateTime.of(2018,5,15,5,5));
         Bill bill3 = createPayedBill(restaurant,LocalDateTime.now());
 
-        restaurant.getBill().addAll(Arrays.asList(bill,new Bill(),bill2,bill3));
+        restaurant.getBill().addAll(Arrays.asList(bill,createBill(restaurant,LocalDateTime.now()),bill2,bill3));
 
         List<Menu> allMenus = new ArrayList<>();
         allMenus.add(menuDejeuner);
@@ -165,12 +157,17 @@ public class DataLoader implements CommandLineRunner {
     }
 
     public Bill createPayedBill(Restaurant restaurant,LocalDateTime time){
-        Bill bill = new Bill();
+        Bill bill = createBill(restaurant,time);
         bill.setBillStatus(BillStatus.PAYED);
+        return bill;
+    }
+    public Bill createBill(Restaurant restaurant,LocalDateTime time){
+        Bill bill = new Bill();
         bill.setOrderItems(new ArrayList<>());
         bill.setRestaurant(restaurant);
         bill.setDate(time);
-
+        bill.setPrix(BigDecimal.TEN);
+        bill.setPrixTotal(BigDecimal.ZERO);
         return bill;
     }
 }
