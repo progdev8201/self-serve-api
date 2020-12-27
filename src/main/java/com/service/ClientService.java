@@ -55,8 +55,8 @@ public class ClientService {
 
     public BillDTO initBill() {
         Bill bill = new Bill();
-        billRepository.save(bill);
-        return BillToBillDTO.instance.convert(bill);
+        bill.setPrix(BigDecimal.valueOf(0));
+        return BillToBillDTO.instance.convert(billRepository.save(bill));
     }
 
     public BillStatus findBillStatus(Long id) {
@@ -84,7 +84,8 @@ public class ClientService {
     public BillDTO updateBill(BillDTO billDTO) {
         Bill bill = billRepository.findById(billDTO.getId()).get();
         bill.setBillStatus(billDTO.getBillStatus());
-        bill.setTips(billDTO.getTips());
+        bill.setTips(billDTO.getTips().setScale(2,RoundingMode.UP));
+        bill.setPrixTotal(bill.getPrix().add(bill.getTips()).setScale(2,RoundingMode.UP));
         return dtoUtils.mapBillToBillDTOWithOrderItems(billRepository.save(bill));
     }
 
