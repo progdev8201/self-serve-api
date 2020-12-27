@@ -7,13 +7,19 @@ import com.model.dto.BillDTO;
 import com.model.dto.JwtResponse;
 import com.model.dto.LoginForm;
 import com.model.dto.ProductDTO;
+import com.model.dto.requests.FindBillBetweenDateRequestDTO;
+import com.model.entity.Bill;
 import com.model.enums.BillStatus;
 import com.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,10 +29,24 @@ public class BillController {
     @Autowired
     private ClientService clientService;
 
+    //
+    // GetMapping
+    //
+
     @PreAuthorize("hasAnyAuthority('ROLE_GUEST','ROLE_CLIENT')")
     @GetMapping("/billStatus/{billId}")
     public BillStatus findBillStatus(@PathVariable final Long billId){
         return clientService.findBillStatus(billId);
+    }
+
+    //
+    // PostMapping
+    //
+
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
+    @PostMapping("/getPaidBillsBetweenDates")
+    public List<BillDTO> findAllPaidBillsByRestaurantBetweenDates(@RequestBody FindBillBetweenDateRequestDTO findBillBetweenDateRequestDTO) throws Exception {
+        return clientService.findAllPaidBillsByRestaurantBetweenDates(findBillBetweenDateRequestDTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_GUEST','ROLE_CLIENT')")

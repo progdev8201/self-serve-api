@@ -3,12 +3,9 @@ package com.model.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.model.enums.BillStatus;
-import org.hibernate.annotations.NaturalId;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -24,8 +21,6 @@ public class BillDTO {
 
     private GuestDTO orderCustomer;
 
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDateTime date;
 
     private BigDecimal prixTotal;
@@ -81,7 +76,7 @@ public class BillDTO {
     public LocalDateTime getDate() {
         return date;
     }
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+
     public void setDate(LocalDateTime date) {
         this.date = date;
     }
@@ -110,16 +105,4 @@ public class BillDTO {
         this.restaurant = restaurant;
     }
 
-    @Override
-    public String toString() {
-        return "BillDTO{" +
-                "id=" + id +
-                ", orderItems=" + orderItems +
-                ", orderCustomer=" + orderCustomer +
-                ", date=" + date +
-                ", prixTotal=" + prixTotal +
-                ", billStatus=" + billStatus +
-                ", restaurant=" + restaurant +
-                '}';
-    }
 }

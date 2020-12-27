@@ -8,18 +8,21 @@ import com.model.dto.BillDTO;
 import com.model.dto.CheckItemDTO;
 import com.model.dto.OptionDTO;
 import com.model.dto.ProductDTO;
+import com.model.dto.requests.FindBillBetweenDateRequestDTO;
 import com.model.entity.*;
 import com.model.enums.BillStatus;
 import com.model.enums.MenuType;
 import com.model.enums.ProgressStatus;
 import com.repository.*;
 import com.service.Util.DTOUtils;
+import com.service.validator.RestaurantOwnerShipValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,11 +40,12 @@ public class ClientService {
     private RestaurantRepository restaurantRepository;
     private RestaurentTableService restaurentTableService;
     private RestaurentTableRepository restaurentTableRepository;
+    private RestaurantOwnerShipValidator restaurantOwnerShipValidator;
     private DTOUtils dtoUtils;
     private static final int DOUBLE_SCALE_PLACES = 2;
 
     @Autowired
-    public ClientService(BillRepository billRepository, GuestRepository guestRepository, ProductRepository productRepository, RestaurantRepository restaurantRepository, RestaurentTableService restaurentTableService, RestaurentTableRepository restaurentTableRepository, DTOUtils dtoUtils) {
+    public ClientService(BillRepository billRepository, GuestRepository guestRepository, ProductRepository productRepository, RestaurantRepository restaurantRepository, RestaurentTableService restaurentTableService, RestaurentTableRepository restaurentTableRepository, DTOUtils dtoUtils,RestaurantOwnerShipValidator restaurantOwnerShipValidator) {
         this.billRepository = billRepository;
         this.guestRepository = guestRepository;
         this.productRepository = productRepository;
@@ -49,6 +53,7 @@ public class ClientService {
         this.restaurentTableService = restaurentTableService;
         this.restaurentTableRepository = restaurentTableRepository;
         this.dtoUtils = dtoUtils;
+        this.restaurantOwnerShipValidator = restaurantOwnerShipValidator;
     }
 
     //PUBLIC METHODS
@@ -101,6 +106,16 @@ public class ClientService {
         return dtoUtils.mapBillToBillDTOWithOrderItems(bill);
     }
 
+    public List<BillDTO> findAllPaidBillsByRestaurantBetweenDates(FindBillBetweenDateRequestDTO request) throws Exception {
+        if (!restaurantOwnerShipValidator.hasOwnerRight(request.getRestaurantId()))
+            throw new Exception();
+
+        return billRepository.findAllByDateBetweenAndBillStatusAndRestaurant_Id(request.getBegin(), request.getEnd(), BillStatus.PAYED, request.getRestaurantId())
+                .stream()
+                .map(dtoUtils::mapBillToBillDTOWithOrderItems)
+                .collect(Collectors.toList());
+    }
+
     // PRIVATE METHODS
 
     private void addBillToValues(Long restaurantTableId, Bill bill, List<OrderItem> orderItemList) {
@@ -111,8 +126,6 @@ public class ClientService {
         Restaurant restaurant = restaurentTable.getRestaurant();
 
         addBillToValues(orderItemList, restaurentTable, restaurant, bill);
-
-
     }
 
     private void addBillToValues(List<OrderItem> orderItemList, RestaurentTable restaurentTable, Restaurant restaurant, Bill bill) {
@@ -164,6 +177,7 @@ public class ClientService {
         bill.setTips(calculerTipsDeBase(bill.getPrix()).setScale(2,RoundingMode.UP));
         bill.setPrixTotal(bill.getPrix().add(bill.getTips()).setScale(2,RoundingMode.UP));
         bill.setBillStatus(BillStatus.PROGRESS);
+        bill.setDate(LocalDateTime.now());
 
         addBillToValues(restaurantTableId, bill, orderItemList);
         return bill;
