@@ -3,6 +3,7 @@ package com.model.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class CheckItemDTO implements Serializable {
     private Long id;
@@ -11,7 +12,7 @@ public class CheckItemDTO implements Serializable {
 
     private OptionDTO option;
 
-    private double prix;
+    private BigDecimal prix;
 
     @JsonProperty("isActive")
     private boolean isActive;
@@ -44,11 +45,11 @@ public class CheckItemDTO implements Serializable {
         this.name = name;
     }
 
-    public double getPrix() {
+    public BigDecimal getPrix() {
         return prix;
     }
 
-    public void setPrix(double prix) {
+    public void setPrix(BigDecimal prix) {
         this.prix = prix;
     }
 

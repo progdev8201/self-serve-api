@@ -127,7 +127,7 @@ public class StripeService {
 
         PaymentIntentCreateParams params =
                 PaymentIntentCreateParams.builder()
-                        .setAmount(Math.round(bill.getPrixTotal()) * 100)
+                        .setAmount(Math.round(bill.getPrixTotal().doubleValue()) * 100)
                         .setCurrency("cad")
                         .setTransferData(PaymentIntentCreateParams.TransferData.builder().setDestination(restaurentStripeAccount).build())
                         .addPaymentMethodType("card")
@@ -147,7 +147,7 @@ public class StripeService {
         PaymentIntentCreateParams params =
                 PaymentIntentCreateParams.builder()
                         .setCurrency("cad")
-                        .setAmount(Math.round(bill.getPrixTotal()) * 100)
+                        .setAmount(Math.round(bill.getPrixTotal().doubleValue()) * 100)
                         .setTransferData(PaymentIntentCreateParams.TransferData.builder().setDestination(restaurentStripeAccount).build())
                         // Verify your integration in this guide by including this parameter
                         .putMetadata("integration_check", "accept_a_payment")

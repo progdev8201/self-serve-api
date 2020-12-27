@@ -5,6 +5,7 @@ import com.model.enums.MenuType;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -18,7 +19,7 @@ public class Product implements Serializable {
 
     private String description;
 
-    private double prix;
+    private BigDecimal prix;
     ///en minutes
     private int tempsDePreparation;
 
@@ -50,7 +51,7 @@ public class Product implements Serializable {
 
 
 
-    public Product(long id, String name, String description, Menu menu, List<Option> options, List<OrderItem> orderItems, double prix, int tempsDePreparation, String imgUrl, ImgFile imgFile, List<Rate> rates, MenuType menuType) {
+    public Product(long id, String name, String description, Menu menu, List<Option> options, List<OrderItem> orderItems, BigDecimal prix, int tempsDePreparation, String imgUrl, ImgFile imgFile, List<Rate> rates, MenuType menuType) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -148,11 +149,11 @@ public class Product implements Serializable {
         this.menu = menu;
     }
 
-    public double getPrix() {
+    public BigDecimal getPrix() {
         return prix;
     }
 
-    public void setPrix(double prix) {
+    public void setPrix(BigDecimal prix) {
         this.prix = prix;
     }
 

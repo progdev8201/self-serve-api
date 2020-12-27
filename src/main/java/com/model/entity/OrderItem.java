@@ -5,6 +5,7 @@ import com.model.enums.ProgressStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -35,7 +36,7 @@ public class OrderItem implements Serializable {
 
     private String commentaires;
 
-    private double prix;
+    private BigDecimal prix;
     //quand le plat doit etre pret
     private LocalDateTime delaiDePreparation;
 
@@ -111,11 +112,11 @@ public class OrderItem implements Serializable {
         this.commentaires = commentaires;
     }
 
-    public double getPrix() {
+    public BigDecimal getPrix() {
         return prix;
     }
 
-    public void setPrix(double prix) {
+    public void setPrix(BigDecimal prix) {
         this.prix = prix;
     }
 
