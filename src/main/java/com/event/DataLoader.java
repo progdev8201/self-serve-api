@@ -99,9 +99,9 @@ public class DataLoader implements CommandLineRunner {
         //todo trop long pour rien mieux de faire un loop
 
         for (int i =0;i<3;i++){
-            menuCreationService.createProduct(MenuType.FOOD, "download.jpg", 29.99 +i, 30+i, "Steak chico dejeuner " +i, menuDejeuner);
-            menuCreationService.createProduct(MenuType.FOOD, "download.jpg", 29.99 +i, 30+i, "Steak chico diner " +i, menuDiner);
-            menuCreationService.createProduct(MenuType.FOOD, "download.jpg", 29.99 +i, 30+i, "Steak chico souper " +i, menuSouper);
+            menuCreationService.createProduct(MenuType.FOOD, "download.jpg", BigDecimal.valueOf(29.99 +i), 30+i, "Steak chico dejeuner " +i, menuDejeuner);
+            menuCreationService.createProduct(MenuType.FOOD, "download.jpg", BigDecimal.valueOf(29.99 +i), 30+i, "Steak chico diner " +i, menuDiner);
+            menuCreationService.createProduct(MenuType.FOOD, "download.jpg", BigDecimal.valueOf(29.99 +i), 30+i, "Steak chico souper " +i, menuSouper);
         }
 
         if (adminRepository.findAll().size() == 0) {
