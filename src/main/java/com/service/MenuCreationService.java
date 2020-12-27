@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -29,17 +30,17 @@ public class MenuCreationService {
 
     public Menu createMenuRequest() throws IOException {
         Menu menuRequest = createMenu("request", MenuType.WAITERREQUEST);
-        createProduct(MenuType.WAITERREQUEST, "fork.png",0,0,"FORK", menuRequest);
-        createProduct(MenuType.WAITERREQUEST, "knife.png",0,0,"KNIFE", menuRequest);
-        createProduct(MenuType.WAITERREQUEST, "salt.png",0,0,"SALT", menuRequest);
-        createProduct(MenuType.WAITERREQUEST, "sauce.png",0,0,"SAUCE", menuRequest);
-        createProduct(MenuType.WAITERREQUEST, "sugar.png",0,0,"SUGAR", menuRequest);
-        createProduct(MenuType.WAITERCALL, null,0,0,"CALL WAITER", menuRequest);
-        createProduct(MenuType.TERMINALREQUEST, null,0,0,"Request Terminal", menuRequest);
+        createProduct(MenuType.WAITERREQUEST, "fork.png", BigDecimal.valueOf(0),0,"FORK", menuRequest);
+        createProduct(MenuType.WAITERREQUEST, "knife.png",BigDecimal.valueOf(0),0,"KNIFE", menuRequest);
+        createProduct(MenuType.WAITERREQUEST, "salt.png",BigDecimal.valueOf(0),0,"SALT", menuRequest);
+        createProduct(MenuType.WAITERREQUEST, "sauce.png",BigDecimal.valueOf(0),0,"SAUCE", menuRequest);
+        createProduct(MenuType.WAITERREQUEST, "sugar.png",BigDecimal.valueOf(0),0,"SUGAR", menuRequest);
+        createProduct(MenuType.WAITERCALL, null,BigDecimal.valueOf(0),0,"CALL WAITER", menuRequest);
+        createProduct(MenuType.TERMINALREQUEST, null,BigDecimal.valueOf(0),0,"Request Terminal", menuRequest);
         return menuRequest;
     }
 
-    public Product createProduct(MenuType menuType, String fileToCopy, double prix, int tempsPreparation,String productName,Menu menu ) throws IOException {
+    public Product createProduct(MenuType menuType, String fileToCopy, BigDecimal prix, int tempsPreparation,String productName,Menu menu ) throws IOException {
         Product product = new Product();
         product.setName(productName);
         product.setPrix(prix);
@@ -56,12 +57,12 @@ public class MenuCreationService {
         product.setDescription("cest bon cest bon cest bon");
         product.setOrderItems(new ArrayList<>());
         product.setCheckItems(new ArrayList<>());
-        product.getCheckItems().add(createCheckItem("fromage bleu", 5));
-        product.getCheckItems().add(createCheckItem("Miel", 10));
+        product.getCheckItems().add(createCheckItem("fromage bleu", BigDecimal.valueOf(5)));
+        product.getCheckItems().add(createCheckItem("Miel", BigDecimal.valueOf(10)));
         Option option = createOption("cuisson");
-        option.getCheckItemList().add(createCheckItem("moyen", 0));
-        option.getCheckItemList().add(createCheckItem("faible", 0));
-        option.getCheckItemList().add(createCheckItem("fort", 0));
+        option.getCheckItemList().add(createCheckItem("moyen", BigDecimal.valueOf(0)));
+        option.getCheckItemList().add(createCheckItem("faible", BigDecimal.valueOf(0)));
+        option.getCheckItemList().add(createCheckItem("fort", BigDecimal.valueOf(0)));
         product.setOptions(Collections.singletonList(option));
         if (Objects.nonNull(menu)) {
             menu.getProducts().add(product);
@@ -89,7 +90,7 @@ public class MenuCreationService {
         return img;
     }
 
-    private CheckItem createCheckItem(String name, int prix) {
+    private CheckItem createCheckItem(String name, BigDecimal prix) {
         CheckItem productCheckItem = new CheckItem();
         productCheckItem.setName(name);
         productCheckItem.setPrix(prix);

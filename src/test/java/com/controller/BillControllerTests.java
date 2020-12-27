@@ -24,6 +24,7 @@ import org.springframework.util.LinkedMultiValueMap;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,7 +70,9 @@ class BillControllerTests {
         assertEquals("po de bacon po de bacon po de bacon", reponse.getOrderItems().get(0).getCommentaires());
         assertEquals(1, reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
-        assertEquals(29.99, reponse.getPrixTotal());
+        assertEquals(BigDecimal.valueOf(29.99), reponse.getPrix());
+        assertEquals(BigDecimal.valueOf(4.50).doubleValue(), reponse.getTips().doubleValue());
+        assertEquals(BigDecimal.valueOf(34.49), reponse.getPrixTotal());
         assertEquals("Steak chico dejeuner 0", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
         assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
@@ -104,7 +107,7 @@ class BillControllerTests {
         assertEquals("po de bacon po de bacon po de bacon", reponse.getOrderItems().get(0).getCommentaires());
         assertEquals(1, reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
-        assertEquals(34.99, reponse.getPrixTotal());
+        assertEquals(BigDecimal.valueOf(40.24), reponse.getPrixTotal());
         assertEquals("Steak chico dejeuner 0", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
         assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
@@ -139,7 +142,7 @@ class BillControllerTests {
         assertEquals("po de bacon po de bacon po de bacon", reponse.getOrderItems().get(0).getCommentaires());
         assertEquals(1, reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
-        assertEquals(32.49, reponse.getPrixTotal());
+        assertEquals(BigDecimal.valueOf(37.37), reponse.getPrixTotal());
         assertEquals("Steak chico dejeuner 0", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
         assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
@@ -254,7 +257,7 @@ class BillControllerTests {
         assertEquals("po de bacon po de bacon po de bacon", reponse.getOrderItems().get(0).getCommentaires());
         assertEquals(1, reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
-        assertEquals(59.98, reponse.getPrixTotal());
+        assertEquals(BigDecimal.valueOf(68.98), reponse.getPrixTotal());
         assertEquals("Steak chico dejeuner 0", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(2, reponse.getOrderItems().size());
         assertEquals("guest@mail.com", reponse.getOrderCustomer().getUsername());
@@ -357,7 +360,7 @@ class BillControllerTests {
         assertEquals("po de bacon po de bacon po de bacon", reponse.getOrderItems().get(0).getCommentaires());
         assertEquals(1, reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().size());
         assertTrue(reponse.getOrderItems().get(0).getOption().get(0).getCheckItemList().get(0).isActive());
-        assertEquals(29.99, reponse.getPrixTotal());
+        assertEquals(BigDecimal.valueOf(34.49), reponse.getPrixTotal());
         assertEquals("Steak chico dejeuner 0", reponse.getOrderItems().get(0).getProduct().getName());
         assertEquals(1, reponse.getOrderItems().size());
         assertEquals("client@mail.com", reponse.getOrderCustomer().getUsername());
@@ -408,11 +411,13 @@ class BillControllerTests {
     public void testUpdateBill() throws Exception {
         MockMvc mvc = initMockMvc();
         LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
-        String terminalRequestStatus= "TERMINALREQUESTWATING";
+        String terminalRequestStatus = "TERMINALREQUESTWATING";
+        Double billTipsAdded = 5.25;
 
         JSONObject sendObj = new JSONObject();
         sendObj.put("id", 2L);
         sendObj.put("billStatus", terminalRequestStatus);
+        sendObj.put("tips", billTipsAdded);
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.put("/order/updateBills").
                 content(sendObj.toString()).
@@ -424,7 +429,8 @@ class BillControllerTests {
         mapper.registerModule(new JavaTimeModule());
         BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
 
-        assertEquals(BillStatus.TERMINALREQUESTWATING,reponse.getBillStatus());
+        assertEquals(BillStatus.TERMINALREQUESTWATING, reponse.getBillStatus());
+        assertEquals(BigDecimal.valueOf(billTipsAdded), reponse.getTips());
     }
 
     @Test
@@ -475,13 +481,13 @@ class BillControllerTests {
         productDTO.setCheckItems(new ArrayList<>());
         CheckItemDTO productCheckItem = new CheckItemDTO();
         productCheckItem.setName("fromage");
-        productCheckItem.setPrix(2.50);
+        productCheckItem.setPrix(BigDecimal.valueOf(2.50));
         productDTO.getCheckItems().add(productCheckItem);
         optionDTO.getCheckItemList().add(checkItemDTO);
         productDTO.getOptions().add(optionDTO);
         OrderItemDTO orderItemDTO1 = new OrderItemDTO();
         orderItemDTO1.setProduct(productDTO);
-        orderItemDTO1.setPrix(29.99);
+        orderItemDTO1.setPrix(BigDecimal.valueOf(29.99));
         orderItemDTO1.setOption(new ArrayList<>());
         orderItemDTO1.getOption().add(optionDTO);
         List<OrderItemDTO> orderItemDTOList = new ArrayList<>();
@@ -496,7 +502,7 @@ class BillControllerTests {
         BillDTO billDTO = initBillDTO();
         CheckItemDTO checkItemDTO = new CheckItemDTO();
         checkItemDTO.setName("medium");
-        checkItemDTO.setPrix(5.00);
+        checkItemDTO.setPrix(BigDecimal.valueOf(5.00));
         checkItemDTO.setActive(true);
         billDTO.getOrderItems().get(0).getOption().get(0).setCheckItemList(new ArrayList<>());
         billDTO.getOrderItems().get(0).getOption().get(0).getCheckItemList().add(checkItemDTO);

@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 // TODO: all test should include assert arrange act as comments so its easier to understand code
@@ -37,7 +39,7 @@ class RateControllerTest {
         rate.setRaterUsername("killua");
         Product product = new Product();
         product.setName("le steak chico");
-        product.setPrix(29.99);
+        product.setPrix(BigDecimal.valueOf(29.99));
         ObjectMapper objectMapper =new ObjectMapper();
 
 

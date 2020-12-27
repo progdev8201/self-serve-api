@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -157,7 +158,7 @@ public class DataLoader implements CommandLineRunner {
 
         restaurant = new Restaurant();
         Menu menuSupp = menuCreationService.createMenu("Dejeuner", MenuType.FOOD);
-        menuCreationService.createProduct(null, "download.jpg", 0 , 0, "Steak chico dejeuner " , menuSupp);
+        menuCreationService.createProduct(null, "download.jpg", BigDecimal.valueOf(0) , 0, "Steak chico dejeuner " , menuSupp);
         restaurant.setMenus(Collections.singletonList(menuSupp));
         restaurantRepository.save(restaurant);
         System.out.println("APPLICATION IS READY!!!");

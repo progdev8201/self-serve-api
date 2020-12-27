@@ -2,6 +2,7 @@ package com.model.dto;
 
 import com.model.enums.MenuType;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class ProductDTO {
@@ -16,7 +17,7 @@ public class ProductDTO {
 
     private List<OptionDTO> options;
 
-    private double prix;
+    private BigDecimal prix;
 
     private List<CheckItemDTO> checkItems;
 
@@ -104,11 +105,11 @@ public class ProductDTO {
         this.options = options;
     }
 
-    public double getPrix() {
+    public BigDecimal getPrix() {
         return prix;
     }
 
-    public void setPrix(double prix) {
+    public void setPrix(BigDecimal prix) {
         this.prix = prix;
     }
 

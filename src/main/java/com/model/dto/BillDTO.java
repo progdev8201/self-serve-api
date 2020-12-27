@@ -8,6 +8,8 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.model.enums.BillStatus;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,7 +23,11 @@ public class BillDTO {
 
     private LocalDateTime date;
 
-    private double prixTotal;
+    private BigDecimal prixTotal;
+
+    private BigDecimal prix;
+
+    private BigDecimal tips;
 
     private BillStatus billStatus;
 
@@ -37,6 +43,22 @@ public class BillDTO {
 
     public List<OrderItemDTO> getOrderItems() {
         return orderItems;
+    }
+
+    public BigDecimal getPrix() {
+        return prix;
+    }
+
+    public void setPrix(BigDecimal prix) {
+        this.prix = prix;
+    }
+
+    public BigDecimal getTips() {
+        return tips;
+    }
+
+    public void setTips(BigDecimal tips) {
+        this.tips = tips;
     }
 
     public void setOrderItems(List<OrderItemDTO> orderItems) {
@@ -59,11 +81,11 @@ public class BillDTO {
         this.date = date;
     }
 
-    public double getPrixTotal() {
+    public BigDecimal getPrixTotal() {
         return prixTotal;
     }
 
-    public void setPrixTotal(double prixTotal) {
+    public void setPrixTotal(BigDecimal prixTotal) {
         this.prixTotal = prixTotal;
     }
 
