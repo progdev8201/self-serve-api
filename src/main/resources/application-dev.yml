@@ -1,3 +1,5 @@
+hibernate:
+  dialect: org.hibernate.dialect.MySQL8Dialect
 server:
   port: 8081
 spring:
@@ -12,7 +14,7 @@ spring:
     driverClassName: com.mysql.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
   mail:
     host: smtp.gmail.com
     port: 587
@@ -38,10 +40,10 @@ stripe:
 
 
 front-end:
-  url : "http://localhost:3000/"
+  url : "https://front-end-dev.i-serve.ca"
 config:
   securite:
-    active: false
+    active: true
   styles:
     images:
       path: "\\src\\main\\resources\\img\\"

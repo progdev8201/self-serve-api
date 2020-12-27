@@ -2,45 +2,70 @@ package com.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.model.dto.BillDTO;
-import com.model.dto.MenuDTO;
-import com.model.dto.RestaurantSelectionDTO;
-import com.service.ClientService;
+import com.model.dto.*;
+import com.model.dto.requests.MenuRequestDTO;
 import com.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/menu")
 public class MenuController {
 
     @Autowired
-    MenuService menuService;
+    private MenuService menuService;
 
-    @PostMapping("/changeFeatured")
-    public ResponseEntity<MenuDTO> changeFeatured (@RequestBody Map<String, String> json) throws JsonProcessingException {
-        MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menu"),MenuDTO.class);
-        return ResponseEntity.ok(menuService.createSpecial(menuDTO,menuDTO.getProducts()));
-    }
 
-    @PostMapping("/removeFeatured")
-    public ResponseEntity<MenuDTO> removeFeatured(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        MenuDTO menuDTO = new ObjectMapper().readValue(json.get("menu"),MenuDTO.class);
-        return ResponseEntity.ok(menuService.removeSpecial(menuDTO,menuDTO.getProducts()));
-    }
+    // Post
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN','ROLE_GUEST','ROLE_CLIENT')")
     @PostMapping("/getMenu")
-    public ResponseEntity<MenuDTO> getMenu(@RequestBody Map<String, String> json) throws JsonProcessingException {
-        Long menuId = new ObjectMapper().readValue(json.get("menuId"),Long.class);
-        return ResponseEntity.ok(menuService.findMenu(menuId));
+    public ResponseEntity<List<MenuDTO>> getMenu(@RequestBody Map<String, String> json) throws JsonProcessingException {
+        Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
+        return ResponseEntity.ok(menuService.findFoodMenuForRestaurants(restaurantId));
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
+    @PostMapping("/getAllMenu")
+    public ResponseEntity<List<MenuDTO>> getAllMenu(@RequestBody Map<String, String> json) throws JsonProcessingException {
+        Long restaurantId = new ObjectMapper().readValue(json.get("restaurantId"),Long.class);
+        return menuService.findAllMenuForRestaurants(restaurantId);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
+    @PostMapping("/createMenu")
+    public ResponseEntity<?> createMenu(@RequestBody MenuRequestDTO menuRequestDTO) {
+        return menuService.createMenu(menuRequestDTO.getRestaurantId(), menuRequestDTO.getMenuName(), menuRequestDTO.getMenuType());
+    }
+
+    // Put
+
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
+    @PutMapping("/updateMenu")
+    public ResponseEntity<?> updateMenu(@RequestBody MenuRequestDTO menuRequestDTO) {
+        return menuService.updateMenu(menuRequestDTO.getMenuId(), menuRequestDTO.getMenuName(), menuRequestDTO.getMenuType());
+    }
+
+    // Get
+
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @GetMapping("/restaurantName/{ownerId}")
     public ResponseEntity<List<RestaurantSelectionDTO>> findAllRestaurantName(@PathVariable final String ownerId){
         return ResponseEntity.ok(menuService.findAllRestaurantName(ownerId));
+    }
+
+    // Delete
+
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
+    @DeleteMapping("/deleteMenu/{restaurantId}/{menuId}")
+    public ResponseEntity<?> deleteMenu(@PathVariable("restaurantId") Long restaurantId, @PathVariable("menuId") Long menuId) {
+        return menuService.deleteMenuFromRestaurantList(restaurantId, menuId);
     }
 }

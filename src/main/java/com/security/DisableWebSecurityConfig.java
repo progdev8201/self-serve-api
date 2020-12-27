@@ -1,6 +1,7 @@
 package com.security;
 
 import com.security.jwt.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,9 +24,8 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @ConditionalOnProperty(name = "config.securite.active", havingValue = "false")
-public class WebSecurityConfigDev extends WebSecurityConfigurerAdapter implements WebSecurityConfigInterface {
+public class DisableWebSecurityConfig extends WebSecurityConfigurerAdapter implements WebSecurityConfigInterface {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
@@ -37,8 +37,13 @@ public class WebSecurityConfigDev extends WebSecurityConfigurerAdapter implement
         return new BCryptPasswordEncoder();
     }
 
+    @Value("${front-end.url}")
+    String frontEndUrl;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.headers().frameOptions().disable();
+
         http.cors().and().csrf().disable()
 
                 // Permit all registration or authentication requests
@@ -61,7 +66,7 @@ public class WebSecurityConfigDev extends WebSecurityConfigurerAdapter implement
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://i-serve.ca"));
+        configuration.setAllowedOrigins(Arrays.asList(frontEndUrl));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
 

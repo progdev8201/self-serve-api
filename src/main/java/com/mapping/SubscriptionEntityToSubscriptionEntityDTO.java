@@ -1,7 +1,6 @@
 package com.mapping;
 
-import com.model.dto.BillDTO;
-import com.model.dto.SubscriptionEntityDTO;
+import com.model.dto.requests.SubscriptionEntityDTO;
 import com.model.entity.SubscriptionEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

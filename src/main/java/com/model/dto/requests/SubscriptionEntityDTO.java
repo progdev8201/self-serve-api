@@ -1,9 +1,7 @@
-package com.model.dto;
+package com.model.dto.requests;
 
-import com.model.entity.Owner;
-import com.model.entity.StripeSubscriptionProducts;
+import com.model.dto.OwnerDTO;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
 public class SubscriptionEntityDTO implements Serializable {
@@ -20,6 +18,8 @@ public class SubscriptionEntityDTO implements Serializable {
     private Long periodEnd;
 
     private String status;
+
+    private String latestInvoiceStatus;
 
     private OwnerDTO owner;
 
@@ -105,5 +105,13 @@ public class SubscriptionEntityDTO implements Serializable {
 
     public void setOwner(OwnerDTO owner) {
         this.owner = owner;
+    }
+
+    public String getLatestInvoiceStatus() {
+        return latestInvoiceStatus;
+    }
+
+    public void setLatestInvoiceStatus(String latestInvoiceStatus) {
+        this.latestInvoiceStatus = latestInvoiceStatus;
     }
 }

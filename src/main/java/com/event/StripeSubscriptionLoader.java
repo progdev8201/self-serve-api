@@ -42,7 +42,7 @@ public class StripeSubscriptionLoader implements CommandLineRunner {
         StripeSubscriptionProducts stripeSubscriptionProducts = new StripeSubscriptionProducts();
         stripeSubscriptionProducts.setProductName("Dine in plan premium");
         stripeSubscriptionProducts.setProductPrice(200.00);
-        stripeSubscriptionProducts.setProductDescription("Unlimited orders");
+        stripeSubscriptionProducts.setProductDescription("No set up fee,Up to 5 restaurants, Up to 500 products,Up to 30 menus,Sale analytics (Coming Soon),E-mail support");
         stripeSubscriptionProducts.setPriceId("price_1HiTbuC5UoZOX4GRhbClArla");
 
 
@@ -50,8 +50,8 @@ public class StripeSubscriptionLoader implements CommandLineRunner {
         StripeSubscriptionProducts stripeSubscriptionProducts2 = new StripeSubscriptionProducts();
         stripeSubscriptionProducts2.setProductName("Dine in plan basic");
         stripeSubscriptionProducts2.setProductPrice(125.00);
+        stripeSubscriptionProducts2.setProductDescription("No set up fee,Up to 2 restaurants,Up to 100 products,Up to 10 menus,E-mail support");
         stripeSubscriptionProducts2.setPriceId("price_1HiTYKC5UoZOX4GRDOIONoDR");
-        stripeSubscriptionProducts2.setProductDescription("up to 500 orders");
 
 
         return Arrays.asList(stripeSubscriptionProducts, stripeSubscriptionProducts2);

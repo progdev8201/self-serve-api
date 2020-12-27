@@ -1,8 +1,11 @@
 package com.model.entity;
-import com.model.enums.ProductType;
+
+import com.model.enums.MenuType;
 import com.model.enums.ProgressStatus;
+
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -12,32 +15,32 @@ public class OrderItem implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Product product;
 
     @Enumerated(EnumType.STRING)
-    //@NaturalId
     @Column(length = 60)
     private ProgressStatus orderStatus;
 
-    @ManyToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
-    private  Bill bill;
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Bill bill;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 60)
-    private ProductType productType;
+    private MenuType menuType;
 
-    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.MERGE})
-    private List <CheckItem> checkItems;
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
+    private List<CheckItem> checkItems;
 
+    private boolean selected;
 
     private String commentaires;
 
-    private double prix;
+    private BigDecimal prix;
     //quand le plat doit etre pret
-    private LocalDateTime delaiDePreparation ;
+    private LocalDateTime delaiDePreparation;
 
-    @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Option> option;
 
     private int numeroTable;
@@ -51,6 +54,14 @@ public class OrderItem implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 
     public Product getProduct() {
@@ -77,12 +88,12 @@ public class OrderItem implements Serializable {
         this.bill = bill;
     }
 
-    public ProductType getProductType() {
-        return productType;
+    public MenuType getMenuType() {
+        return menuType;
     }
 
-    public void setProductType(ProductType productType) {
-        this.productType = productType;
+    public void setMenuType(MenuType menuType) {
+        this.menuType = menuType;
     }
 
     public List<CheckItem> getCheckItems() {
@@ -101,11 +112,11 @@ public class OrderItem implements Serializable {
         this.commentaires = commentaires;
     }
 
-    public double getPrix() {
+    public BigDecimal getPrix() {
         return prix;
     }
 
-    public void setPrix(double prix) {
+    public void setPrix(BigDecimal prix) {
         this.prix = prix;
     }
 

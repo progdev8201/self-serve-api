@@ -1,6 +1,9 @@
-version: "3.8"
+version: '3'
+
 services:
-  backend:
-    build: .
+  iserve-api:
+    image: momothebest/backend_repo
+    environment:
+      - environement=dev
     ports:
-      - "8080:8080"
+      - 0.0.0.0:80:8081/tcp

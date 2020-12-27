@@ -6,6 +6,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -18,10 +19,13 @@ import javax.imageio.ImageIO;
 import javax.validation.constraints.NotNull;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Validated
@@ -29,11 +33,13 @@ import java.util.Map;
 public class QrCodeService {
     private final String DIR = "src/main/resources/qrfolder/";
     private final String ext = ".png";
-    private final String LOGO = "src/main/resources/img/waiter3.png";
-    private final String CONTENT = "http://i-serve.ca/start?restaurantTableId=";
-    private final int WIDTH = 400;
-    private final int HEIGHT = 400;
-    private final float DELTA_PERCENTAGE_LIMIT = 0.7f;
+    private final String LOGO = "src/main/resources/img/iserveqrlogo.png";
+    private final String suffix = "/start?restaurantTableId=";
+    @Value("${front-end.url}")
+    private String link;
+    private final int WIDTH = 600;
+    private final int HEIGHT = 600;
+    private final float DELTA_PERCENTAGE_LIMIT = .5f;
 
     public ResponseEntity<Resource> downloadQrCode(@NotNull int tableId) {
         // Create new configuration that specifies the error correction
@@ -47,7 +53,7 @@ public class QrCodeService {
         try {
 
             // Create a qr code with the url as content and a size of WxH px
-            bitMatrix = writer.encode(CONTENT + tableId, BarcodeFormat.QR_CODE, WIDTH, HEIGHT, hints);
+            bitMatrix = writer.encode(link + suffix + tableId, BarcodeFormat.QR_CODE, WIDTH, HEIGHT, hints);
 
             // Load QR image
             BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
@@ -59,8 +65,12 @@ public class QrCodeService {
             int deltaHeight = qrImage.getHeight() - overly.getHeight();
             int deltaWidth = qrImage.getWidth() - overly.getWidth();
 
-            if (deltaHeight < qrImage.getHeight() * DELTA_PERCENTAGE_LIMIT || deltaWidth < qrImage.getWidth() * DELTA_PERCENTAGE_LIMIT)
+
+            if (deltaHeight < qrImage.getHeight() * DELTA_PERCENTAGE_LIMIT || deltaWidth < qrImage.getWidth() * DELTA_PERCENTAGE_LIMIT){
+                System.out.println("delta height: " + deltaHeight + " delta percentage: " + qrImage.getHeight() * DELTA_PERCENTAGE_LIMIT);
+                System.out.println("delta width: " + deltaWidth + " delta percentage: " + qrImage.getWidth() * DELTA_PERCENTAGE_LIMIT);
                 throw new Exception("Logo too big Exception");
+            }
 
             // Initialize combined image
             BufferedImage combined = new BufferedImage(qrImage.getHeight(), qrImage.getWidth(), BufferedImage.TYPE_INT_ARGB);
@@ -78,7 +88,7 @@ public class QrCodeService {
             // Write combined image as PNG to OutputStream
             ImageIO.write(combined, "png", os);
             // Store Image
-//             Files.copy(new ByteArrayInputStream(os.toByteArray()), Paths.get(DIR + "fileqrcode" + ext), StandardCopyOption.REPLACE_EXISTING);
+//            Files.copy(new ByteArrayInputStream(os.toByteArray()), Paths.get(DIR + "fileqrcode" + ext), StandardCopyOption.REPLACE_EXISTING);
 
         } catch (Exception e) {
             e.printStackTrace();

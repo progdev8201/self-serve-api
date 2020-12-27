@@ -1,10 +1,9 @@
 package com.model.dto;
 
-import com.model.entity.CheckItem;
-import com.model.enums.ProductType;
+import com.model.enums.MenuType;
 import com.model.enums.ProgressStatus;
 
-import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -16,18 +15,27 @@ public class OrderItemDTO {
 
     private ProgressStatus orderStatus;
 
-    private double prix;
+    private BigDecimal prix;
 
     private LocalDateTime delaiDePreparation;
 
     private List<OptionDTO> option;
 
-    private List <CheckItemDTO> checkItems;
+    private List<CheckItemDTO> checkItems;
 
-    private ProductType productType;
+    private boolean selected;
+
+    private MenuType menuType;
 
     private String commentaires;
 
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
 
     public String getCommentaires() {
         return commentaires;
@@ -61,11 +69,11 @@ public class OrderItemDTO {
         this.orderStatus = orderStatus;
     }
 
-    public double getPrix() {
+    public BigDecimal getPrix() {
         return prix;
     }
 
-    public void setPrix(double prix) {
+    public void setPrix(BigDecimal prix) {
         this.prix = prix;
     }
 
@@ -96,12 +104,12 @@ public class OrderItemDTO {
         this.option = option;
     }
 
-    public ProductType getProductType() {
-        return productType;
+    public MenuType getMenuType() {
+        return menuType;
     }
 
-    public void setProductType(ProductType productType) {
-        this.productType = productType;
+    public void setMenuType(MenuType menuType) {
+        this.menuType = menuType;
     }
 
     public List<CheckItemDTO> getCheckItems() {
@@ -121,6 +129,11 @@ public class OrderItemDTO {
                 ", prix=" + prix +
                 ", delaiDePreparation=" + delaiDePreparation +
                 ", option=" + option +
+                ", checkItems=" + checkItems +
+                ", isAssigned=" + selected +
+                ", menuType=" + menuType +
+                ", commentaires='" + commentaires + '\'' +
+                ", tempsDePreparation=" + tempsDePreparation +
                 '}';
     }
 }

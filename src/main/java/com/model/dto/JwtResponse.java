@@ -1,11 +1,16 @@
 package com.model.dto;
 
-public class JwtResponse {
+import java.io.Serializable;
+
+public class JwtResponse implements Serializable {
     private String token;
     private String type = "Bearer";
 
     public JwtResponse(String accessToken) {
         this.token = accessToken;
+    }
+
+    public JwtResponse() {
     }
 
     public String getToken() {

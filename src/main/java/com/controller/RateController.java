@@ -25,7 +25,7 @@ import java.util.Map;
 public class RateController {
 
     @Autowired
-    RatingService ratingService;
+    private RatingService ratingService;
 
     @PostMapping("/createRate")
     public ResponseEntity<RateDTO> find(@RequestBody Map<String, String> json) throws JsonProcessingException {

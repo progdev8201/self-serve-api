@@ -26,16 +26,16 @@ import java.util.Optional;
 public class AuthentificationService {
 
     @Autowired
-    AdminRepository adminRepository;
+    private AdminRepository adminRepository;
 
     @Autowired
-    OwnerRepository ownerRepository;
+    private OwnerRepository ownerRepository;
 
     @Autowired
-    PasswordEncoder encoder;
+    private PasswordEncoder encoder;
 
     @Autowired
-    JwtProvider jwtProvider;
+    private JwtProvider jwtProvider;
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthentificationService.class);
@@ -65,7 +65,7 @@ public class AuthentificationService {
             return ResponseEntity.ok(new JwtResponse(token));
         }
 
-        return null;
+        return new ResponseEntity<JwtResponse>(HttpStatus.BAD_REQUEST);
     }
 
     public ResponseEntity<OwnerDTO> fetchOwner(OwnerDTO ownerDTO) {
@@ -90,14 +90,12 @@ public class AuthentificationService {
     private boolean createEntityBasedOnRoles(SignUpForm user) {
         Optional<RoleName> roleName = lookupRoleNameByName(user.getRole());
 
-        if (!roleName.isPresent()) {
+        if (!roleName.isPresent())
             return false;
-        }
 
         switch (roleName.get()) {
             case ROLE_CLIENT:
                 adminRepository.save(new Client(user.getUsername(), encoder.encode(user.getPassword()), user.getTelephone(), RoleName.ROLE_CLIENT.toString()));
-                // send email
                 LOGGER.info("I created a new client");
                 return true;
 
@@ -106,15 +104,6 @@ public class AuthentificationService {
                 LOGGER.info("I created a new owner");
                 return true;
 
-            case ROLE_COOK:
-                adminRepository.save(new Cook(user.getUsername(), encoder.encode(user.getPassword()), RoleName.ROLE_COOK.toString()));
-                LOGGER.info("I created a new cook");
-                return true;
-
-            case ROLE_WAITER:
-                adminRepository.save(new Waiter(user.getUsername(), encoder.encode(user.getPassword()), RoleName.ROLE_WAITER.toString()));
-                LOGGER.info("I created a new waiter");
-                return true;
             case ROLE_ADMIN:
                 adminRepository.save(new Admin(user.getUsername(), encoder.encode(user.getPassword()), RoleName.ROLE_ADMIN.toString()));
                 LOGGER.info("I created a new Admin");
@@ -126,10 +115,9 @@ public class AuthentificationService {
                 return true;
 
             default:
-                break;
+                return false;
         }
 
-        return false;
     }
 
 }

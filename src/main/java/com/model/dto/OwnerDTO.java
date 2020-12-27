@@ -1,8 +1,9 @@
 package com.model.dto;
 
 import java.util.List;
+import java.util.Set;
 
-public class  OwnerDTO extends GuestDTO{
+public class OwnerDTO extends GuestDTO{
     private List<RestaurantDTO> restaurants;
 
     private String stripeAccountId;
@@ -13,6 +14,17 @@ public class  OwnerDTO extends GuestDTO{
 
     public List<RestaurantDTO> getRestaurants() {
         return restaurants;
+    }
+
+    public OwnerDTO(Long id, String username, String password, List<BillDTO> bills, Set<RoleDTO> roles, List<RestaurantDTO> restaurants, String stripeAccountId, String stripeCustomerId, Boolean isStripeEnable) {
+        super(id, username, password, bills, roles);
+        this.restaurants = restaurants;
+        this.stripeAccountId = stripeAccountId;
+        this.stripeCustomerId = stripeCustomerId;
+        this.isStripeEnable = isStripeEnable;
+    }
+
+    public OwnerDTO() {
     }
 
     public void setRestaurants(List<RestaurantDTO> restaurants) {
@@ -46,7 +58,13 @@ public class  OwnerDTO extends GuestDTO{
     @Override
     public String toString() {
         return "OwnerDTO{" +
-                "restaurantList=" + restaurants +
+                "restaurants=" + restaurants +
+                ", stripeAccountId='" + stripeAccountId + '\'' +
+                ", stripeCustomerId='" + stripeCustomerId + '\'' +
+                ", isStripeEnable=" + isStripeEnable +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", roles=" + roles +
                 '}';
     }
 }

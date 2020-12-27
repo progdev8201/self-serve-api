@@ -1,4 +1,4 @@
-package com.model.dto;
+package com.model.dto.requests;
 
 public class StripeSessionCustomerIdDTO {
     private String customerId;

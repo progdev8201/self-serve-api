@@ -1,19 +1,25 @@
 package com.service;
 
-import com.mapping.*;
-import com.model.dto.*;
-import com.model.entity.*;
+import com.model.dto.MenuDTO;
+import com.model.dto.RestaurantSelectionDTO;
+import com.model.entity.Menu;
+import com.model.entity.Restaurant;
+import com.model.enums.MenuType;
 import com.repository.MenuRepository;
 import com.repository.OwnerRepository;
-import com.repository.ProductRepository;
-import com.service.DtoUtil.DTOUtils;
+import com.repository.RestaurantRepository;
+import com.service.Util.DTOUtils;
+import com.service.validator.RestaurantOwnerShipValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,87 +28,117 @@ public class MenuService {
     private MenuRepository menuRepository;
 
     @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
     private OwnerRepository ownerRepository;
 
     @Autowired
-    private ProductService productService;
+    private RestaurantRepository restaurantRepository;
 
     @Autowired
-    DTOUtils dtoUtils;
+    private DTOUtils dtoUtils;
 
     @Autowired
-    public MenuService(MenuRepository menuRepository) {
-        this.menuRepository = menuRepository;
+    private RestaurantOwnerShipValidator restaurantOwnerShipValidator;
+
+
+    public List<MenuDTO> findFoodMenuForRestaurants(Long id) {
+        Restaurant restaurant = restaurantRepository.findById(id).get();
+        return restaurant.getMenus()
+                .stream()
+                .filter(menu -> menu.getMenuType() == MenuType.FOOD)
+                .map(menu -> dtoUtils.mapMenuToMenuDTO(menu))
+                .collect(Collectors.toList());
     }
 
-    //permet de set des obj en vedette
-    public MenuDTO createSpecial(MenuDTO menuDTO, List<ProductDTO> specialProducts) {
-        List<Product> products = findSpecialsInBD(specialProducts);
-        Menu menu = menuRepository.findById(menuDTO.getId()).get();
+    public ResponseEntity<List<MenuDTO>> findAllMenuForRestaurants(Long id) {
+        if (!restaurantOwnerShipValidator.hasOwnerRight(id) && !restaurantOwnerShipValidator.isAdminConnected())
+            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
-        if (Objects.isNull(menu.getSpeciaux())) {
-            menu.setSpeciaux(products);
-        } else {
-            menu.getSpeciaux().addAll(products);
-            menu.setSpeciaux(menu.getSpeciaux());
-        }
-        menu = menuRepository.save(menu);
-        return dtoUtils.generateMenuDTO(menu);
+        Restaurant restaurant = restaurantRepository.findById(id).get();
+
+        return ResponseEntity.ok(restaurant.getMenus()
+                .stream()
+                .map(menu -> dtoUtils.mapMenuToMenuDTO(menu))
+                .collect(Collectors.toList()));
+    }
+
+    public ResponseEntity deleteMenuFromRestaurantList(Long restaurantId, Long menuId) {
+        if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId) && !restaurantOwnerShipValidator.isAdminConnected())
+            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
+
+        Menu menuToRemove = restaurant.getMenus()
+                .stream()
+                .filter(menu -> menu.getId() == menuId)
+                .findFirst().get();
+
+        if (menuToRemove.getMenuType().equals(MenuType.WAITERREQUEST))
+            return ResponseEntity.badRequest().body("Menu of type WAITERREQUEST is not deletable");
+
+        restaurant.getMenus().remove(menuToRemove);
+
+        restaurantRepository.save(restaurant);
+
+        MenuDTO menuDTO = (MenuDTO) createMenu(2L,"sd",MenuType.FOOD).getBody();
+
+        return ResponseEntity.ok().build();
     }
 
 
-    //permet de set des obj en vedette
-    public MenuDTO removeSpecial(MenuDTO menuDTO, List<ProductDTO> specialProducts) {
-        List<Product> products = findSpecialsInBD(specialProducts);
-        Menu menu = menuRepository.findById(menuDTO.getId()).get();
-        List<Product> speciauxDuMenu = menu.getSpeciaux();
-        speciauxDuMenu.removeAll(products);
-        menu.setSpeciaux(speciauxDuMenu);
-        menu = menuRepository.save(menu);
-        return dtoUtils.generateMenuDTO(menu);
+    public ResponseEntity createMenu(Long restoId, String menuName, MenuType menuType) {
+        if (!restaurantOwnerShipValidator.hasOwnerRight(restoId) && !restaurantOwnerShipValidator.isAdminConnected())
+            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        Restaurant restaurant = restaurantRepository.findById(restoId).get();
+
+        if (findMenuInRestaurantByName(menuName, restaurant) != null)
+            return ResponseEntity.badRequest().body("Fail -> Menu with same name already exists");
+
+        if (menuType.equals(MenuType.WAITERREQUEST) && isMenuWaiterRequestAlreadyExisting(restaurant))
+            return ResponseEntity.badRequest().body("Fail -> Menu with WAITERREQUEST type already exists");
+
+        Menu menu = new Menu();
+        menu.setName(menuName);
+        menu.setProducts(new ArrayList<>());
+        menu.setMenuType(menuType);
+        restaurant.getMenus().add(menu);
+        menu = findMenuInRestaurantByName(menuName, restaurantRepository.save(restaurant));
+
+        return ResponseEntity.ok(dtoUtils.mapMenuToMenuDTO(menu));
     }
 
-    public MenuDTO findMenu(Long id) {
-        Menu menu = menuRepository.findById(id).get();
-        MenuDTO menuDTO = MenuToMenuDTO.instance.convert(menu);
-        menuDTO.setSpeciaux(productService.findMenuSpecials(menuDTO));
-        menuDTO.setFeatured(productService.findMenuChoixDuChef(menuDTO));
-        menuDTO.setDejeuner(productService.findMenuDejeunerProduct(menuDTO));
-        menuDTO.setSouper(productService.findMenuSouper(menuDTO));
-        menuDTO.setDiner(productService.findMenuDinerProduct(menuDTO));
-        menuDTO.setProducts(dtoUtils.mapProductListToProductDTOList(menu.getProducts()));
+    public ResponseEntity<?> updateMenu(Long menuId, String menuName, MenuType menuType) {
+        Menu menu = menuRepository.findById(menuId).get();
 
-        return menuDTO;
+        if (findMenuInRestaurantByName(menuName, menu.getRestaurant()) != null)
+            return ResponseEntity.badRequest().body("Fail -> Menu with same name already exists");
+
+        if (menu.getMenuType().equals(MenuType.WAITERREQUEST) && !menuType.equals(MenuType.WAITERREQUEST))
+            return ResponseEntity.badRequest().body("Fail -> You cannot update menu type of menu of type waiter request");
+
+        menu.setName(menuName);
+        menu.setMenuType(menuType);
+
+        return ResponseEntity.ok(dtoUtils.mapMenuToMenuDTO(menuRepository.save(menu)));
     }
 
-    private List<Product> findSpecialsInBD(List<ProductDTO> specialProducts) {
-        List<Product> products = new ArrayList<>();
-        for (ProductDTO productDTO : specialProducts) {
-            Product product = productRepository.findById(productDTO.getId()).get();
-            products.add(product);
-        }
-        return products;
+    private Menu findMenuInRestaurantByName(String menuName, Restaurant restaurant) {
+        return restaurant.getMenus()
+                .stream()
+                .filter(x -> x.getName().contentEquals(menuName))
+                .findFirst().orElse(null);
     }
 
-    private MenuDTO returnMenu(Menu menu) {
-        MenuDTO returnValue = MenuToMenuDTO.instance.convert(menuRepository.save(menu));
-        returnValue.setSpeciaux(new ArrayList<>());
-        for (Product special : menu.getSpeciaux()) {
-            returnValue.getSpeciaux().add(ProductToProductDTO.instance.convert(special));
-            returnValue.setSpeciaux(returnValue.getSpeciaux());
-        }
-        return returnValue;
+    private boolean isMenuWaiterRequestAlreadyExisting(Restaurant restaurant){
+        return restaurant.getMenus().stream().anyMatch(menu -> menu.getMenuType().equals(MenuType.WAITERREQUEST));
     }
 
-    public List<RestaurantSelectionDTO> findAllRestaurantName(String ownerUsername){
+    public List<RestaurantSelectionDTO> findAllRestaurantName(String ownerUsername) {
         List<RestaurantSelectionDTO> restaurantSelectionDTOS = new ArrayList<>();
 
-        ownerRepository.findByUsername(ownerUsername).ifPresent(owner ->{
+        ownerRepository.findByUsername(ownerUsername).ifPresent(owner -> {
             owner.getRestaurantList().forEach(restaurant -> {
-                restaurantSelectionDTOS.add(new RestaurantSelectionDTO(restaurant.getId(), restaurant.getMenu().getId(),restaurant.getName(),restaurant.getRestaurentTables()));
+                restaurantSelectionDTOS.add(dtoUtils.mapRestaurantToRestaurantSelectionDTO(restaurant));
             });
         });
 

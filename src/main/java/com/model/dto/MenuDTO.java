@@ -1,54 +1,22 @@
 package com.model.dto;
 
+import com.model.entity.Product;
+import com.model.entity.Restaurant;
+import com.model.enums.MenuType;
+
+import javax.persistence.*;
 import java.util.List;
 
 public class MenuDTO {
     private Long id;
+
     private List<ProductDTO> products;
 
     private RestaurantDTO restaurant;
 
-    private List<ProductDTO> speciaux;
+    private String name;
 
-    private List<ProductDTO> featured;
-
-    private List<ProductDTO> diner;
-
-    private List<ProductDTO> dejeuner;
-
-    private List<ProductDTO> souper;
-
-    public List<ProductDTO> getDiner() {
-        return diner;
-    }
-
-    public void setDiner(List<ProductDTO> diner) {
-        this.diner = diner;
-    }
-
-    public List<ProductDTO> getDejeuner() {
-        return dejeuner;
-    }
-
-    public void setDejeuner(List<ProductDTO> dejeuner) {
-        this.dejeuner = dejeuner;
-    }
-
-    public List<ProductDTO> getSouper() {
-        return souper;
-    }
-
-    public void setSouper(List<ProductDTO> souper) {
-        this.souper = souper;
-    }
-
-    public List<ProductDTO> getFeatured() {
-        return featured;
-    }
-
-    public void setFeatured(List<ProductDTO> featured) {
-        this.featured = featured;
-    }
+    private MenuType menuType;
 
     public Long getId() {
         return id;
@@ -56,6 +24,22 @@ public class MenuDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public MenuType getMenuType() {
+        return menuType;
+    }
+
+    public void setMenuType(MenuType menuType) {
+        this.menuType = menuType;
     }
 
     public List<ProductDTO> getProducts() {
@@ -74,21 +58,13 @@ public class MenuDTO {
         this.restaurant = restaurant;
     }
 
-    public List<ProductDTO> getSpeciaux() {
-        return speciaux;
-    }
-
-    public void setSpeciaux(List<ProductDTO> speciaux) {
-        this.speciaux = speciaux;
-    }
-
     @Override
     public String toString() {
         return "MenuDTO{" +
                 "id=" + id +
                 ", products=" + products +
                 ", restaurant=" + restaurant +
-                ", speciaux=" + speciaux +
+                ", name='" + name + '\'' +
                 '}';
     }
 }

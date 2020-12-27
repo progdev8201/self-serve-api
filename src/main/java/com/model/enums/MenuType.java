@@ -1,8 +1,8 @@
 package com.model.enums;
 
-public enum ProductType {
+public enum MenuType {
     WAITERREQUEST,
     WAITERCALL,
-    SPECIAL,
-    CHEFCHOICE
+    TERMINALREQUEST,
+    FOOD
 }

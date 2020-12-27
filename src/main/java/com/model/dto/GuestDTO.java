@@ -14,6 +14,17 @@ public class GuestDTO {
 
     protected Set<RoleDTO> roles = new HashSet<>();
 
+    public GuestDTO() {
+    }
+
+    public GuestDTO(Long id, String username, String password, List<BillDTO> bills, Set<RoleDTO> roles) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.bills = bills;
+        this.roles = roles;
+    }
+
     public Long getId() {
         return id;
     }
