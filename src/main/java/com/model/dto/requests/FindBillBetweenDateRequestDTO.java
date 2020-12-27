@@ -6,19 +6,10 @@ import java.time.LocalDateTime;
 public class FindBillBetweenDateRequestDTO implements Serializable {
     private LocalDateTime begin;
     private LocalDateTime end;
-    private LocalDateTime month;
     private Long restaurantId;
 
     public LocalDateTime getBegin() {
         return begin;
-    }
-
-    public LocalDateTime getMonth() {
-        return month;
-    }
-
-    public void setMonth(LocalDateTime month) {
-        this.month = month;
     }
 
     public void setBegin(LocalDateTime begin) {

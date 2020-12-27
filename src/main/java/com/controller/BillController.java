@@ -41,10 +41,9 @@ public class BillController {
 
     @PreAuthorize("hasAuthority('ROLE_OWNER')")
     @GetMapping("/getAllPaidBills/{restaurantId}")
-    public List<BillDTO> findAllPaidBillsByRestaurant(@PathVariable final Long restaurantId){
+    public List<BillDTO> findAllPaidBillsByRestaurant(@PathVariable final Long restaurantId) throws Exception {
         return clientService.findAllPaidBillsByRestaurant(restaurantId);
     }
-
 
     //
     // PostMapping
@@ -52,7 +51,7 @@ public class BillController {
 
     @PreAuthorize("hasAuthority('ROLE_OWNER')")
     @PostMapping("/getPaidBillsBetweenDates")
-    public List<BillDTO> findAllPaidBillsByRestaurantBetweenDates(@RequestBody FindBillBetweenDateRequestDTO findBillBetweenDateRequestDTO){
+    public List<BillDTO> findAllPaidBillsByRestaurantBetweenDates(@RequestBody FindBillBetweenDateRequestDTO findBillBetweenDateRequestDTO) throws Exception {
         return clientService.findAllPaidBillsByRestaurantBetweenDates(findBillBetweenDateRequestDTO);
     }
 

@@ -15,6 +15,7 @@ import com.model.enums.MenuType;
 import com.model.enums.ProgressStatus;
 import com.repository.*;
 import com.service.Util.DTOUtils;
+import com.service.validator.RestaurantOwnerShipValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,11 +40,12 @@ public class ClientService {
     private RestaurantRepository restaurantRepository;
     private RestaurentTableService restaurentTableService;
     private RestaurentTableRepository restaurentTableRepository;
+    private RestaurantOwnerShipValidator restaurantOwnerShipValidator;
     private DTOUtils dtoUtils;
     private static final int DOUBLE_SCALE_PLACES = 2;
 
     @Autowired
-    public ClientService(BillRepository billRepository, GuestRepository guestRepository, ProductRepository productRepository, RestaurantRepository restaurantRepository, RestaurentTableService restaurentTableService, RestaurentTableRepository restaurentTableRepository, DTOUtils dtoUtils) {
+    public ClientService(BillRepository billRepository, GuestRepository guestRepository, ProductRepository productRepository, RestaurantRepository restaurantRepository, RestaurentTableService restaurentTableService, RestaurentTableRepository restaurentTableRepository, DTOUtils dtoUtils,RestaurantOwnerShipValidator restaurantOwnerShipValidator) {
         this.billRepository = billRepository;
         this.guestRepository = guestRepository;
         this.productRepository = productRepository;
@@ -51,6 +53,7 @@ public class ClientService {
         this.restaurentTableService = restaurentTableService;
         this.restaurentTableRepository = restaurentTableRepository;
         this.dtoUtils = dtoUtils;
+        this.restaurantOwnerShipValidator = restaurantOwnerShipValidator;
     }
 
     //PUBLIC METHODS
@@ -100,14 +103,9 @@ public class ClientService {
         return dtoUtils.mapBillToBillDTOWithOrderItems(bill);
     }
 
-    public List<BillDTO> findAllPaidBillsByRestaurant(Long restaurantId) {
-        billRepository.findAllByBillStatusAndRestaurant_Id(BillStatus.PAYED, restaurantId)
-                .stream()
-                .map(dtoUtils::mapBillToBillDTOWithOrderItems)
-                .forEach(billDTO -> {
-                    System.out.println(billDTO.getId());
-                    System.out.println(billDTO.getBillStatus());
-                });
+    public List<BillDTO> findAllPaidBillsByRestaurant(Long restaurantId) throws Exception {
+        if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId))
+            throw new Exception();
 
         return billRepository.findAllByBillStatusAndRestaurant_Id(BillStatus.PAYED, restaurantId)
                 .stream()
@@ -115,7 +113,10 @@ public class ClientService {
                 .collect(Collectors.toList());
     }
 
-    public List<BillDTO> findAllPaidBillsByRestaurantBetweenDates(FindBillBetweenDateRequestDTO request) {
+    public List<BillDTO> findAllPaidBillsByRestaurantBetweenDates(FindBillBetweenDateRequestDTO request) throws Exception {
+        if (!restaurantOwnerShipValidator.hasOwnerRight(request.getRestaurantId()))
+            throw new Exception();
+
         return billRepository.findAllByDateBetweenAndBillStatusAndRestaurant_Id(request.getBegin(), request.getEnd(), BillStatus.PAYED, request.getRestaurantId())
                 .stream()
                 .map(dtoUtils::mapBillToBillDTOWithOrderItems)
