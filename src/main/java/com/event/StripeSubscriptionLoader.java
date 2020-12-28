@@ -57,7 +57,7 @@ public class StripeSubscriptionLoader implements CommandLineRunner {
         stripeSubscriptionProducts.setProductName("Dine in plan basic");
         stripeSubscriptionProducts.setProductPrice(0);
         stripeSubscriptionProducts.setProductDescription("No set up fee,Up to 2 restaurants,Up to 100 products,Up to 10 menus,E-mail support");
-        stripeSubscriptionProducts.setPriceId("prod_IeRmzuRT8ASMlp");
+        stripeSubscriptionProducts.setPriceId("price_1I38skC5UoZOX4GR5NVoh84t");
 
 
         return Arrays.asList(stripeSubscriptionProducts);
