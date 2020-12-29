@@ -14,14 +14,14 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Order(2)
-@Profile("!prod")
+@Profile("prod")
 @Component
-public class StripeSubscriptionLoader implements CommandLineRunner {
+public class StripeSubscriptionLoaderProd implements CommandLineRunner {
 
     @Autowired
     private StripeSubscriptionProductRepository stripeSubscriptionProductRepository;
 
-    private Logger logger = Logger.getLogger(StripeSubscriptionLoader.class.getName());
+    private Logger logger = Logger.getLogger(StripeSubscriptionLoaderProd.class.getName());
 
     @Override
     public void run(String... args) throws Exception {
@@ -40,24 +40,14 @@ public class StripeSubscriptionLoader implements CommandLineRunner {
     }
 
     private List<StripeSubscriptionProducts> findSubscriptions() {
-        // Dine in plan premium
         StripeSubscriptionProducts stripeSubscriptionProducts = new StripeSubscriptionProducts();
-        stripeSubscriptionProducts.setProductName("Dine in plan premium");
-        stripeSubscriptionProducts.setProductPrice(200.00);
-        stripeSubscriptionProducts.setProductDescription("No set up fee,Up to 5 restaurants, Up to 500 products,Up to 30 menus,Sale analytics (Coming Soon),E-mail support");
-        stripeSubscriptionProducts.setPriceId("price_1HiTbuC5UoZOX4GRhbClArla");
+        stripeSubscriptionProducts.setProductName("Dine in plan basic");
+        stripeSubscriptionProducts.setProductPrice(0);
+        stripeSubscriptionProducts.setProductDescription("No set up fee,Up to 2 restaurants,Up to 100 products,Up to 10 menus,E-mail support");
+        stripeSubscriptionProducts.setPriceId("price_1I38skC5UoZOX4GR5NVoh84t");
 
 
-        // Dine in plan basic
-        StripeSubscriptionProducts stripeSubscriptionProducts2 = new StripeSubscriptionProducts();
-        stripeSubscriptionProducts2.setProductName("Dine in plan basic");
-        stripeSubscriptionProducts2.setProductPrice(125.00);
-        stripeSubscriptionProducts2.setProductDescription("No set up fee,Up to 2 restaurants,Up to 100 products,Up to 10 menus,E-mail support");
-        stripeSubscriptionProducts2.setPriceId("price_1HiTYKC5UoZOX4GRDOIONoDR");
-
-
-
-        return Arrays.asList(stripeSubscriptionProducts,stripeSubscriptionProducts2);
+        return Arrays.asList(stripeSubscriptionProducts);
     }
 
     private List<StripeSubscriptionProducts> findMissingSubscriptions(List<StripeSubscriptionProducts> currentSubscriptionsProducts){
