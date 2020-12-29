@@ -31,7 +31,10 @@ public class StripeService {
     private String stripeAPIKey;
 
     @Value("${front-end.url}")
-    String frontEndUrl;
+    private String frontEndUrl;
+
+    @Value("${stripe.trialDays}")
+    private Long trialDays;
 
     @Autowired
     private OwnerRepository ownerRepository;
@@ -49,6 +52,7 @@ public class StripeService {
     private StripeSubscriptionProductRepository stripeSubscriptionProductRepository;
 
     private static String STRIPE_PAID_INVOICE ="paid";
+
 
     public StripeCreateAccountUrlDTO createStripeAccount(String ownerUsername) throws StripeException {
         Stripe.apiKey = stripeAPIKey;
@@ -215,6 +219,7 @@ public class StripeService {
                 )
                 .setCustomer(customer.getId())
                 .addAllExpand(Arrays.asList("latest_invoice.payment_intent"))
+                .setTrialPeriodDays(trialDays)
                 .build();
 
         Subscription subscription = Subscription.create(subCreateParams);

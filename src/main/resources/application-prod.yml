@@ -31,6 +31,7 @@ security:
 
 stripe:
   apiKey: "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"
+  trialDays: 30
 
 
 front-end:
