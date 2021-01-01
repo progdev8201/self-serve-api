@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -341,7 +342,7 @@ public class StripeService {
 
     private BigDecimal trouverMontantAVerserAuResto(Bill bill) {
         BigDecimal pourcentageResto = BigDecimal.valueOf((100 - pourcentageRetirer));
-        return bill.getPrixTotal().multiply(pourcentageResto).divide(BigDecimal.valueOf(100));
+        return bill.getPrixTotal().multiply(pourcentageResto).divide(BigDecimal.valueOf(100)).setScale(2, RoundingMode.UP);
     }
 
     private PaymentIntentCreateParams buildPaymentParams(String restaurentStripeAccount, Bill bill, boolean isPaymentRequest) {

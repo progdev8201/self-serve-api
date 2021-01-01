@@ -21,6 +21,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,6 +47,8 @@ public class ProductService {
     @Autowired
     private DTOUtils dtoUtils;
 
+    @Value("${stripe.pourcentageRetirer}")
+    private Long pourcentageRetirer;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductService.class);
 
@@ -78,6 +82,7 @@ public class ProductService {
     public ProductDTO create(ProductDTO productDTO, Long menuId) {
         // convert product dto to a product
         Product product = DTOUtils.mapProductDTOToProduct(productDTO, imgFileRepository);
+        product.setPrix(calculerPrixProduitPlusPourcentage(product));
         Menu menu = menuRepository.findById(menuId).get();
         product = linkMenuAndProduct(product, menu);
 
@@ -154,6 +159,12 @@ public class ProductService {
         product.setImgFile(imgFileRepository.save(ImgFileUtils.createImgFile(file, StringUtils.cleanPath(file.getOriginalFilename()), file.getContentType())));
 
         return dtoUtils.mapProductToProductDTO(productRepository.save(product));
+    }
+
+    private BigDecimal calculerPrixProduitPlusPourcentage(Product product) {
+        //ex 100 * 1.10 = 110
+        BigDecimal pourcentageResto = BigDecimal.valueOf((100 + pourcentageRetirer));
+        return product.getPrix().multiply(pourcentageResto).divide(BigDecimal.valueOf(100)).setScale(2, RoundingMode.UP);
     }
 
     public byte[] returnImgAsByteArrayString(Long id) {
