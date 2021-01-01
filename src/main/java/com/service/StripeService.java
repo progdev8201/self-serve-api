@@ -48,7 +48,7 @@ public class StripeService {
     @Autowired
     private StripeSubscriptionProductRepository stripeSubscriptionProductRepository;
 
-    private static String STRIPE_PAID_INVOICE ="paid";
+    private static String STRIPE_PAID_INVOICE = "paid";
 
     public StripeCreateAccountUrlDTO createStripeAccount(String ownerUsername) throws StripeException {
         Stripe.apiKey = stripeAPIKey;
@@ -77,8 +77,7 @@ public class StripeService {
             owner.setStripeAccountId(account.getId());
             owner.setStripeEnable(false);
             ownerRepository.save(owner);
-        }
-        else{
+        } else {
             account = Account.retrieve(owner.getStripeAccountId());
         }
 
@@ -94,6 +93,7 @@ public class StripeService {
         stripeCreateAccountUrlDTO.setValue(accountLink.getUrl());
         return stripeCreateAccountUrlDTO;
     }
+
     //TODO pk on dois faire ca?
     public void initApplePay() throws StripeException {
         Stripe.apiKey = stripeAPIKey;
@@ -106,22 +106,22 @@ public class StripeService {
 
     }
 
-    public void saveStripeAccountId( String username) {
+    public void saveStripeAccountId(String username) {
         Owner owner = ownerRepository.findByUsername(username).get();
         owner.setStripeEnable(true);
         ownerRepository.save(owner);
     }
 
-    public StripeAccountIdDTO getAccountId(Long restaurantId){
+    public StripeAccountIdDTO getAccountId(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
         Owner owner = restaurant.getOwner();
-        if(owner.getStripeEnable()){
-            StripeAccountIdDTO stripeAccountIdDTO = new StripeAccountIdDTO();
+        StripeAccountIdDTO stripeAccountIdDTO = new StripeAccountIdDTO();
+        if (Objects.nonNull(owner.getStripeEnable()) && owner.getStripeEnable()) {
             stripeAccountIdDTO.setValue(owner.getStripeAccountId());
-            return stripeAccountIdDTO;
         }
-        return null;
+        return stripeAccountIdDTO;
     }
+
     public StripeClientSecretDTO processPayment(String restaurentStripeAccount, Bill bill) throws StripeException {
         Stripe.apiKey = stripeAPIKey;
 
@@ -289,11 +289,11 @@ public class StripeService {
                 params,
                 null
         );
-        if(!invoice.getStatus().contentEquals(STRIPE_PAID_INVOICE)){
+        if (!invoice.getStatus().contentEquals(STRIPE_PAID_INVOICE)) {
             throw new Exception("payment card not valid");
         }
         owner.getSubscriptionEntity().setLatestInvoiceStatus(invoice.getStatus());
-        owner=ownerRepository.save(owner);
+        owner = ownerRepository.save(owner);
         return SubscriptionEntityToSubscriptionEntityDTO.instance.convert(owner.getSubscriptionEntity());
     }
 
