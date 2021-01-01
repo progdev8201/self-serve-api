@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,6 +30,9 @@ import java.util.stream.Collectors;
 public class StripeService {
     @Value("${stripe.apiKey}")
     private String stripeAPIKey;
+
+    @Value("${stripe.pourcentageRetirer}")
+    private Long pourcentageRetirer;
 
     @Value("${front-end.url}")
     String frontEndUrl;
@@ -124,14 +128,8 @@ public class StripeService {
 
     public StripeClientSecretDTO processPayment(String restaurentStripeAccount, Bill bill) throws StripeException {
         Stripe.apiKey = stripeAPIKey;
-
         PaymentIntentCreateParams params =
-                PaymentIntentCreateParams.builder()
-                        .setAmount(Math.round(bill.getPrixTotal().doubleValue()) * 100)
-                        .setCurrency("cad")
-                        .setTransferData(PaymentIntentCreateParams.TransferData.builder().setDestination(restaurentStripeAccount).build())
-                        .addPaymentMethodType("card")
-                        .build();
+                buildPaymentParams(restaurentStripeAccount, bill, false);
         ArrayList paymentMethodTypes = new ArrayList();
         paymentMethodTypes.add("card");
 
@@ -145,13 +143,7 @@ public class StripeService {
         Stripe.apiKey = stripeAPIKey;
 
         PaymentIntentCreateParams params =
-                PaymentIntentCreateParams.builder()
-                        .setCurrency("cad")
-                        .setAmount(Math.round(bill.getPrixTotal().doubleValue()) * 100)
-                        .setTransferData(PaymentIntentCreateParams.TransferData.builder().setDestination(restaurentStripeAccount).build())
-                        // Verify your integration in this guide by including this parameter
-                        .putMetadata("integration_check", "accept_a_payment")
-                        .build();
+                buildPaymentParams(restaurentStripeAccount, bill, true);
         PaymentIntent paymentIntent = PaymentIntent.create(params);
         StripeClientSecretDTO stripeClientSecretDTO = new StripeClientSecretDTO();
         stripeClientSecretDTO.setValue(paymentIntent.getClientSecret());
@@ -345,5 +337,28 @@ public class StripeService {
                         .setCustomer(customer.getId())
                         .build()
         );
+    }
+
+    private BigDecimal trouverMontantAVerserAuResto(Bill bill) {
+        BigDecimal pourcentageResto = BigDecimal.valueOf((100 - pourcentageRetirer));
+        return bill.getPrixTotal().multiply(pourcentageResto).divide(BigDecimal.valueOf(100));
+    }
+
+    private PaymentIntentCreateParams buildPaymentParams(String restaurentStripeAccount, Bill bill, boolean isPaymentRequest) {
+        PaymentIntentCreateParams.Builder builder =
+                PaymentIntentCreateParams.builder()
+                        .setAmount(Math.round(bill.getPrixTotal().doubleValue() * 100))
+                        .setCurrency("cad")
+                        .setTransferData(PaymentIntentCreateParams
+                                .TransferData.builder()
+                                .setDestination(restaurentStripeAccount)
+                                .setAmount(Math.round(trouverMontantAVerserAuResto(bill).doubleValue() * 100))
+                                .build());
+        if (isPaymentRequest) {
+            builder.putMetadata("integration_check", "accept_a_payment");
+        } else {
+            builder.addPaymentMethodType("card");
+        }
+        return builder.build();
     }
 }
