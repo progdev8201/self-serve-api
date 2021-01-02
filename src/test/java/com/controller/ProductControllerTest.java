@@ -107,7 +107,7 @@ class ProductControllerTest {
                 andReturn();
         ProductDTO returnValue = objectMapper.readValue(result.getResponse().getContentAsString(), ProductDTO.class);
         assertEquals("killua", returnValue.getName());
-        assertEquals(BigDecimal.valueOf(39.99), returnValue.getPrix());
+        assertEquals(BigDecimal.valueOf(43.99), returnValue.getPrix());
         assertEquals(1, productDTO.getCheckItems().size());
         assertEquals(1, productDTO.getOptions().size());
 

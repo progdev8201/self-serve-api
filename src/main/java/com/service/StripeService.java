@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,6 +31,9 @@ import java.util.stream.Collectors;
 public class StripeService {
     @Value("${stripe.apiKey}")
     private String stripeAPIKey;
+
+    @Value("${stripe.pourcentageRetirer}")
+    private Long pourcentageRetirer;
 
     @Value("${front-end.url}")
     String frontEndUrl;
@@ -48,7 +53,7 @@ public class StripeService {
     @Autowired
     private StripeSubscriptionProductRepository stripeSubscriptionProductRepository;
 
-    private static String STRIPE_PAID_INVOICE ="paid";
+    private static String STRIPE_PAID_INVOICE = "paid";
 
     public StripeCreateAccountUrlDTO createStripeAccount(String ownerUsername) throws StripeException {
         Stripe.apiKey = stripeAPIKey;
@@ -77,8 +82,7 @@ public class StripeService {
             owner.setStripeAccountId(account.getId());
             owner.setStripeEnable(false);
             ownerRepository.save(owner);
-        }
-        else{
+        } else {
             account = Account.retrieve(owner.getStripeAccountId());
         }
 
@@ -94,6 +98,7 @@ public class StripeService {
         stripeCreateAccountUrlDTO.setValue(accountLink.getUrl());
         return stripeCreateAccountUrlDTO;
     }
+
     //TODO pk on dois faire ca?
     public void initApplePay() throws StripeException {
         Stripe.apiKey = stripeAPIKey;
@@ -106,32 +111,26 @@ public class StripeService {
 
     }
 
-    public void saveStripeAccountId( String username) {
+    public void saveStripeAccountId(String username) {
         Owner owner = ownerRepository.findByUsername(username).get();
         owner.setStripeEnable(true);
         ownerRepository.save(owner);
     }
 
-    public StripeAccountIdDTO getAccountId(Long restaurantId){
+    public StripeAccountIdDTO getAccountId(Long restaurantId) {
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
         Owner owner = restaurant.getOwner();
-        if(owner.getStripeEnable()){
-            StripeAccountIdDTO stripeAccountIdDTO = new StripeAccountIdDTO();
+        StripeAccountIdDTO stripeAccountIdDTO = new StripeAccountIdDTO();
+        if (Objects.nonNull(owner.getStripeEnable()) && owner.getStripeEnable()) {
             stripeAccountIdDTO.setValue(owner.getStripeAccountId());
-            return stripeAccountIdDTO;
         }
-        return null;
+        return stripeAccountIdDTO;
     }
+
     public StripeClientSecretDTO processPayment(String restaurentStripeAccount, Bill bill) throws StripeException {
         Stripe.apiKey = stripeAPIKey;
-
         PaymentIntentCreateParams params =
-                PaymentIntentCreateParams.builder()
-                        .setAmount(Math.round(bill.getPrixTotal().doubleValue()) * 100)
-                        .setCurrency("cad")
-                        .setTransferData(PaymentIntentCreateParams.TransferData.builder().setDestination(restaurentStripeAccount).build())
-                        .addPaymentMethodType("card")
-                        .build();
+                buildPaymentParams(restaurentStripeAccount, bill, false);
         ArrayList paymentMethodTypes = new ArrayList();
         paymentMethodTypes.add("card");
 
@@ -145,13 +144,7 @@ public class StripeService {
         Stripe.apiKey = stripeAPIKey;
 
         PaymentIntentCreateParams params =
-                PaymentIntentCreateParams.builder()
-                        .setCurrency("cad")
-                        .setAmount(Math.round(bill.getPrixTotal().doubleValue()) * 100)
-                        .setTransferData(PaymentIntentCreateParams.TransferData.builder().setDestination(restaurentStripeAccount).build())
-                        // Verify your integration in this guide by including this parameter
-                        .putMetadata("integration_check", "accept_a_payment")
-                        .build();
+                buildPaymentParams(restaurentStripeAccount, bill, true);
         PaymentIntent paymentIntent = PaymentIntent.create(params);
         StripeClientSecretDTO stripeClientSecretDTO = new StripeClientSecretDTO();
         stripeClientSecretDTO.setValue(paymentIntent.getClientSecret());
@@ -289,11 +282,11 @@ public class StripeService {
                 params,
                 null
         );
-        if(!invoice.getStatus().contentEquals(STRIPE_PAID_INVOICE)){
+        if (!invoice.getStatus().contentEquals(STRIPE_PAID_INVOICE)) {
             throw new Exception("payment card not valid");
         }
         owner.getSubscriptionEntity().setLatestInvoiceStatus(invoice.getStatus());
-        owner=ownerRepository.save(owner);
+        owner = ownerRepository.save(owner);
         return SubscriptionEntityToSubscriptionEntityDTO.instance.convert(owner.getSubscriptionEntity());
     }
 
@@ -345,5 +338,28 @@ public class StripeService {
                         .setCustomer(customer.getId())
                         .build()
         );
+    }
+
+    private BigDecimal trouverMontantAVerserAuResto(Bill bill) {
+        BigDecimal pourcentageResto = BigDecimal.valueOf((100 - pourcentageRetirer));
+        return bill.getPrixTotal().multiply(pourcentageResto).divide(BigDecimal.valueOf(100)).setScale(2, RoundingMode.UP);
+    }
+
+    private PaymentIntentCreateParams buildPaymentParams(String restaurentStripeAccount, Bill bill, boolean isPaymentRequest) {
+        PaymentIntentCreateParams.Builder builder =
+                PaymentIntentCreateParams.builder()
+                        .setAmount(Math.round(bill.getPrixTotal().doubleValue() * 100))
+                        .setCurrency("cad")
+                        .setTransferData(PaymentIntentCreateParams
+                                .TransferData.builder()
+                                .setDestination(restaurentStripeAccount)
+                                .setAmount(Math.round(trouverMontantAVerserAuResto(bill).doubleValue() * 100))
+                                .build());
+        if (isPaymentRequest) {
+            builder.putMetadata("integration_check", "accept_a_payment");
+        } else {
+            builder.addPaymentMethodType("card");
+        }
+        return builder.build();
     }
 }
