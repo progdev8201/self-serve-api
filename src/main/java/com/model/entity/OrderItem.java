@@ -47,6 +47,15 @@ public class OrderItem implements Serializable {
 
     private Date tempsDePreparation;
 
+    private LocalDateTime startTime;
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
 
     public Long getId() {
         return id;

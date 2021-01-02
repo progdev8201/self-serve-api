@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -230,6 +229,7 @@ public class ClientService {
         orderItem.setCommentaires(commentaire);
         orderItem.setOption(new ArrayList<>());
         orderItem.setCheckItems(setUpCheckItems(productToAdd.getCheckItems()));
+        orderItem.setStartTime(LocalDateTime.now());
         return orderItem;
     }
 
