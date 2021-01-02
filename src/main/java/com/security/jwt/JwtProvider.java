@@ -25,8 +25,8 @@ public final class JwtProvider {
     private final long duration;
 
 
-    public JwtProvider(@Value("${security.jwt.duration}") long durationHours) {
-        algorithm = Algorithm.HMAC256(SecureRandom.getSeed(16));
+    public JwtProvider(@Value("${security.jwt.duration}") long durationHours,@Value("${security.jwt.secret}") String secret) {
+        algorithm = Algorithm.HMAC256(secret);
         verifier = JWT.require(algorithm).build();
         duration = TimeUnit.HOURS.toMillis(durationHours);
     }
