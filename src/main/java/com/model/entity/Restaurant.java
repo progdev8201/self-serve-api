@@ -1,5 +1,8 @@
 package com.model.entity;
 
+import com.model.enums.MenuType;
+import com.model.enums.RestaurantType;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
@@ -29,6 +32,10 @@ public class Restaurant implements Serializable {
 
     @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.REMOVE, CascadeType.MERGE})
     private ImgFile imgFile;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 60)
+    private RestaurantType restaurantType;
 
     public Long getId() {
         return id;
@@ -60,6 +67,14 @@ public class Restaurant implements Serializable {
 
     public void setOwner(Owner owner) {
         this.owner = owner;
+    }
+
+    public RestaurantType getRestaurantType() {
+        return restaurantType;
+    }
+
+    public void setRestaurantType(RestaurantType restaurantType) {
+        this.restaurantType = restaurantType;
     }
 
     public CustomProprety getCustomProprety() {

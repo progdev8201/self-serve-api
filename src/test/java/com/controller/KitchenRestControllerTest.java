@@ -10,6 +10,7 @@ import com.model.dto.*;
 import com.model.entity.Cook;
 import com.model.enums.OrderStatus;
 import com.model.enums.ProgressStatus;
+import com.model.enums.RestaurantType;
 import com.model.enums.RoleName;
 import com.service.ClientService;
 import org.json.JSONObject;
@@ -136,6 +137,7 @@ class KitchenRestControllerTest {
         sendObj.put("ownerUsername", "owner@mail.com");
         sendObj.put("restaurantName", "le resto de momo");
         sendObj.put("nombreDeTable", "5");
+        sendObj.put("restaurantType", RestaurantType.DINEIN);
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/createRestaurant").
                 content(sendObj.toString()).
                 contentType(APPLICATION_JSON).
@@ -145,6 +147,7 @@ class KitchenRestControllerTest {
         RestaurantDTO response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), RestaurantDTO.class);
         assertNotNull(response);
         assertEquals("le resto de momo", response.getName());
+        assertEquals(RestaurantType.DINEIN, response.getRestaurantType());
         mvc = MockMvcBuilders.standaloneSetup(productController).build();
         for (RestaurentTableDTO restaurentTableDTO : response.getRestaurentTables()) {
             String pathDansProjet = fileBasePath + "qr.jpg";

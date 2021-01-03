@@ -5,10 +5,7 @@ import com.model.dto.RestaurantDTO;
 import com.model.dto.RestaurantEmployerDTO;
 import com.model.dto.SignUpForm;
 import com.model.entity.*;
-import com.model.enums.BillStatus;
-import com.model.enums.MenuType;
-import com.model.enums.ProgressStatus;
-import com.model.enums.RoleName;
+import com.model.enums.*;
 import com.repository.*;
 import com.service.AuthentificationService;
 import com.service.KitchenService;
@@ -112,7 +109,7 @@ public class DataLoader implements CommandLineRunner {
             authentificationService.registerUser(admin);
         }
 
-        RestaurantDTO restaurantDTO = kitchenService.createRestaurant("owner@mail.com", "le monde chico", 5);
+        RestaurantDTO restaurantDTO = kitchenService.createRestaurant("owner@mail.com", "le monde chico", 5, RestaurantType.DINEIN);
         restaurant = restaurantRepository.findById(restaurantDTO.getId()).get();
 
         // add waiter and cook to restaurant
