@@ -40,7 +40,7 @@ public class StripeController {
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_GUEST','ROLE_CLIENT')")
+    @PreAuthorize("hasAnyAuthority('ROLE_GUEST','ROLE_CLIENT','ROLE_WAITER','ROLE_COOK')")
     @PostMapping("/getAccountId")
     public ResponseEntity<StripeAccountIdDTO> getStripeAccountId(@RequestBody Map<String, String> json) throws JsonProcessingException {
         Long menuId = new ObjectMapper().readValue(json.get("restaurantId"), Long.class);
