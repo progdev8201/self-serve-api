@@ -39,7 +39,7 @@ front-end:
 security:
   jwt:
     duration: 5
-    secret: "localsecret"
+    secret: "2kUWcbj08NNNcekKENnE"
 
 stripe:
   apiKey: "sk_test_51HLwKgC5UoZOX4GRUFItjFyJNULwHrPtVdQneYTfdNWN8Jvaix5wabpNZk8JwjkSG36Mg2st9yV1VrhnfhUfhAOQ00NasvN6m1"
