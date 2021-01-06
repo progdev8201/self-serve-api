@@ -50,6 +50,12 @@ public class KitchenRestController {
         return kitchenService.findRestaurantEmployer(username);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN','ROLE_COOK','ROLE_WAITER')")
+    @GetMapping("/restaurant/{id}")
+    public RestaurantDTO findRestaurant(@PathVariable final Long id) {
+        return kitchenService.findRestaurant(id);
+    }
+
     @GetMapping("/findRestaurantByRestaurantTableId/{tableID}")
     public ResponseEntity<RestaurantDTO> findRestaurantByRestaurantTableId(@PathVariable long tableID) {
         return ResponseEntity.ok(kitchenService.findRestaurantByRestaurantTableId(tableID));

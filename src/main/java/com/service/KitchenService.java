@@ -150,6 +150,9 @@ public class KitchenService {
     public RestaurantEmployerDTO findRestaurantEmployer(String username) {
         return new RestaurantEmployerDTO(employerRepository.findEmployerByUsername(username).get());
     }
+    public RestaurantDTO findRestaurant(Long id){
+        return dtoUtils.mapRestaurantToRestaurantDTO(restaurantRepository.findById(id).get());
+    }
 
     public ResponseEntity<RestaurantDTO> uploadLogo(MultipartFile file, long restaurantId) throws IOException {
         if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId) && !restaurantOwnerShipValidator.isAdminConnected())

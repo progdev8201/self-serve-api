@@ -8,10 +8,7 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.model.dto.*;
 import com.model.entity.Cook;
-import com.model.enums.OrderStatus;
-import com.model.enums.ProgressStatus;
-import com.model.enums.RestaurantType;
-import com.model.enums.RoleName;
+import com.model.enums.*;
 import com.service.ClientService;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -41,9 +38,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 // TODO: all test should include assert arrange act as comments so its easier to understand code
 @SpringBootTest
-
 class KitchenRestControllerTest {
 
     @Autowired
@@ -169,7 +166,7 @@ class KitchenRestControllerTest {
 
             try {
                 Result value = new MultiFormatReader().decode(bitmap);
-                assertEquals(frontEndUrl+"/start?restaurantTableId=" + String.valueOf(restaurentTableDTO.getTableNumber()), value.getText());
+                assertEquals(frontEndUrl + "/start?restaurantTableId=" + String.valueOf(restaurentTableDTO.getTableNumber()), value.getText());
             } catch (NotFoundException e) {
                 System.out.println("There is no QR code in the image");
             }
@@ -198,7 +195,7 @@ class KitchenRestControllerTest {
     @Test
     public void testAddTable() throws Exception {
         MockMvc mvc = initMockMvc();
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/addTable/"+ 2L + "/" + 5).
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/addTable/" + 2L + "/" + 5).
                 contentType(APPLICATION_JSON).
                 accept(APPLICATION_JSON)).
                 andExpect(status().isOk()).
@@ -250,7 +247,7 @@ class KitchenRestControllerTest {
         JSONObject sendObj = new JSONObject();
         sendObj.put("bill", objectMapper.writeValueAsString(billDTO));
         sendObj.put("guestUsername", "client1@mail.com");
-        sendObj.put("restaurentId", "3");
+        sendObj.put("restaurentId", "2");
 
         MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/findAllTables").
                 content(sendObj.toString()).
@@ -260,13 +257,43 @@ class KitchenRestControllerTest {
                 andReturn();
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        List<RestaurentTableDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), List.class);
-        assertEquals(1, reponse.size());
+        List<RestaurentTableDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<RestaurentTableDTO>>() {
+        });
+        assertEquals(6, reponse.size());
     }
+
+    @Test
+    public void testFetchRestaurantTableFastFoodBillFound() throws Exception {
+        MockMvc mvc = initMockMvc();
+        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
+
+        BillDTO billDTO = initBillDTO();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+
+        JSONObject sendObj = new JSONObject();
+        sendObj.put("bill", objectMapper.writeValueAsString(billDTO));
+        sendObj.put("guestUsername", "client1@mail.com");
+        sendObj.put("restaurentId", "5");
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/rest/kitchen/findAllTables").
+                content(sendObj.toString()).
+                contentType(APPLICATION_JSON).
+                accept(APPLICATION_JSON)).
+                andExpect(status().isOk()).
+                andReturn();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        List<RestaurentTableDTO> reponse = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<RestaurentTableDTO>>() {
+        });
+        assertEquals(1, reponse.size());
+        assertEquals(BillStatus.PAYED, reponse.get(0).getBills().get(0).getBillStatus());
+    }
+
     @Test
     public void testfindRestaurantParRestaurantTable() throws Exception {
         MockMvc mvc = initMockMvc();
-        MvcResult result = mvc.perform(get("/rest/kitchen/findRestaurantByRestaurantTableId/{tableID}","1").
+        MvcResult result = mvc.perform(get("/rest/kitchen/findRestaurantByRestaurantTableId/{tableID}", "1").
                 contentType(APPLICATION_JSON).
                 accept(APPLICATION_JSON)).
                 andExpect(status().isOk()).
@@ -274,14 +301,15 @@ class KitchenRestControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         RestaurantDTO restaurantDTO = mapper.readValue(result.getResponse().getContentAsString(), RestaurantDTO.class);
-        assertEquals(2,restaurantDTO.getId());
+        assertEquals(2, restaurantDTO.getId());
+        assertEquals(RestaurantType.DINEIN, restaurantDTO.getRestaurantType());
     }
 
     @Test
-    public void updateRestaurantEmployeeCookTest() throws Exception{
+    public void updateRestaurantEmployeeCookTest() throws Exception {
         // Arrange
-        RestaurantEmployerDTO cook = new RestaurantEmployerDTO(5L,"newCookMail@mail.com","ibawe",2L, RoleName.ROLE_COOK.toString(),"owner@mail.com");
-        RestaurantEmployerDTO waiter = new RestaurantEmployerDTO(6L,"newWaiterMail@mail.com","ibawe",2L, RoleName.ROLE_WAITER.toString(),"owner@mail.com");
+        RestaurantEmployerDTO cook = new RestaurantEmployerDTO(5L, "newCookMail@mail.com", "ibawe", 2L, RoleName.ROLE_COOK.toString(), "owner@mail.com", RestaurantType.DINEIN);
+        RestaurantEmployerDTO waiter = new RestaurantEmployerDTO(6L, "newWaiterMail@mail.com", "ibawe", 2L, RoleName.ROLE_WAITER.toString(), "owner@mail.com", RestaurantType.DINEIN);
         MockMvc mvc = initMockMvc();
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
@@ -309,7 +337,8 @@ class KitchenRestControllerTest {
                 .andReturn();
 
 
-        List<RestaurantEmployerDTO> restaurantEmployerDTOS = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<RestaurantEmployerDTO>>() {});
+        List<RestaurantEmployerDTO> restaurantEmployerDTOS = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<RestaurantEmployerDTO>>() {
+        });
 
         RestaurantEmployerDTO cookResponse = restaurantEmployerDTOS.get(0).getRole().equals(RoleName.ROLE_COOK.toString()) ? restaurantEmployerDTOS.get(0) : restaurantEmployerDTOS.get(1);
         RestaurantEmployerDTO waiterResponse = restaurantEmployerDTOS.get(0).getRole().equals(RoleName.ROLE_COOK.toString()) ? restaurantEmployerDTOS.get(1) : restaurantEmployerDTOS.get(0);
@@ -325,6 +354,31 @@ class KitchenRestControllerTest {
         assertEquals(waiter.getUsername(), waiterResponse.getUsername());
         assertEquals(waiter.getRestaurantId(), waiterResponse.getRestaurantId());
         assertEquals(waiter.getRole(), waiterResponse.getRole());
+    }
+
+    @Test
+    public void fetchRestaurant() throws Exception {
+        // Arrange
+        MockMvc mvc = initMockMvc();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        Long restaurantId = 2L;
+
+        // Act
+
+        MvcResult result = mvc.perform(get("/rest/kitchen/restaurant/" + restaurantId)
+                .contentType(APPLICATION_JSON)
+                .accept(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+
+        RestaurantDTO restaurantDTO = mapper.readValue(result.getResponse().getContentAsString(), RestaurantDTO.class);
+
+
+        // Assert
+        assertEquals(restaurantId, restaurantDTO.getId());
+        assertEquals(RestaurantType.DINEIN, restaurantDTO.getRestaurantType());
     }
 
     //todo find out why is there a 406 error

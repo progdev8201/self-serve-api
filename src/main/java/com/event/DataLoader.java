@@ -109,12 +109,12 @@ public class DataLoader implements CommandLineRunner {
             authentificationService.registerUser(admin);
         }
 
-        RestaurantDTO restaurantDTO = kitchenService.createRestaurant("owner@mail.com", "le monde chico", 5, RestaurantType.DINEIN);
+        RestaurantDTO restaurantDTO = kitchenService.createRestaurant("owner@mail.com", "le monde chico", 5, RestaurantType.FASTFOOD);
         restaurant = restaurantRepository.findById(restaurantDTO.getId()).get();
 
         // add waiter and cook to restaurant
-        RestaurantEmployerDTO waiter = new RestaurantEmployerDTO(null, "waiter@mail.com", "123456", restaurant.getId(), RoleName.ROLE_WAITER.toString(), "owner@mail.com");
-        RestaurantEmployerDTO cook = new RestaurantEmployerDTO(null, "cook@mail.com", "123456", restaurant.getId(), RoleName.ROLE_COOK.toString(), "owner@mail.com");
+        RestaurantEmployerDTO waiter = new RestaurantEmployerDTO(null, "waiter@mail.com", "123456", restaurant.getId(), RoleName.ROLE_WAITER.toString(), "owner@mail.com",RestaurantType.DINEIN);
+        RestaurantEmployerDTO cook = new RestaurantEmployerDTO(null, "cook@mail.com", "123456", restaurant.getId(), RoleName.ROLE_COOK.toString(), "owner@mail.com",RestaurantType.DINEIN);
         kitchenService.addUserToRestaurant(cook);
         kitchenService.addUserToRestaurant(waiter);
 
@@ -150,6 +150,15 @@ public class DataLoader implements CommandLineRunner {
         menuCreationService.createProduct(null, "download.jpg", BigDecimal.valueOf(0) , 0, "Steak chico dejeuner " , menuSupp);
         restaurant.setMenus(Collections.singletonList(menuSupp));
         restaurantRepository.save(restaurant);
+
+        restaurantDTO = kitchenService.createRestaurant("owner@mail.com", "le monde chickette", 1, RestaurantType.FASTFOOD);
+        restaurant = restaurantRepository.findById(restaurantDTO.getId()).get();
+        Bill billPayed = new Bill();
+        billPayed.setBillStatus(BillStatus.PAYED);
+        restaurant.getRestaurentTables().get(0).setBills(new ArrayList<>());
+        restaurant.getRestaurentTables().get(0).getBills().add(billPayed);
+        restaurantRepository.save(restaurant);
+
         System.out.println("APPLICATION IS READY!!!");
     }
 

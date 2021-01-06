@@ -4,6 +4,8 @@ import com.model.dto.RestaurentTableDTO;
 import com.model.entity.Bill;
 import com.model.entity.Restaurant;
 import com.model.entity.RestaurentTable;
+import com.model.enums.BillStatus;
+import com.model.enums.RestaurantType;
 import com.repository.RestaurantRepository;
 import com.repository.RestaurentTableRepository;
 import com.service.Util.DTOUtils;
@@ -40,7 +42,14 @@ public class RestaurentTableService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         Restaurant restaurant = restaurantRepository.findById(restaurentId).get();
-
+        if (restaurant.getRestaurantType() == RestaurantType.FASTFOOD) {
+            restaurant.getRestaurentTables().forEach(restaurentTable -> {
+                restaurentTable.setBills(restaurentTable.getBills()
+                        .stream()
+                        .filter(bill -> bill.getBillStatus() == BillStatus.PAYED)
+                        .collect(Collectors.toList()));
+            });
+        }
         return ResponseEntity.ok(restaurant.getRestaurentTables()
                 .stream()
                 .map(dtoUtils::mapRestaurantTableToRestaurantTableDTO)
