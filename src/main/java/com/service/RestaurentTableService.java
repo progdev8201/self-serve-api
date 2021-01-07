@@ -57,11 +57,12 @@ public class RestaurentTableService {
     }
 
 
-    public void deleteBillFromTable(Bill bill) {
+    public RestaurentTable deleteBillFromTable(Bill bill) {
         RestaurentTable restaurentTable = bill.getRestaurentTable();
         if (restaurentTable.getBills().remove(bill)) {
-            restaurentTable = restaurentTableRepository.save(restaurentTable);
+            restaurentTable =restaurentTableRepository.save(restaurentTable);
         }
+        return restaurentTable;
     }
 
 

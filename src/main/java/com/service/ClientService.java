@@ -10,9 +10,7 @@ import com.model.dto.OptionDTO;
 import com.model.dto.ProductDTO;
 import com.model.dto.requests.FindBillBetweenDateRequestDTO;
 import com.model.entity.*;
-import com.model.enums.BillStatus;
-import com.model.enums.MenuType;
-import com.model.enums.ProgressStatus;
+import com.model.enums.*;
 import com.repository.*;
 import com.service.Util.DTOUtils;
 import com.service.validator.RestaurantOwnerShipValidator;
@@ -45,7 +43,7 @@ public class ClientService {
     private static final int DOUBLE_SCALE_PLACES = 2;
 
     @Autowired
-    public ClientService(BillRepository billRepository, GuestRepository guestRepository, ProductRepository productRepository, RestaurantRepository restaurantRepository, RestaurentTableService restaurentTableService, RestaurentTableRepository restaurentTableRepository, DTOUtils dtoUtils,RestaurantOwnerShipValidator restaurantOwnerShipValidator) {
+    public ClientService(BillRepository billRepository, GuestRepository guestRepository, ProductRepository productRepository, RestaurantRepository restaurantRepository, RestaurentTableService restaurentTableService, RestaurentTableRepository restaurentTableRepository, DTOUtils dtoUtils, RestaurantOwnerShipValidator restaurantOwnerShipValidator) {
         this.billRepository = billRepository;
         this.guestRepository = guestRepository;
         this.productRepository = productRepository;
@@ -72,9 +70,11 @@ public class ClientService {
         Bill bill = billRepository.findById(billId).get();
         if (Objects.nonNull(bill)) {
             bill.setBillStatus(BillStatus.PAYED);
-            unlinkBillAndTable(bill);
-            if (Objects.nonNull(billRepository.save(bill))) {
-                return true;
+            if (bill.getRestaurant().getRestaurantType() == RestaurantType.DINEIN || isAllOrderItemsCompleted(bill.getOrderItems())) {
+                unlinkBillAndTable(bill);
+                if (Objects.nonNull(billRepository.save(bill))) {
+                    return true;
+                }
             }
         }
         return false;
@@ -89,8 +89,8 @@ public class ClientService {
     public BillDTO updateBill(BillDTO billDTO) {
         Bill bill = billRepository.findById(billDTO.getId()).get();
         bill.setBillStatus(billDTO.getBillStatus());
-        bill.setTips(billDTO.getTips().setScale(2,RoundingMode.UP));
-        bill.setPrixTotal(bill.getPrix().add(bill.getTips()).setScale(2,RoundingMode.UP));
+        bill.setTips(billDTO.getTips().setScale(2, RoundingMode.UP));
+        bill.setPrixTotal(bill.getPrix().add(bill.getTips()).setScale(2, RoundingMode.UP));
         return dtoUtils.mapBillToBillDTOWithOrderItems(billRepository.save(bill));
     }
 
@@ -173,9 +173,9 @@ public class ClientService {
 
         bill.setOrderCustomer(guest);
         bill.setOrderItems(initEmptyList(bill.getOrderItems()));
-        bill.setPrix(bill.getPrix().add( calculerPriceBill(orderItemList)).setScale(2,RoundingMode.UP));
-        bill.setTips(calculerTipsDeBase(bill.getPrix()).setScale(2,RoundingMode.UP));
-        bill.setPrixTotal(bill.getPrix().add(bill.getTips()).setScale(2,RoundingMode.UP));
+        bill.setPrix(bill.getPrix().add(calculerPriceBill(orderItemList)).setScale(2, RoundingMode.UP));
+        bill.setTips(calculerTipsDeBase(bill.getPrix()).setScale(2, RoundingMode.UP));
+        bill.setPrixTotal(bill.getPrix().add(bill.getTips()).setScale(2, RoundingMode.UP));
         bill.setBillStatus(BillStatus.PROGRESS);
         bill.setDate(LocalDateTime.now());
 
@@ -195,7 +195,7 @@ public class ClientService {
     }
 
     private BigDecimal calculerTipsDeBase(BigDecimal prix) {
-        return BigDecimal.valueOf((15 * prix.doubleValue())/100);
+        return BigDecimal.valueOf((15 * prix.doubleValue()) / 100);
     }
 
     private OrderItem initOrderItem(ProductDTO productToAdd, String commentaire, Product product) {
@@ -214,7 +214,7 @@ public class ClientService {
     private BigDecimal calculerPriceBill(List<OrderItem> orderItems) {
         return orderItems.stream()
                 .map(OrderItem::getPrix)
-                .reduce(BigDecimal.valueOf(0),BigDecimal::add);
+                .reduce(BigDecimal.valueOf(0), BigDecimal::add);
     }
 
     private OrderItem createOrderItemFromProduct(ProductDTO productToAdd, String commentaire, Product product) {
@@ -260,7 +260,7 @@ public class ClientService {
         checkItemDTOS.forEach(checkItemDTO -> {
             CheckItem checkItem = CheckItemDTOCheckItem.instance.convert(checkItemDTO);
             checkItem.setId(null);
-            if(Objects.isNull(checkItem.getPrix())){
+            if (Objects.isNull(checkItem.getPrix())) {
                 checkItem.setPrix(BigDecimal.valueOf(0));
             }
             checkItemList.add(checkItem);
@@ -303,11 +303,12 @@ public class ClientService {
         bill.setRestaurentTable(null);
     }
 
-    private static double roundDouble(double prix) {
+    private boolean isAllOrderItemsCompleted(List<OrderItem> orderItemList) {
 
-        BigDecimal bigDecimal = new BigDecimal(Double.toString(prix));
-        bigDecimal = bigDecimal.setScale(DOUBLE_SCALE_PLACES, RoundingMode.HALF_UP);
-        return bigDecimal.doubleValue();
+        if (Objects.isNull(orderItemList.stream().filter(orderItem -> orderItem.getOrderStatus() != ProgressStatus.COMPLETED).findFirst().orElse(null))) {
+            return true;
+        }
+        return false;
     }
 
 }
