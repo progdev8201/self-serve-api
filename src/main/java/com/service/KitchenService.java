@@ -88,9 +88,7 @@ public class KitchenService {
         orderItem.setOrderStatus(orderItemDTO.getOrderStatus());
         orderItem.setTempsDePreparation(orderItemDTO.getTempsDePreparation());
         orderItem.setSelected(orderItemDTO.isSelected());
-        if (orderItem.getMenuType() == MenuType.TERMINALREQUEST) {
-            clientService.makePayment(orderItem.getBill().getId());
-        }
+        clientService.makePayment(orderItem.getBill().getId());
         return dtoUtils.mapOrderItemToOrderItemDTO(orderItemRepository.save(orderItem));
     }
 
@@ -150,7 +148,8 @@ public class KitchenService {
     public RestaurantEmployerDTO findRestaurantEmployer(String username) {
         return new RestaurantEmployerDTO(employerRepository.findEmployerByUsername(username).get());
     }
-    public RestaurantDTO findRestaurant(Long id){
+
+    public RestaurantDTO findRestaurant(Long id) {
         return dtoUtils.mapRestaurantToRestaurantDTO(restaurantRepository.findById(id).get());
     }
 
@@ -300,7 +299,7 @@ public class KitchenService {
                 (orderItem.getMenuType() == MenuType.WAITERCALL);
     }
 
-    private Restaurant initRestaurant(String restaurantName, int nombreDeTable,RestaurantType restaurantType) throws WriterException, IOException {
+    private Restaurant initRestaurant(String restaurantName, int nombreDeTable, RestaurantType restaurantType) throws WriterException, IOException {
         Restaurant restaurant = initRestaurant(restaurantName, restaurantType);
         initMenus(restaurant);
         createTables(nombreDeTable, restaurant);
@@ -356,7 +355,7 @@ public class KitchenService {
             restaurant.getRestaurentTables().add(createTable(i, restaurant));
     }
 
-    private Restaurant initRestaurant(String restaurantName,RestaurantType restaurantType) {
+    private Restaurant initRestaurant(String restaurantName, RestaurantType restaurantType) {
         Restaurant restaurant = new Restaurant();
         restaurant.setName(restaurantName);
         restaurant.setRestaurentTables(new ArrayList<>());

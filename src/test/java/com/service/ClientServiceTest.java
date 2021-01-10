@@ -3,14 +3,14 @@ package com.service;
 import com.model.entity.Bill;
 import com.model.entity.OrderItem;
 import com.model.entity.Restaurant;
+import com.model.enums.BillStatus;
+import com.model.enums.MenuType;
 import com.model.enums.ProgressStatus;
 import com.model.enums.RestaurantType;
 import com.repository.BillRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
@@ -30,10 +30,21 @@ class ClientServiceTest {
     @Mock
     BillRepository billRepository;
 
+    @Captor
+    ArgumentCaptor<Bill> billArgumentCaptor;
+
     @Test
     public void makePaymentDineIn() {
         Mockito.when(billRepository.findById(any(Long.class))).thenReturn(Optional.of(initBill()));
-        Mockito.when(billRepository.save(any(Bill.class))).thenReturn(initBill());
+        assertFalse(clientService.makePayment(1L));
+        Mockito.verify(restaurentTableService,Mockito.times(0)).deleteBillFromTable(any(Bill.class));
+    }
+    @Test
+    public void makePaymentDineInTerminalRequest() {
+        Bill bill = initBill();
+        bill.getOrderItems().get(0).setMenuType(MenuType.TERMINALREQUEST);
+        Mockito.when(billRepository.findById(any(Long.class))).thenReturn(Optional.of(bill));
+        Mockito.when(billRepository.save(any(Bill.class))).thenReturn(bill);
         assertTrue(clientService.makePayment(1L));
         Mockito.verify(restaurentTableService,Mockito.times(1)).deleteBillFromTable(any(Bill.class));
     }
@@ -48,12 +59,15 @@ class ClientServiceTest {
         Mockito.verify(restaurentTableService,Mockito.times(1)).deleteBillFromTable(any(Bill.class));
     }
     @Test
-    public void makePaymentFastFoodAllOrderItemsNotCompleted() {
+    public void makePaymentFastFood() {
         Bill bill = initBill();
         bill.getRestaurant().setRestaurantType(RestaurantType.FASTFOOD);
         Mockito.when(billRepository.findById(any(Long.class))).thenReturn(Optional.of(bill));
-        assertFalse(clientService.makePayment(1L));
-        Mockito.verify(restaurentTableService,Mockito.times(0)).deleteBillFromTable(any(Bill.class));
+        Mockito.when(billRepository.save(any(Bill.class))).thenReturn(bill);
+        assertTrue(clientService.makePayment(1L));
+        Mockito.verify(billRepository,Mockito.times(1)).save(any(Bill.class));
+        Mockito.verify(billRepository).save(billArgumentCaptor.capture());
+        assertEquals(BillStatus.PAYED,billArgumentCaptor.getValue().getBillStatus());
     }
 
 

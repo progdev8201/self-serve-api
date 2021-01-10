@@ -366,46 +366,6 @@ class BillControllerTests {
         assertEquals("client@mail.com", reponse.getOrderCustomer().getUsername());
     }
 
-    @Test
-    public void testCreateMakePaymentReturnTrue() throws Exception {
-        MockMvc mvc = initMockMvc();
-        LinkedMultiValueMap<String, String> requestParams = new LinkedMultiValueMap<>();
-
-        BillDTO billDTO = initBillDTO();
-        ObjectMapper objectMapper = new ObjectMapper();
-
-
-        JSONObject sendObj = new JSONObject();
-        sendObj.put("billDTO", objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername", "guest@mail.com");
-        sendObj.put("restaurentTableId", "1");
-        sendObj.put("productDTO", objectMapper.writeValueAsString(billDTO.getOrderItems().get(0).getProduct()));
-        sendObj.put("commentaire", "po de bacon po de bacon po de bacon");
-
-
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.post("/order/makeOrder").
-                content(sendObj.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
-                andExpect(status().isOk()).
-                andReturn();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        BillDTO reponse = mapper.readValue(result.getResponse().getContentAsString(), BillDTO.class);
-        sendObj = new JSONObject();
-        sendObj.put("billId", reponse.getId());
-        sendObj.put("billDTO", objectMapper.writeValueAsString(billDTO));
-        sendObj.put("guestUsername", "guest@mail.com");
-        sendObj.put("restaurentTableId", "1");
-        result = mvc.perform(MockMvcRequestBuilders.post("/order/makePayment").
-                content(sendObj.toString()).
-                contentType(MediaType.APPLICATION_JSON).
-                accept(MediaType.APPLICATION_JSON)).
-                andExpect(status().isOk()).
-                andReturn();
-
-        assertTrue(mapper.readValue(result.getResponse().getContentAsString(), Boolean.class));
-    }
 
     @Test
     public void testUpdateBill() throws Exception {

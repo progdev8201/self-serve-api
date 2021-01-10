@@ -42,28 +42,33 @@ public class RestaurentTableService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         Restaurant restaurant = restaurantRepository.findById(restaurentId).get();
-        if (restaurant.getRestaurantType() == RestaurantType.FASTFOOD) {
-            restaurant.getRestaurentTables().forEach(restaurentTable -> {
-                restaurentTable.setBills(restaurentTable.getBills()
-                        .stream()
-                        .filter(bill -> bill.getBillStatus() == BillStatus.PAYED)
-                        .collect(Collectors.toList()));
-            });
-        }
-        return ResponseEntity.ok(restaurant.getRestaurentTables()
+        List<RestaurentTableDTO> restaurentTableDTOS = restaurant.getRestaurentTables()
                 .stream()
                 .map(dtoUtils::mapRestaurantTableToRestaurantTableDTO)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
+        if (restaurant.getRestaurantType() == RestaurantType.FASTFOOD) {
+            filterTablesForFastFoodRestaurants(restaurentTableDTOS);
+        }
+        return ResponseEntity.ok(restaurentTableDTOS);
     }
 
 
     public RestaurentTable deleteBillFromTable(Bill bill) {
         RestaurentTable restaurentTable = bill.getRestaurentTable();
         if (restaurentTable.getBills().remove(bill)) {
-            restaurentTable =restaurentTableRepository.save(restaurentTable);
+            restaurentTable = restaurentTableRepository.save(restaurentTable);
         }
         return restaurentTable;
     }
 
+
+    private void filterTablesForFastFoodRestaurants(List<RestaurentTableDTO> restaurentTableDTOS) {
+        restaurentTableDTOS.forEach(restaurentTable -> {
+            restaurentTable.setBills(restaurentTable.getBills()
+                    .stream()
+                    .filter(bill -> bill.getBillStatus() == BillStatus.PAYED)
+                    .collect(Collectors.toList()));
+        });
+    }
 
 }

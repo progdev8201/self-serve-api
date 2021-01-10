@@ -69,12 +69,15 @@ public class ClientService {
     public boolean makePayment(Long billId) {
         Bill bill = billRepository.findById(billId).get();
         if (Objects.nonNull(bill)) {
-            bill.setBillStatus(BillStatus.PAYED);
-            if (bill.getRestaurant().getRestaurantType() == RestaurantType.DINEIN || isAllOrderItemsCompleted(bill.getOrderItems())) {
+            if (bill.getRestaurant().getRestaurantType() == RestaurantType.FASTFOOD) {
+                bill.setBillStatus(BillStatus.PAYED);
+            }
+            if (isBillEligibileForPayment(bill)) {
+                bill.setBillStatus(BillStatus.PAYED);
                 unlinkBillAndTable(bill);
-                if (Objects.nonNull(billRepository.save(bill))) {
-                    return true;
-                }
+            }
+            if (Objects.nonNull(billRepository.save(bill))) {
+                return true;
             }
         }
         return false;
@@ -86,6 +89,7 @@ public class ClientService {
     }
 
     /*On update juste le bill status pck cest juste ca on a besoin live*/
+
     public BillDTO updateBill(BillDTO billDTO) {
         Bill bill = billRepository.findById(billDTO.getId()).get();
         bill.setBillStatus(billDTO.getBillStatus());
@@ -116,8 +120,8 @@ public class ClientService {
                 .collect(Collectors.toList());
     }
 
-    // PRIVATE METHODS
 
+    // PRIVATE METHODS
     private void addBillToValues(Long restaurantTableId, Bill bill, List<OrderItem> orderItemList) {
         //find restaurant table
         RestaurentTable restaurentTable = restaurentTableRepository.findById(restaurantTableId).get();
@@ -311,4 +315,21 @@ public class ClientService {
         return false;
     }
 
+    private boolean isBillEligibileForPayment(Bill bill) {
+        return eligibleForFastFood(bill) || eligibleForDineIn(bill);
+    }
+    private boolean eligibleForFastFood(Bill bill){
+        return bill.getRestaurant().getRestaurantType()==RestaurantType.FASTFOOD && isAllOrderItemsCompleted(bill.getOrderItems());
+    }
+    private boolean eligibleForDineIn(Bill bill){
+        return bill.getRestaurant().getRestaurantType()==RestaurantType.DINEIN && isAllOrderItemsMenuRequest(bill.getOrderItems());
+    }
+
+    private boolean isAllOrderItemsMenuRequest(List<OrderItem> orderItemList) {
+
+        if (Objects.nonNull(orderItemList.stream().filter(orderItem -> orderItem.getMenuType() == MenuType.TERMINALREQUEST).findFirst().orElse(null))) {
+            return true;
+        }
+        return false;
+    }
 }
