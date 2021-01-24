@@ -11,6 +11,7 @@ import com.model.dto.RestaurantEmployerDTO;
 import com.model.entity.*;
 import com.model.enums.MenuType;
 import com.model.enums.ProgressStatus;
+import com.model.enums.RestaurantType;
 import com.model.enums.RoleName;
 import com.repository.*;
 import com.service.Util.DTOUtils;
@@ -87,15 +88,13 @@ public class KitchenService {
         orderItem.setOrderStatus(orderItemDTO.getOrderStatus());
         orderItem.setTempsDePreparation(orderItemDTO.getTempsDePreparation());
         orderItem.setSelected(orderItemDTO.isSelected());
-        if (orderItem.getMenuType() == MenuType.TERMINALREQUEST) {
-            clientService.makePayment(orderItem.getBill().getId());
-        }
+        clientService.makePayment(orderItem.getBill().getId());
         return dtoUtils.mapOrderItemToOrderItemDTO(orderItemRepository.save(orderItem));
     }
 
 
-    public RestaurantDTO createRestaurant(String ownerUsername, String restaurantName, int nombreDeTable) throws IOException, WriterException {
-        Restaurant restaurant = initRestaurant(restaurantName, nombreDeTable);
+    public RestaurantDTO createRestaurant(String ownerUsername, String restaurantName, int nombreDeTable, RestaurantType restaurantType) throws IOException, WriterException {
+        Restaurant restaurant = initRestaurant(restaurantName, nombreDeTable, restaurantType);
 
         Owner owner = linkOwnerAndRestaurant(ownerUsername, restaurant);
 
@@ -148,6 +147,10 @@ public class KitchenService {
 
     public RestaurantEmployerDTO findRestaurantEmployer(String username) {
         return new RestaurantEmployerDTO(employerRepository.findEmployerByUsername(username).get());
+    }
+
+    public RestaurantDTO findRestaurant(Long id) {
+        return dtoUtils.mapRestaurantToRestaurantDTO(restaurantRepository.findById(id).get());
     }
 
     public ResponseEntity<RestaurantDTO> uploadLogo(MultipartFile file, long restaurantId) throws IOException {
@@ -296,8 +299,8 @@ public class KitchenService {
                 (orderItem.getMenuType() == MenuType.WAITERCALL);
     }
 
-    private Restaurant initRestaurant(String restaurantName, int nombreDeTable) throws WriterException, IOException {
-        Restaurant restaurant = initRestaurant(restaurantName);
+    private Restaurant initRestaurant(String restaurantName, int nombreDeTable, RestaurantType restaurantType) throws WriterException, IOException {
+        Restaurant restaurant = initRestaurant(restaurantName, restaurantType);
         initMenus(restaurant);
         createTables(nombreDeTable, restaurant);
 
@@ -352,11 +355,12 @@ public class KitchenService {
             restaurant.getRestaurentTables().add(createTable(i, restaurant));
     }
 
-    private Restaurant initRestaurant(String restaurantName) {
+    private Restaurant initRestaurant(String restaurantName, RestaurantType restaurantType) {
         Restaurant restaurant = new Restaurant();
         restaurant.setName(restaurantName);
         restaurant.setRestaurentTables(new ArrayList<>());
         restaurant.setMenus(new ArrayList<>());
+        restaurant.setRestaurantType(restaurantType);
         return restaurant;
     }
 

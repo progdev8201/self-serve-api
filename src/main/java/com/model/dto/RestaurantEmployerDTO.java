@@ -1,6 +1,7 @@
 package com.model.dto;
 
 import com.model.entity.Employer;
+import com.model.enums.RestaurantType;
 import com.model.enums.RoleName;
 
 import java.io.Serializable;
@@ -12,26 +13,29 @@ public class RestaurantEmployerDTO implements Serializable {
     private Long restaurantId;
     private String role;
     private String ownerUsername;
+    private RestaurantType restaurantType;
 
     public RestaurantEmployerDTO() {
     }
 
-    public RestaurantEmployerDTO(Long id, String username, String password, Long restaurantId, String role,String ownerUsername) {
+    public RestaurantEmployerDTO(Long id, String username, String password, Long restaurantId, String role, String ownerUsername, RestaurantType restaurantType) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.restaurantId = restaurantId;
         this.role = role;
         this.ownerUsername = ownerUsername;
+        this.restaurantType = restaurantType;
     }
 
-    public RestaurantEmployerDTO(Employer employer){
+    public RestaurantEmployerDTO(Employer employer) {
         this.id = employer.getId();
         this.username = employer.getUsername();
         this.password = employer.getPassword();
         this.restaurantId = employer.getRestaurant().getId();
         this.role = employer.getRole();
         this.ownerUsername = employer.getRestaurant().getOwner().getUsername();
+        this.restaurantType = employer.getRestaurant().getRestaurantType();
     }
 
     public String getOwnerUsername() {
@@ -80,6 +84,14 @@ public class RestaurantEmployerDTO implements Serializable {
 
     public void setRestaurantId(Long restaurantId) {
         this.restaurantId = restaurantId;
+    }
+
+    public RestaurantType getRestaurantType() {
+        return restaurantType;
+    }
+
+    public void setRestaurantType(RestaurantType restaurantType) {
+        this.restaurantType = restaurantType;
     }
 
     @Override

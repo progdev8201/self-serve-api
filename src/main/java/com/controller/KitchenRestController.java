@@ -9,6 +9,8 @@ import com.model.dto.OrderItemDTO;
 import com.model.dto.RestaurantDTO;
 import com.model.dto.RestaurantEmployerDTO;
 import com.model.dto.RestaurentTableDTO;
+import com.model.dto.requests.CreateRestaurantRequestDTO;
+import com.model.enums.RestaurantType;
 import com.service.KitchenService;
 import com.service.RestaurentTableService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +50,12 @@ public class KitchenRestController {
         return kitchenService.findRestaurantEmployer(username);
     }
 
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN','ROLE_COOK','ROLE_WAITER')")
+    @GetMapping("/restaurant/{id}")
+    public RestaurantDTO findRestaurant(@PathVariable final Long id) {
+        return kitchenService.findRestaurant(id);
+    }
+
     @GetMapping("/findRestaurantByRestaurantTableId/{tableID}")
     public ResponseEntity<RestaurantDTO> findRestaurantByRestaurantTableId(@PathVariable long tableID) {
         return ResponseEntity.ok(kitchenService.findRestaurantByRestaurantTableId(tableID));
@@ -84,13 +92,8 @@ public class KitchenRestController {
 
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")
     @PostMapping("/createRestaurant")
-    public ResponseEntity<RestaurantDTO> createRestaurant(@RequestBody Map<String, String> json) throws IOException, WriterException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String ownerUsername = json.get("ownerUsername");
-        String restaurantName = json.get("restaurantName");
-        int nombreDeTable = objectMapper.readValue(json.get("nombreDeTable"), Integer.class);
-
-        return ResponseEntity.ok(kitchenService.createRestaurant(ownerUsername, restaurantName, nombreDeTable));
+    public ResponseEntity<RestaurantDTO> createRestaurant(@RequestBody CreateRestaurantRequestDTO createRestaurantRequestDTO) throws IOException, WriterException {
+        return ResponseEntity.ok(kitchenService.createRestaurant(createRestaurantRequestDTO.getOwnerUsername(), createRestaurantRequestDTO.getRestaurantName(), createRestaurantRequestDTO.getNombreDeTables(),createRestaurantRequestDTO.getRestaurantType()));
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER','ROLE_ADMIN')")

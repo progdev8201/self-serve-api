@@ -1,5 +1,10 @@
 package com.model.dto;
 
+import com.model.enums.RestaurantType;
+
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.util.List;
 
 public class RestaurantDTO {
@@ -18,6 +23,10 @@ public class RestaurantDTO {
     private List<RestaurentTableDTO> restaurentTables;
 
     private ImgFileDTO imgFile;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 60)
+    private RestaurantType restaurantType;
 
     public ImgFileDTO getImgFile() {
         return imgFile;
@@ -81,6 +90,14 @@ public class RestaurantDTO {
 
     public void setRestaurentTables(List<RestaurentTableDTO> restaurentTables) {
         this.restaurentTables = restaurentTables;
+    }
+
+    public RestaurantType getRestaurantType() {
+        return restaurantType;
+    }
+
+    public void setRestaurantType(RestaurantType restaurantType) {
+        this.restaurantType = restaurantType;
     }
 
     @Override
