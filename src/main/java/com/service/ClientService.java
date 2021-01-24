@@ -309,10 +309,8 @@ public class ClientService {
 
     private boolean isAllOrderItemsCompleted(List<OrderItem> orderItemList) {
 
-        if (Objects.isNull(orderItemList.stream().filter(orderItem -> orderItem.getOrderStatus() != ProgressStatus.COMPLETED).findFirst().orElse(null))) {
-            return true;
-        }
-        return false;
+        return Objects.isNull(orderItemList.stream().filter(orderItem -> orderItem.getOrderStatus() != ProgressStatus.COMPLETED).findFirst().orElse(null));
+
     }
 
     private boolean isBillEligibileForPayment(Bill bill) {
@@ -327,9 +325,6 @@ public class ClientService {
 
     private boolean isAllOrderItemsMenuRequest(List<OrderItem> orderItemList) {
 
-        if (Objects.nonNull(orderItemList.stream().filter(orderItem -> orderItem.getMenuType() == MenuType.TERMINALREQUEST).findFirst().orElse(null))) {
-            return true;
-        }
-        return false;
+        return Objects.nonNull(orderItemList.stream().filter(orderItem -> orderItem.getMenuType() == MenuType.TERMINALREQUEST).findFirst().orElse(null));
     }
 }
