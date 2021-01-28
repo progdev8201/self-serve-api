@@ -45,3 +45,6 @@ stripe:
   pourcentageRetirer: 10
 server:
   port: 8081
+omnivore:
+  url: https://api.omnivore.io/1.0/locations/
+  apiKey: 9e306ede3ce947c59b5c2ac5a7d0c216
