@@ -34,6 +34,6 @@ class OmnivoreClientTest {
         assertNotNull(omnivoreItem.getName());
         assertNotNull(omnivoreItem.getPosId());
         assertNotNull(omnivoreItem.getPricePerUnit());
-        assertNull(omnivoreItem.isInStock());
+        assertNotNull(omnivoreItem.isInStock());
     }
 }
