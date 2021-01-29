@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 public class OmnivoreTableList {
-    @JsonAlias("_embedded")
-    private TableEmbeddedList tableEmbeddedList;
 
     private List<OmnivoreTable> omnivoreTableList;
 
@@ -25,14 +23,6 @@ public class OmnivoreTableList {
 
     public void setOmnivoreTableList(List<OmnivoreTable> omnivoreTableList) {
         this.omnivoreTableList = omnivoreTableList;
-    }
-
-    public TableEmbeddedList getTableEmbeddedList() {
-        return tableEmbeddedList;
-    }
-
-    public void setTableEmbeddedList(TableEmbeddedList tableEmbeddedList) {
-        this.tableEmbeddedList = tableEmbeddedList;
     }
 
     public Long getCount() {
