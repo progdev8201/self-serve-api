@@ -1,7 +1,9 @@
 package com.model.omnivore;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OmnivoreTable {
     private Long id;
     private String name;

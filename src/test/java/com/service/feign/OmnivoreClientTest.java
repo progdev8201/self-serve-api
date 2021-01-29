@@ -1,10 +1,14 @@
 package com.service.feign;
 
 import com.model.omnivore.OmnivoreTable;
+import com.model.omnivore.OmnivoreTableList;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
@@ -16,12 +20,18 @@ class OmnivoreClientTest {
     private String apiKey;
 
     @Test
-    public void faireUnAppelAvecClient(){
-        OmnivoreTable omnivoreTable = omnivoreClient.findByLocation(locationId,apiKey,1L);
+    public void fetchTableById(){
+        OmnivoreTable omnivoreTable = omnivoreClient.findByTableById(locationId,apiKey,1L);
         assertNotNull(omnivoreTable.getId());
         assertNotNull(omnivoreTable.getName());
         assertNotNull(omnivoreTable.getSeats());
         assertNotNull(omnivoreTable.getPosId());
         assertNotNull(omnivoreTable.getNumber());
+    }
+    @Test
+    public void fetchAllTables(){
+        OmnivoreTableList omnivoreTableList = omnivoreClient.findAllTables(locationId,apiKey);
+        assertNotNull(omnivoreTableList);
+        assertNotNull(omnivoreTableList.getOmnivoreTableList());
     }
 }
