@@ -7,8 +7,6 @@ import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
 
-import java.util.List;
-
 public interface OmnivoreClient {
     @RequestLine("GET /{location}/tables/{tableId}")
     @Headers("Api-Key:{apikey}")
