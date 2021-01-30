@@ -1,31 +1,25 @@
 package com.model.omnivore;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.time.LocalDateTime;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OmnivoreItem {
-    private Long id;
-    @JsonAlias("in_stock")
-    private boolean inStock;
+    private String id;
     private String name;
-    @JsonAlias("pos_id")
-    private Long posId;
+    private String description;
+    private LocalDateTime modified;
     @JsonAlias("price_per_unit")
     private double pricePerUnit;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
-    }
-
-    public boolean isInStock() {
-        return inStock;
-    }
-
-    public void setInStock(boolean inStock) {
-        this.inStock = inStock;
     }
 
     public String getName() {
@@ -36,12 +30,20 @@ public class OmnivoreItem {
         this.name = name;
     }
 
-    public Long getPosId() {
-        return posId;
+    public String getDescription() {
+        return description;
     }
 
-    public void setPosId(Long posId) {
-        this.posId = posId;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getModified() {
+        return modified;
+    }
+
+    public void setModified(LocalDateTime modified) {
+        this.modified = modified;
     }
 
     public double getPricePerUnit() {

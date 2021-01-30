@@ -12,10 +12,6 @@ public interface OmnivoreClient {
     @Headers("Api-Key:{apikey}")
     OmnivoreTable findByTableById(@Param("location") String locationId, @Param("apikey") String apiKey, @Param("tableId") Long tableId);
 
-    @RequestLine("GET /{location}/menu/items/{itemId}")
-    @Headers("Api-Key:{apikey}")
-    OmnivoreItem findByItemId(@Param("location") String locationId, @Param("apikey") String apiKey, @Param("itemId") Long itemId);
-
     @RequestLine("GET /{location}/tables")
     @Headers("Api-Key:{apikey}")
     OmnivoreTableList findAllTables(@Param("location") String locationId, @Param("apikey") String apiKey);

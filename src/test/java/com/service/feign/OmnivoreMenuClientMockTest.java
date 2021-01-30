@@ -10,8 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.anyString;
 
@@ -44,9 +43,7 @@ class OmnivoreMenuClientMockTest {
     public void findAllMenusTest(){
         // Arrange
 
-        final long COUNT = 3l;
-        final long LIMIT = 100l;
-        when(omnivoreMenuClient.findAllMenus(anyString(),anyString())).thenReturn(initMenuList(COUNT,LIMIT));
+        when(omnivoreMenuClient.findAllMenus(anyString(),anyString())).thenReturn(initMenuList());
 
         // Act
 
@@ -54,9 +51,9 @@ class OmnivoreMenuClientMockTest {
 
         // Assert
 
-        assertEquals(omnivoreMenuList.getCount(),COUNT);
-        assertEquals(omnivoreMenuList.getLimit(),LIMIT);
-        assertEquals(omnivoreMenuList.getOmnivoreMenuList().size(),COUNT);
+        assertNotNull(omnivoreMenuList.getCount());
+        assertNotNull(omnivoreMenuList.getLimit());
+        assertFalse(omnivoreMenuList.getOmnivoreMenus().isEmpty());
     }
 
     private OmnivoreMenu initMenu(){
@@ -71,12 +68,12 @@ class OmnivoreMenuClientMockTest {
         return omnivoreMenu;
     }
 
-    private OmnivoreMenuList initMenuList(long count,long limit){
+    private OmnivoreMenuList initMenuList(){
         OmnivoreMenuList omnivoreMenuList = new OmnivoreMenuList();
 
-        omnivoreMenuList.setCount(count);
-        omnivoreMenuList.setLimit(limit);
-        omnivoreMenuList.setOmnivoreMenuList(Arrays.asList(initMenu(),initMenu(),initMenu()));
+        omnivoreMenuList.setCount(3l);
+        omnivoreMenuList.setLimit(100l);
+        omnivoreMenuList.setOmnivoreMenus(Arrays.asList(initMenu(),initMenu(),initMenu()));
 
         return omnivoreMenuList;
     }

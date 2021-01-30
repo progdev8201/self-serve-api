@@ -32,16 +32,6 @@ class OmnivoreClientTest {
     }
 
     @Test
-    public void findItemByIdTest(){
-        OmnivoreItem omnivoreItem = omnivoreClient.findByItemId(locationId,apiKey,101L);
-        assertNotNull(omnivoreItem.getId());
-        assertNotNull(omnivoreItem.getName());
-        assertNotNull(omnivoreItem.getPosId());
-        assertNotNull(omnivoreItem.getPricePerUnit());
-        assertNotNull(omnivoreItem.isInStock());
-    }
-    
-    @Test
     public void fetchAllTables(){
         OmnivoreTableList omnivoreTableList = omnivoreClient.findAllTables(locationId,apiKey);
         assertNotNull(omnivoreTableList);

@@ -8,18 +8,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 
-public class OmnivoreMenuList {
-    private List<OmnivoreMenu> omnivoreMenus;
+public class OmnivoreItemList {
+    private List<OmnivoreItem> omnivoreItems;
 
     private long count;
     private long limit;
 
-    public List<OmnivoreMenu> getOmnivoreMenus() {
-        return omnivoreMenus;
+    public List<OmnivoreItem> getOmnivoreItems() {
+        return omnivoreItems;
     }
 
-    public void setOmnivoreMenus(List<OmnivoreMenu> omnivoreMenus) {
-        this.omnivoreMenus = omnivoreMenus;
+    public void setOmnivoreItems(List<OmnivoreItem> omnivoreItems) {
+        this.omnivoreItems = omnivoreItems;
     }
 
     public long getCount() {
@@ -40,7 +40,7 @@ public class OmnivoreMenuList {
 
     @JsonProperty("_embedded")
     private void unpackNested(Map<String, Object> embeddedValues) throws JsonProcessingException {
-        this.setOmnivoreMenus(new ObjectMapper().convertValue(embeddedValues.get("menus"), new TypeReference<List<OmnivoreMenu>>() {
+        this.setOmnivoreItems(new ObjectMapper().convertValue(embeddedValues.get("items"), new TypeReference<List<OmnivoreItem>>() {
         }));
     }
 }
