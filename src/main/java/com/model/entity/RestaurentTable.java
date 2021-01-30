@@ -12,6 +12,10 @@ public class RestaurentTable implements Serializable {
 
     private int tableNumber;
 
+    private Long omnivoreTableID;
+
+    private Long seats;
+
     //Todo: rajouter un s a bill
     @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private List<Bill> bills;
@@ -22,30 +26,6 @@ public class RestaurentTable implements Serializable {
 
     @OneToOne(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private ImgFile imgFile;
-
-    public ImgFile getImgFile() {
-        return imgFile;
-    }
-
-    public void setImgFile(ImgFile imgFile) {
-        this.imgFile = imgFile;
-    }
-
-    public Restaurant getRestaurant() {
-        return restaurant;
-    }
-
-    public void setRestaurant(Restaurant restaurent) {
-        this.restaurant = restaurent;
-    }
-
-    public List<Bill> getBills() {
-        return bills;
-    }
-
-    public void setBills(List<Bill> bill) {
-        this.bills = bill;
-    }
 
     public Long getId() {
         return id;
@@ -61,5 +41,45 @@ public class RestaurentTable implements Serializable {
 
     public void setTableNumber(int tableNumber) {
         this.tableNumber = tableNumber;
+    }
+
+    public Long getOmnivoreTableID() {
+        return omnivoreTableID;
+    }
+
+    public void setOmnivoreTableID(Long omnivoreTableID) {
+        this.omnivoreTableID = omnivoreTableID;
+    }
+
+    public Long getSeats() {
+        return seats;
+    }
+
+    public void setSeats(Long seats) {
+        this.seats = seats;
+    }
+
+    public List<Bill> getBills() {
+        return bills;
+    }
+
+    public void setBills(List<Bill> bills) {
+        this.bills = bills;
+    }
+
+    public Restaurant getRestaurant() {
+        return restaurant;
+    }
+
+    public void setRestaurant(Restaurant restaurant) {
+        this.restaurant = restaurant;
+    }
+
+    public ImgFile getImgFile() {
+        return imgFile;
+    }
+
+    public void setImgFile(ImgFile imgFile) {
+        this.imgFile = imgFile;
     }
 }

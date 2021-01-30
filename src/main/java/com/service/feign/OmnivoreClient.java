@@ -1,5 +1,6 @@
 package com.service.feign;
 
+import com.model.omnivore.OmnivoreLocation;
 import com.model.omnivore.OmnivoreTable;
 import com.model.omnivore.OmnivoreTableList;
 import feign.Headers;
@@ -16,4 +17,8 @@ public interface OmnivoreClient {
     @RequestLine("GET /{location}/tables")
     @Headers("Api-Key:{apikey}")
     OmnivoreTableList findAllTables(@Param("location") String locationId, @Param("apikey") String apiKey);
+
+    @RequestLine("GET /{location}")
+    @Headers("Api-Key:{apikey}")
+    OmnivoreLocation findLocationById(@Param("location") String locationId, @Param("apikey") String apiKey);
 }
