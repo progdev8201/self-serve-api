@@ -1,6 +1,6 @@
 package com.service.feign;
 
-import com.model.omnivore.OmnivoreItem;
+import com.model.omnivore.OmnivoreLocation;
 import com.model.omnivore.OmnivoreTable;
 import com.model.omnivore.OmnivoreTableList;
 import org.junit.jupiter.api.Test;
@@ -36,5 +36,12 @@ class OmnivoreClientTest {
         OmnivoreTableList omnivoreTableList = omnivoreClient.findAllTables(locationId,apiKey);
         assertNotNull(omnivoreTableList);
         assertNotNull(omnivoreTableList.getOmnivoreTableList());
+    }
+    @Test
+    public void fetchLocation(){
+        OmnivoreLocation omnivoreLocation = omnivoreClient.findLocationById(locationId,apiKey);
+        assertNotNull(omnivoreLocation.getId());
+        assertNotNull(omnivoreLocation.getName());
+        assertNotNull(omnivoreLocation.getOwner());
     }
 }
