@@ -12,5 +12,6 @@ public interface OmnivoreMenuToMenu {
 
     @Mapping(source = "id", target = "omnivoreMenuId")
     @Mapping(source = "type", target = "omnivoreMenuType")
+    @Mapping(target = "id", ignore = true)
     Menu convert(OmnivoreMenu omnivoreMenu);
 }

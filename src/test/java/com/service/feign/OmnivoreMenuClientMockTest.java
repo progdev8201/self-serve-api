@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.anyString;
 
 @ExtendWith(MockitoExtension.class)
-class OmnivoreMenuClientMockTest {
+public class OmnivoreMenuClientMockTest {
 
     @Mock
     private OmnivoreMenuClient omnivoreMenuClient;
@@ -56,7 +56,7 @@ class OmnivoreMenuClientMockTest {
         assertFalse(omnivoreMenuList.getOmnivoreMenus().isEmpty());
     }
 
-    private OmnivoreMenu initMenu(){
+    public static OmnivoreMenu initMenu(){
         OmnivoreMenu omnivoreMenu = new OmnivoreMenu();
 
         omnivoreMenu.setId("koTjETdj");
@@ -68,7 +68,7 @@ class OmnivoreMenuClientMockTest {
         return omnivoreMenu;
     }
 
-    private OmnivoreMenuList initMenuList(){
+    public static OmnivoreMenuList initMenuList(){
         OmnivoreMenuList omnivoreMenuList = new OmnivoreMenuList();
 
         omnivoreMenuList.setCount(3l);
