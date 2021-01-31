@@ -3,6 +3,7 @@ package com.model.omnivore;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -12,7 +13,7 @@ public class OmnivoreItem {
     private String description;
     private LocalDateTime modified;
     @JsonAlias("price_per_unit")
-    private double pricePerUnit;
+    private BigDecimal pricePerUnit;
 
     public String getId() {
         return id;
@@ -46,11 +47,11 @@ public class OmnivoreItem {
         this.modified = modified;
     }
 
-    public double getPricePerUnit() {
+    public BigDecimal getPricePerUnit() {
         return pricePerUnit;
     }
 
-    public void setPricePerUnit(double pricePerUnit) {
+    public void setPricePerUnit(BigDecimal pricePerUnit) {
         this.pricePerUnit = pricePerUnit;
     }
 }

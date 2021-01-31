@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
@@ -65,7 +66,7 @@ class OmnivoreItemClientMockTest {
        omnivoreItem.setId("test");
        omnivoreItem.setModified(LocalDateTime.now());
        omnivoreItem.setName("test");
-       omnivoreItem.setPricePerUnit(5.99);
+       omnivoreItem.setPricePerUnit(BigDecimal.valueOf(5.99));
 
        return omnivoreItem;
     }

@@ -10,6 +10,10 @@ import java.util.List;
 public class MenuDTO {
     private Long id;
 
+    private String omnivoreMenuId;
+
+    private String omnivoreMenuType;
+
     private List<ProductDTO> products;
 
     private RestaurantDTO restaurant;
@@ -58,13 +62,19 @@ public class MenuDTO {
         this.restaurant = restaurant;
     }
 
-    @Override
-    public String toString() {
-        return "MenuDTO{" +
-                "id=" + id +
-                ", products=" + products +
-                ", restaurant=" + restaurant +
-                ", name='" + name + '\'' +
-                '}';
+    public String getOmnivoreMenuId() {
+        return omnivoreMenuId;
+    }
+
+    public void setOmnivoreMenuId(String omnivoreMenuId) {
+        this.omnivoreMenuId = omnivoreMenuId;
+    }
+
+    public String getOmnivoreMenuType() {
+        return omnivoreMenuType;
+    }
+
+    public void setOmnivoreMenuType(String omnivoreMenuType) {
+        this.omnivoreMenuType = omnivoreMenuType;
     }
 }

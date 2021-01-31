@@ -11,6 +11,8 @@ public class ProductDTO {
 
     private String name;
 
+    private String omnivoreItemId;
+
     private String description;
 
     private MenuDTO menu;
@@ -32,6 +34,13 @@ public class ProductDTO {
 
     private ImgFileDTO imgFileDTO;
 
+    public String getOmnivoreItemId() {
+        return omnivoreItemId;
+    }
+
+    public void setOmnivoreItemId(String omnivoreItemId) {
+        this.omnivoreItemId = omnivoreItemId;
+    }
 
     public List<CheckItemDTO> getCheckItems() {
         return checkItems;

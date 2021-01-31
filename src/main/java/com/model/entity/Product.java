@@ -15,6 +15,8 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    private String omnivoreItemId;
+
     private String name;
 
     private String description;
@@ -67,6 +69,14 @@ public class Product implements Serializable {
     }
 
     public Product() {
+    }
+
+    public String getOmnivoreItemId() {
+        return omnivoreItemId;
+    }
+
+    public void setOmnivoreItemId(String omnivoreItemId) {
+        this.omnivoreItemId = omnivoreItemId;
     }
 
     public List<CheckItem> getCheckItems() {
