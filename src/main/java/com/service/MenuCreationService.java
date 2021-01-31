@@ -14,10 +14,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class MenuCreationService {
@@ -63,7 +60,7 @@ public class MenuCreationService {
         option.getCheckItemList().add(createCheckItem("moyen", BigDecimal.valueOf(0)));
         option.getCheckItemList().add(createCheckItem("faible", BigDecimal.valueOf(0)));
         option.getCheckItemList().add(createCheckItem("fort", BigDecimal.valueOf(0)));
-        product.setOptions(Collections.singletonList(option));
+        product.setOptions(new ArrayList<>(Arrays.asList(option)));
         if (Objects.nonNull(menu)) {
             menu.getProducts().add(product);
             product.setMenu(menu);
