@@ -148,7 +148,7 @@ public class DataLoader implements CommandLineRunner {
         restaurant = new Restaurant();
         Menu menuSupp = menuCreationService.createMenu("Dejeuner", MenuType.FOOD);
         menuCreationService.createProduct(null, "download.jpg", BigDecimal.valueOf(0) , 0, "Steak chico dejeuner " , menuSupp);
-        restaurant.setMenus(Collections.singletonList(menuSupp));
+        restaurant.setMenus(Arrays.asList(menuSupp));
         restaurantRepository.save(restaurant);
 
         restaurantDTO = kitchenService.createRestaurant("owner@mail.com", "le monde chickette", 1, RestaurantType.FASTFOOD);

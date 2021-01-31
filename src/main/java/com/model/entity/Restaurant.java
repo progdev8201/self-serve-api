@@ -15,6 +15,8 @@ public class Restaurant implements Serializable {
 
     private String name;
 
+    private String locationId;
+
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Bill> bill;
 
@@ -91,6 +93,14 @@ public class Restaurant implements Serializable {
 
     public void setMenus(List<Menu> menu) {
         this.menus = menu;
+    }
+
+    public String getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(String locationId) {
+        this.locationId = locationId;
     }
 
     public ImgFile getImgFile() {

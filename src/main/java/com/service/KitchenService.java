@@ -312,10 +312,10 @@ public class KitchenService {
     }
 
     private RestaurentTable createTable(int tableNumber, Restaurant restaurant) throws WriterException, IOException {
-        RestaurentTable restaurentTable = new RestaurentTable();
+        RestaurentTable restaurentTable = restaurentTableRepository.save(new RestaurentTable());
         restaurentTable.setTableNumber(tableNumber);
         restaurentTable.setRestaurant(restaurant);
-        ImgFile imgFile = ImgFileUtils.createImgFile(generateQRCode(frontEndUrl, Integer.toString(restaurentTable.getTableNumber())), QR_CODE_FILE_TYPE);
+        ImgFile imgFile = ImgFileUtils.createImgFile(generateQRCode(frontEndUrl, Long.toString(restaurentTable.getId())), QR_CODE_FILE_TYPE);
         restaurentTable.setImgFile(imgFile);
         return restaurentTable;
     }
