@@ -7,6 +7,10 @@ public class RestaurentTableDTO {
 
     private int tableNumber;
 
+    private Long omnivoreTableID;
+
+    private Long seats;
+
     private List<BillDTO> bills;
 
     private MenuDTO menuDTO;
@@ -17,6 +21,22 @@ public class RestaurentTableDTO {
 
     public ImgFileDTO getImgFileDTO() {
         return imgFileDTO;
+    }
+
+    public Long getOmnivoreTableID() {
+        return omnivoreTableID;
+    }
+
+    public void setOmnivoreTableID(Long omnivoreTableID) {
+        this.omnivoreTableID = omnivoreTableID;
+    }
+
+    public Long getSeats() {
+        return seats;
+    }
+
+    public void setSeats(Long seats) {
+        this.seats = seats;
     }
 
     public void setImgFileDTO(ImgFileDTO imgFileDTO) {

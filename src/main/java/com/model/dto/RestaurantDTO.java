@@ -12,6 +12,8 @@ public class RestaurantDTO {
 
     private String name;
 
+    private String locationId;
+
     private List<BillDTO> bill;
 
     private OwnerDTO owner;
@@ -27,6 +29,14 @@ public class RestaurantDTO {
     @Enumerated(EnumType.STRING)
     @Column(length = 60)
     private RestaurantType restaurantType;
+
+    public String getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(String locationId) {
+        this.locationId = locationId;
+    }
 
     public ImgFileDTO getImgFile() {
         return imgFile;
