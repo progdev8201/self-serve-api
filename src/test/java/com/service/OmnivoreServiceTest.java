@@ -4,12 +4,11 @@ import com.model.entity.Menu;
 import com.model.entity.Product;
 import com.model.entity.Restaurant;
 import com.model.entity.RestaurentTable;
-import com.model.omnivore.OmnivoreLocation;
-import com.model.omnivore.OmnivoreTable;
-import com.model.omnivore.OmnivoreTableList;
-import com.service.feign.*;
+import com.model.omnivore.*;
+import com.service.feign.OmnivoreClient;
+import com.service.feign.OmnivoreItemClient;
+import com.service.feign.OmnivoreMenuClient;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,11 +17,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +46,13 @@ public class OmnivoreServiceTest {
     private final String restaurantName = "le resto chouette";
     private final String restaurantOwner = "le owner pas trop chouette";
     private final String tableName = "ta table chico";
+    private final String ITEM_MENU_TEST_STRINGS = "test";
+    private final LocalDateTime GLOBAL_TIME = LocalDateTime.now();
+    private final BigDecimal BASIC_PRICE = BigDecimal.valueOf(5.99);
     private final int nombreDeTables = 3;
+    private final long COUNT = 3l;
+    private final long LIMIT = 100l;
+
 
     @BeforeEach
     public void setFields() {
@@ -54,81 +61,90 @@ public class OmnivoreServiceTest {
 
     @Test
     public void testCreateRestaurantFromLocation() {
+        // Arrange
+
         Mockito.when(omnivoreClient.findLocationById(anyString(), anyString())).thenReturn(initLocation());
         Mockito.when(omnivoreClient.findAllTables(anyString(), anyString())).thenReturn(initOmnivoreTableList());
+
+        // Act
+
         Restaurant restaurant = omnivoreService.createRestaurantFromLocation(locationID);
+
+        // Assert
+
         assertEquals(locationID, restaurant.getLocationId());
         assertEquals(restaurantName, restaurant.getName());
+
         for (int i = 0; i < nombreDeTables; i++) {
             RestaurentTable restaurentTable = restaurant.getRestaurentTables().get(i);
             assertEquals(i, restaurentTable.getOmnivoreTableID());
             assertEquals(i, restaurentTable.getTableNumber());
-            assertEquals(i,restaurentTable.getSeats());
+            assertEquals(i, restaurentTable.getSeats());
         }
     }
 
     @Test
-    public void createProductFromOmnivoreItemTest(){
+    public void createProductFromOmnivoreItemTest() {
         // Arrange
 
-        when(omnivoreItemClient.findItemByIdFromMenuSection(anyString(),anyString(),anyString(),anyString(),anyString())).thenReturn(OmnivoreItemClientMockTest.initItem());
+        when(omnivoreItemClient.findItemByIdFromMenuSection(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(initItem());
 
         // Act
 
-        Product product = omnivoreService.createProductFromOmnivoreItem("test","test","test","test");
+        Product product = omnivoreService.createProductFromOmnivoreItem("test", "test", "test", "test");
 
         // Assert
 
-        assertNotNull(product.getDescription());
-        assertNotNull(product.getOmnivoreItemId());
-        assertNotNull(product.getName());
-        assertNotNull(product.getPrix());
+        assertEquals(product.getDescription(),ITEM_MENU_TEST_STRINGS);
+        assertEquals(product.getOmnivoreItemId(),ITEM_MENU_TEST_STRINGS);
+        assertEquals(product.getName(),ITEM_MENU_TEST_STRINGS);
+        assertEquals(product.getPrix(),BASIC_PRICE);
     }
 
     @Test
-    public void createProductsFromOmnivoreItemsTest(){
+    public void createProductsFromOmnivoreItemsTest() {
         // Arrange
 
-        when(omnivoreItemClient.findAllItemsFromMenuSection(anyString(),anyString(),anyString(),anyString())).thenReturn(OmnivoreItemClientMockTest.initMenuList());
+        when(omnivoreItemClient.findAllItemsFromMenuSection(anyString(), anyString(), anyString(), anyString())).thenReturn(initItemList());
 
         // Act
 
-        List<Product> products = omnivoreService.createProductsFromOmnivoreItems("test","test","test");
+        List<Product> products = omnivoreService.createProductsFromOmnivoreItems("test", "test", "test");
 
         // Assert
 
         products.forEach(product -> {
-            assertNotNull(product.getDescription());
-            assertNotNull(product.getOmnivoreItemId());
-            assertNotNull(product.getName());
-            assertNotNull(product.getPrix());
+            assertEquals(product.getDescription(),ITEM_MENU_TEST_STRINGS);
+            assertEquals(product.getOmnivoreItemId(),ITEM_MENU_TEST_STRINGS);
+            assertEquals(product.getName(),ITEM_MENU_TEST_STRINGS);
+            assertEquals(product.getPrix(),BASIC_PRICE);
         });
 
         assertFalse(products.isEmpty());
     }
 
     @Test
-    public void createMenuFromOmnivoreMenuTest(){
+    public void createMenuFromOmnivoreMenuTest() {
         // Arrange
 
-        when(omnivoreMenuClient.findMenuById(anyString(),anyString(),anyString())).thenReturn(OmnivoreMenuClientMockTest.initMenu());
+        when(omnivoreMenuClient.findMenuById(anyString(), anyString(), anyString())).thenReturn(initMenu());
 
         // Act
 
-        Menu menu = omnivoreService.createMenuFromOmnivoreMenu("test","test");
+        Menu menu = omnivoreService.createMenuFromOmnivoreMenu("test", "test");
 
         // Assert
 
-        assertNotNull(menu.getOmnivoreMenuId());
-        assertNotNull(menu.getOmnivoreMenuType());
-        assertNotNull(menu.getName());
+        assertEquals(menu.getOmnivoreMenuId(),ITEM_MENU_TEST_STRINGS);
+        assertEquals(menu.getOmnivoreMenuType(),ITEM_MENU_TEST_STRINGS);
+        assertEquals(menu.getName(),ITEM_MENU_TEST_STRINGS);
     }
 
     @Test
-    public void createMenusFromOmnivoreMenusTest(){
+    public void createMenusFromOmnivoreMenusTest() {
         // Arrange
 
-        when(omnivoreMenuClient.findAllMenus(anyString(),anyString())).thenReturn(OmnivoreMenuClientMockTest.initMenuList());
+        when(omnivoreMenuClient.findAllMenus(anyString(), anyString())).thenReturn(initMenuList());
 
         // Act
 
@@ -137,9 +153,9 @@ public class OmnivoreServiceTest {
         // Assert
 
         menus.forEach(menu -> {
-            assertNotNull(menu.getOmnivoreMenuId());
-            assertNotNull(menu.getOmnivoreMenuType());
-            assertNotNull(menu.getName());
+            assertEquals(menu.getOmnivoreMenuId(),ITEM_MENU_TEST_STRINGS);
+            assertEquals(menu.getOmnivoreMenuType(),ITEM_MENU_TEST_STRINGS);
+            assertEquals(menu.getName(),ITEM_MENU_TEST_STRINGS);
         });
 
         assertFalse(menus.isEmpty());
@@ -167,5 +183,50 @@ public class OmnivoreServiceTest {
         omnivoreLocation.setOmnivoreTableList(omnivoreTables);
         return omnivoreLocation;
     }
+
+    private OmnivoreItem initItem() {
+        OmnivoreItem omnivoreItem = new OmnivoreItem();
+
+        omnivoreItem.setDescription(ITEM_MENU_TEST_STRINGS);
+        omnivoreItem.setId(ITEM_MENU_TEST_STRINGS);
+        omnivoreItem.setModified(LocalDateTime.now());
+        omnivoreItem.setName(ITEM_MENU_TEST_STRINGS);
+        omnivoreItem.setPricePerUnit(BASIC_PRICE);
+
+        return omnivoreItem;
+    }
+
+    private OmnivoreItemList initItemList() {
+        OmnivoreItemList omnivoreItemList = new OmnivoreItemList();
+
+        omnivoreItemList.setCount(COUNT);
+        omnivoreItemList.setLimit(LIMIT);
+        omnivoreItemList.setOmnivoreItems(Arrays.asList(initItem(), initItem(), initItem()));
+
+        return omnivoreItemList;
+    }
+
+    private OmnivoreMenu initMenu() {
+        OmnivoreMenu omnivoreMenu = new OmnivoreMenu();
+
+        omnivoreMenu.setId(ITEM_MENU_TEST_STRINGS);
+        omnivoreMenu.setName(ITEM_MENU_TEST_STRINGS);
+        omnivoreMenu.setType(ITEM_MENU_TEST_STRINGS);
+        omnivoreMenu.setCreated(LocalDateTime.now());
+        omnivoreMenu.setModified(LocalDateTime.now());
+
+        return omnivoreMenu;
+    }
+
+    private OmnivoreMenuList initMenuList() {
+        OmnivoreMenuList omnivoreMenuList = new OmnivoreMenuList();
+
+        omnivoreMenuList.setCount(COUNT);
+        omnivoreMenuList.setLimit(LIMIT);
+        omnivoreMenuList.setOmnivoreMenus(Arrays.asList(initMenu(), initMenu(), initMenu()));
+
+        return omnivoreMenuList;
+    }
+
 
 }
