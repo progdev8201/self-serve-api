@@ -12,6 +12,7 @@ public class ProductDTO {
     private String name;
 
     private String omnivoreItemId;
+    
     private String orderProfileId;
 
     private String description;

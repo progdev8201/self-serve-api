@@ -16,6 +16,7 @@ public class Product implements Serializable {
     private long id;
 
     private String omnivoreItemId;
+    
     private String orderProfileId;
 
     private String name;

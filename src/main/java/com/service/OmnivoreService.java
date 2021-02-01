@@ -1,12 +1,17 @@
 package com.service;
 
+import com.mapping.OmnivoreItemToProduct;
 import com.mapping.OmnivoreLocationToRestaurant;
+import com.mapping.OmnivoreMenuToMenu;
 import com.mapping.OmnivoreTableToRestaurantTable;
+import com.model.entity.Menu;
+import com.model.entity.Product;
 import com.model.entity.Restaurant;
 import com.model.entity.RestaurentTable;
-import com.model.omnivore.OmnivoreLocation;
-import com.model.omnivore.OmnivoreTableList;
+import com.model.omnivore.*;
 import com.service.feign.OmnivoreClient;
+import com.service.feign.OmnivoreItemClient;
+import com.service.feign.OmnivoreMenuClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,7 +22,13 @@ import java.util.stream.Collectors;
 @Service
 public class OmnivoreService {
     @Autowired
-    OmnivoreClient omnivoreClient;
+    private OmnivoreClient omnivoreClient;
+
+    @Autowired
+    private OmnivoreItemClient omnivoreItemClient;
+
+    @Autowired
+    private OmnivoreMenuClient omnivoreMenuClient;
 
     @Value("${omnivore.apiKey}")
     private String apiKey;
@@ -30,6 +41,38 @@ public class OmnivoreService {
         return restaurant;
     }
 
+    public Product createProductFromOmnivoreItem(String locationId, String menuId, String sectionId, String itemId){
+        OmnivoreItem omnivoreItem = omnivoreItemClient.findItemByIdFromMenuSection(locationId,apiKey,menuId,sectionId,itemId);
+
+        return OmnivoreItemToProduct.instance.convert(omnivoreItem);
+    }
+
+    public List<Product> createProductsFromOmnivoreItems(String locationId,String menuId,String sectionId){
+        OmnivoreItemList omnivoreItemList = omnivoreItemClient.findAllItemsFromMenuSection(locationId,apiKey,menuId,sectionId);
+
+        return omnivoreItemList.getOmnivoreItems()
+                .stream()
+                .map(OmnivoreItemToProduct.instance::convert)
+                .collect(Collectors.toList());
+    }
+
+    public Menu createMenuFromOmnivoreMenu(String locationId,String menuId){
+        OmnivoreMenu omnivoreMenu = omnivoreMenuClient.findMenuById(locationId,apiKey,menuId);
+
+        return OmnivoreMenuToMenu.instance.convert(omnivoreMenu);
+    }
+
+    public List<Menu> createMenusFromOmnivoreMenus(String locationId){
+        OmnivoreMenuList omnivoreMenuList = omnivoreMenuClient.findAllMenus(locationId,apiKey);
+
+        //todo after finding menus find all items from each menu
+
+        return omnivoreMenuList.getOmnivoreMenus()
+                .stream()
+                .map( OmnivoreMenuToMenu.instance::convert)
+                .collect(Collectors.toList());
+    }
+
     private List<RestaurentTable> createRestaurantTablesFromOmnivoreTables(String locationId) {
         OmnivoreTableList omnivoreTableList = omnivoreClient.findAllTables(locationId, apiKey);
         return omnivoreTableList
@@ -38,4 +81,5 @@ public class OmnivoreService {
                 .map(omnivoreTable -> OmnivoreTableToRestaurantTable.instance.convert(omnivoreTable))
                 .collect(Collectors.toList());
     }
+
 }

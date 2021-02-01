@@ -11,11 +11,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest
 class OmnivoreClientTest {
     @Autowired
-    OmnivoreClient omnivoreClient;
+    private OmnivoreClient omnivoreClient;
     private String locationId="idpXoB7T";
     @Value("${omnivore.apiKey}")
     private String apiKey;
@@ -29,6 +30,7 @@ class OmnivoreClientTest {
         assertNotNull(omnivoreTable.getPosId());
         assertNotNull(omnivoreTable.getNumber());
     }
+
     @Test
     public void fetchAllTables(){
         OmnivoreTableList omnivoreTableList = omnivoreClient.findAllTables(locationId,apiKey);
