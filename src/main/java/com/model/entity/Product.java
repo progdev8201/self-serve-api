@@ -15,6 +15,9 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    private String omnivoreItemId;
+    private String orderProfileId;
+
     private String name;
 
     private String description;
@@ -26,23 +29,23 @@ public class Product implements Serializable {
     @ManyToOne(cascade = CascadeType.REMOVE)
     private Menu menu;
 
-    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.MERGE})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
     private List<Option> options;
 
-    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.MERGE})
-    private List <OrderItem> orderItems;
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
+    private List<OrderItem> orderItems;
 
-    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.MERGE})
-    private List <CheckItem> checkItems;
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
+    private List<CheckItem> checkItems;
 
 
     private String imgUrl;
 
-    @OneToOne(cascade = {CascadeType.PERSIST,CascadeType.REMOVE, CascadeType.MERGE})
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
     private ImgFile imgFile;
 
 
-    @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Rate> rates;
 
     @Enumerated(EnumType.STRING)
@@ -50,8 +53,7 @@ public class Product implements Serializable {
     private MenuType menuType;
 
 
-
-    public Product(long id, String name, String description, Menu menu, List<Option> options, List<OrderItem> orderItems, BigDecimal prix, int tempsDePreparation, String imgUrl, ImgFile imgFile, List<Rate> rates, MenuType menuType) {
+    public Product(long id, String name, String description, Menu menu, List<Option> options, List<OrderItem> orderItems, BigDecimal prix, int tempsDePreparation, String imgUrl, ImgFile imgFile, List<Rate> rates, MenuType menuType, String orderProfileId) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -64,9 +66,18 @@ public class Product implements Serializable {
         this.imgFile = imgFile;
         this.rates = rates;
         this.menuType = menuType;
+        this.orderProfileId = orderProfileId;
     }
 
     public Product() {
+    }
+
+    public String getOmnivoreItemId() {
+        return omnivoreItemId;
+    }
+
+    public void setOmnivoreItemId(String omnivoreItemId) {
+        this.omnivoreItemId = omnivoreItemId;
     }
 
     public List<CheckItem> getCheckItems() {
@@ -115,6 +126,14 @@ public class Product implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getOrderProfileId() {
+        return orderProfileId;
+    }
+
+    public void setOrderProfileId(String orderProfileId) {
+        this.orderProfileId = orderProfileId;
     }
 
     public String getDescription() {

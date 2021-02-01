@@ -23,6 +23,8 @@ public class OrderItemDTO {
 
     private List<CheckItemDTO> checkItems;
 
+    private String orderProfileId;
+
     private boolean selected;
 
     private MenuType menuType;
@@ -35,6 +37,14 @@ public class OrderItemDTO {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public String getOrderProfileId() {
+        return orderProfileId;
+    }
+
+    public void setOrderProfileId(String orderProfileId) {
+        this.orderProfileId = orderProfileId;
     }
 
     public String getCommentaires() {

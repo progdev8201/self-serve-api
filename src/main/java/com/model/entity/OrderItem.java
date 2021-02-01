@@ -32,6 +32,8 @@ public class OrderItem implements Serializable {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.MERGE})
     private List<CheckItem> checkItems;
 
+    private String orderProfileId;
+
     private boolean selected;
 
     private String commentaires;
@@ -55,6 +57,14 @@ public class OrderItem implements Serializable {
 
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
+    }
+
+    public String getOrderProfileId() {
+        return orderProfileId;
+    }
+
+    public void setOrderProfileId(String orderProfileId) {
+        this.orderProfileId = orderProfileId;
     }
 
     public Long getId() {
