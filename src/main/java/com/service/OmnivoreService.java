@@ -65,6 +65,8 @@ public class OmnivoreService {
     public List<Menu> createMenusFromOmnivoreMenus(String locationId){
         OmnivoreMenuList omnivoreMenuList = omnivoreMenuClient.findAllMenus(locationId,apiKey);
 
+        //todo after finding menus find all items from each menu
+
         return omnivoreMenuList.getOmnivoreMenus()
                 .stream()
                 .map( OmnivoreMenuToMenu.instance::convert)
