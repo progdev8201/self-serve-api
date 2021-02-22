@@ -9,6 +9,7 @@ import com.repository.MenuRepository;
 import com.repository.OwnerRepository;
 import com.repository.RestaurantRepository;
 import com.service.Util.DTOUtils;
+import com.service.feign.OmnivoreMenuClient;
 import com.service.validator.RestaurantOwnerShipValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,19 +39,29 @@ public class MenuService {
     @Autowired
     private RestaurantOwnerShipValidator restaurantOwnerShipValidator;
 
+    @Autowired
+    private OmnivoreService omnivoreService;
 
     public List<MenuDTO> findFoodMenuForRestaurants(Long id) {
         Restaurant restaurant = restaurantRepository.findById(id).get();
-        return restaurant.getMenus()
-                .stream()
-                .filter(menu -> menu.getMenuType() == MenuType.FOOD)
-                .map(menu -> dtoUtils.mapMenuToMenuDTO(menu))
-                .collect(Collectors.toList());
+
+        if (restaurant.getLocationId() == null) {
+            return restaurant.getMenus()
+                    .stream()
+                    .filter(menu -> menu.getMenuType() == MenuType.FOOD)
+                    .map(menu -> dtoUtils.mapMenuToMenuDTO(menu))
+                    .collect(Collectors.toList());
+        } else {
+            return omnivoreService.createMenusFromOmnivoreMenus(restaurant.getLocationId())
+                    .stream()
+                    .map(dtoUtils::mapMenuToMenuDTO)
+                    .collect(Collectors.toList());
+        }
     }
 
     public ResponseEntity<List<MenuDTO>> findAllMenuForRestaurants(Long id) {
         if (!restaurantOwnerShipValidator.hasOwnerRight(id) && !restaurantOwnerShipValidator.isAdminConnected())
-            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         Restaurant restaurant = restaurantRepository.findById(id).get();
 
@@ -63,7 +73,7 @@ public class MenuService {
 
     public ResponseEntity deleteMenuFromRestaurantList(Long restaurantId, Long menuId) {
         if (!restaurantOwnerShipValidator.hasOwnerRight(restaurantId) && !restaurantOwnerShipValidator.isAdminConnected())
-            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         Restaurant restaurant = restaurantRepository.findById(restaurantId).get();
 
@@ -79,7 +89,7 @@ public class MenuService {
 
         restaurantRepository.save(restaurant);
 
-        MenuDTO menuDTO = (MenuDTO) createMenu(2L,"sd",MenuType.FOOD).getBody();
+        MenuDTO menuDTO = (MenuDTO) createMenu(2L, "sd", MenuType.FOOD).getBody();
 
         return ResponseEntity.ok().build();
     }
@@ -87,7 +97,7 @@ public class MenuService {
 
     public ResponseEntity createMenu(Long restoId, String menuName, MenuType menuType) {
         if (!restaurantOwnerShipValidator.hasOwnerRight(restoId) && !restaurantOwnerShipValidator.isAdminConnected())
-            return  ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         Restaurant restaurant = restaurantRepository.findById(restoId).get();
 
@@ -129,7 +139,7 @@ public class MenuService {
                 .findFirst().orElse(null);
     }
 
-    private boolean isMenuWaiterRequestAlreadyExisting(Restaurant restaurant){
+    private boolean isMenuWaiterRequestAlreadyExisting(Restaurant restaurant) {
         return restaurant.getMenus().stream().anyMatch(menu -> menu.getMenuType().equals(MenuType.WAITERREQUEST));
     }
 

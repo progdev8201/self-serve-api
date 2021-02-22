@@ -13,6 +13,10 @@ public class Menu implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String omnivoreMenuId;
+
+    private String omnivoreMenuType;
+
     @OneToMany(cascade ={CascadeType.PERSIST, CascadeType.MERGE})
     private List<Product> products;
 
@@ -65,4 +69,19 @@ public class Menu implements Serializable {
         this.restaurant = restaurant;
     }
 
+    public String getOmnivoreMenuId() {
+        return omnivoreMenuId;
+    }
+
+    public void setOmnivoreMenuId(String omnivoreMenuId) {
+        this.omnivoreMenuId = omnivoreMenuId;
+    }
+
+    public String getOmnivoreMenuType() {
+        return omnivoreMenuType;
+    }
+
+    public void setOmnivoreMenuType(String omnivoreType) {
+        this.omnivoreMenuType = omnivoreType;
+    }
 }

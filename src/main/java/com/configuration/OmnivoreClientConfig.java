@@ -1,6 +1,8 @@
 package com.configuration;
 
 import com.service.feign.OmnivoreClient;
+import com.service.feign.OmnivoreItemClient;
+import com.service.feign.OmnivoreMenuClient;
 import feign.Feign;
 import feign.Logger;
 import feign.jackson.JacksonDecoder;
@@ -25,5 +27,27 @@ public class OmnivoreClientConfig {
                 .logger(new Slf4jLogger(OmnivoreClient.class))
                 .logLevel(Logger.Level.FULL)
                 .target(OmnivoreClient.class, omnivoreUrl);
+    }
+
+    @Bean
+    public OmnivoreItemClient omnivoreItemClientImpl(){
+        return Feign.builder()
+                .client(new OkHttpClient())
+                .encoder(new JacksonEncoder())
+                .decoder(new JacksonDecoder())
+                .logger(new Slf4jLogger(OmnivoreItemClient.class))
+                .logLevel(Logger.Level.FULL)
+                .target(OmnivoreItemClient.class, omnivoreUrl);
+    }
+
+    @Bean
+    public OmnivoreMenuClient omnivoreMenuClientImpl(){
+        return Feign.builder()
+                .client(new OkHttpClient())
+                .encoder(new JacksonEncoder())
+                .decoder(new JacksonDecoder())
+                .logger(new Slf4jLogger(OmnivoreMenuClient.class))
+                .logLevel(Logger.Level.FULL)
+                .target(OmnivoreMenuClient.class, omnivoreUrl);
     }
 }
